@@ -283,6 +283,40 @@ function renderContact() {
     `;
 }
 
+// אתחול EmailJS (שים את זה מחוץ לפונקציות, בראש הקובץ או לפני handleContact)
+(function() {
+    // 🔴 כאן תדביק את ה-Public Key שלך מהאתר
+    emailjs.init("IbRpfo53sxGuf4aZY"); 
+})();
+
+function handleContact(e) {
+    e.preventDefault();
+    
+    // איסוף הנתונים מהטופס
+    const templateParams = {
+        name: document.getElementById('c-name').value,
+        email: document.getElementById('c-email').value,
+        phone: document.getElementById('c-phone').value,
+        message: document.getElementById('c-msg').value
+    };
+
+    const submitBtn = e.target.querySelector('button');
+    submitBtn.innerText = 'שולח...';
+    submitBtn.disabled = true;
+
+    // 🔴 כאן תדביק את ה-Service ID וה-Template ID שלך
+    emailjs.send('service_dqa02j8', 'template_i5v64r8', templateParams)
+        .then(function() {
+            alert('ההודעה נשלחה בהצלחה! נחזור אליך למייל.');
+            router('home');
+        }, function(error) {
+            console.log('FAILED...', error);
+            alert('הייתה שגיאה בשליחה, נסה שוב מאוחר יותר.');
+            submitBtn.innerText = 'שלח הודעה';
+            submitBtn.disabled = false;
+        });
+}
+
 function handleContact(e) {
     e.preventDefault();
     const name = document.getElementById('c-name').value;
@@ -385,3 +419,4 @@ window.onload = function() {
         router('home');
     }
 };
+
