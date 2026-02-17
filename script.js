@@ -453,10 +453,8 @@ function scrollTestimonials(direction) {
     });
 }
 
-// --- נתוני השאלות ---
 const app = document.getElementById('app');
 
-// נתוני השאלות
 const quizData = [
     {
         question: "גוף נופל נפילה חופשית ממנוחה. מהי מהירותו לאחר 3 שניות? (g=10)",
@@ -470,7 +468,6 @@ const quizData = [
     }
 ];
 
-// ניתוב דפים
 function router(page) {
     window.scrollTo(0, 0);
     app.innerHTML = '';
@@ -484,43 +481,47 @@ function router(page) {
     }
 }
 
-// דף הבית
 function renderHome() {
     app.innerHTML = `
-        <div class="container" style="text-align:center;">
-            <h1>ברוכים הבאים ל-Physics Master</h1>
-            <p>המרכז ללימודי פיזיקה בתיכון</p>
-            <div style="display: flex; gap: 20px; justify-content: center; margin-top: 50px;">
-                <button onclick="router('videos')" style="padding: 20px; font-size: 1.2rem; cursor:pointer;">צפייה בסרטונים</button>
-                <button onclick="router('exercises')" style="padding: 20px; font-size: 1.2rem; cursor:pointer;">תרגול שאלות</button>
+        <section class="hero">
+            <h1>Physics Master</h1>
+            <p>המרכז ללימודי פיזיקה בתיכון - הכל במקום אחד</p>
+            <button class="btn-main" onclick="router('videos')">מתחילים ללמוד</button>
+        </section>
+
+        <section id="learning">
+            <h2 class="section-title">מה תרצו לעשות היום?</h2>
+            <div class="grid-full">
+                <div class="card" style="background-image: url('https://images.unsplash.com/photo-1636466497217-26a8cbeaf0aa?q=80&w=1000')" onclick="router('videos')">
+                    <div class="card-overlay">
+                        <h3>סרטוני לימוד</h3>
+                        <p>שיעורים מוקלטים בכל נושאי הבגרות</p>
+                        <button class="card-btn">לצפייה</button>
+                    </div>
+                </div>
+                <div class="card" style="background-image: url('https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1000')" onclick="router('exercises')">
+                    <div class="card-overlay">
+                        <h3>תרגול שאלות</h3>
+                        <p>מאגר שאלות אמריקאיות עם משוב מיידי</p>
+                        <button class="card-btn">לתרגול</button>
+                    </div>
+                </div>
             </div>
-        </div>
+        </section>
     `;
 }
 
-// דף סרטונים (דוגמה)
-function renderVideos() {
-    app.innerHTML = `
-        <div class="container">
-            <h2>סרטוני לימוד</h2>
-            <p>כאן יופיעו הסרטונים שלך...</p>
-            <button onclick="router('home')">חזור</button>
-        </div>
-    `;
-}
-
-// מערכת תרגול שאלות
 function renderQuizSystem() {
     let html = `
-        <div class="container">
-            <h2 style="text-align:center;">תרגול שאלות 📝</h2>
+        <section id="exercises" style="background: var(--light-glass); backdrop-filter: blur(10px); border-radius: 30px; margin: 40px auto; width: 90%; max-width: 1000px; padding: 40px;">
+            <h2 class="section-title">תרגול שאלות 📝</h2>
     `;
 
     quizData.forEach((q, index) => {
         html += `
             <div class="quiz-card">
-                <h3>שאלה ${index + 1}</h3>
-                <p>${q.question}</p>
+                <h3 style="color: var(--primary); margin-bottom: 10px;">שאלה ${index + 1}</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 20px;">${q.question}</p>
                 <div class="options-grid">
                     ${q.options.map((opt, i) => `
                         <button onclick="checkAnswer(this, ${index}, ${i})" class="option-btn">${opt}</button>
@@ -531,7 +532,7 @@ function renderQuizSystem() {
         `;
     });
 
-    html += `<center><button class="btn-back" onclick="router('home')">חזור לדף הבית</button></center></div>`;
+    html += `<button class="btn-back" onclick="router('home')">חזור לדף הבית</button></section>`;
     app.innerHTML = html;
 }
 
@@ -543,15 +544,19 @@ function checkAnswer(btn, qIdx, choiceIdx) {
     btns.forEach(b => b.disabled = true);
 
     if (choiceIdx === q.correct) {
-        btn.style.background = '#10b981';
-        btn.style.color = 'white';
-        feedback.innerHTML = '✅ נכון מאוד!';
+        btn.style.background = "#10b981";
+        btn.style.color = "white";
+        feedback.innerHTML = '<span style="color:#10b981; font-weight:bold;">✅ נכון מאוד!</span>';
     } else {
-        btn.style.background = '#ef4444';
-        btn.style.color = 'white';
-        feedback.innerHTML = `❌ טעות. התשובה הנכונה היא: ${q.options[q.correct]}`;
+        btn.style.background = "#ef4444";
+        btn.style.color = "white";
+        feedback.innerHTML = `<span style="color:#ef4444; font-weight:bold;">❌ טעות. התשובה הנכונה: ${q.options[q.correct]}</span>`;
     }
 }
 
-// טעינת דף הבית בכניסה ראשונה
+// פונקציות ריקות זמנית כדי שלא תהיה שגיאה
+function renderVideos() { app.innerHTML = '<section class="hero"><h1>סרטונים בקרוב...</h1><button class="btn-back" onclick="router(\'home\')">חזור</button></section>'; }
+function renderContact() { app.innerHTML = '<section class="hero"><h1>צור קשר בקרוב...</h1><button class="btn-back" onclick="router(\'home\')">חזור</button></section>'; }
+
 renderHome();
+
