@@ -454,41 +454,76 @@ function scrollTestimonials(direction) {
 }
 
 // --- נתוני השאלות ---
+const app = document.getElementById('app');
+
+// נתוני השאלות
 const quizData = [
     {
         question: "גוף נופל נפילה חופשית ממנוחה. מהי מהירותו לאחר 3 שניות? (g=10)",
         options: ["10 m/s", "20 m/s", "30 m/s", "45 m/s"],
-        correct: 2 // התשובה הנכונה היא האינדקס ה-2 (מתחילים לספור מ-0), כלומר "30"
+        correct: 2
     },
     {
         question: "מהו החוק השני של ניוטון?",
         options: ["F = m/a", "F = m*a", "F = m*v", "אף תשובה אינה נכונה"],
-        correct: 1 // התשובה היא F=ma
-    },
-    {
-        question: "אם נזרוק כדור אופקית, מה יקרה למהירות האופקית שלו (בהזנחת חיכוך)?",
-        options: ["תגדל כל הזמן", "תקטן כל הזמן", "תישאר קבועה", "תלויה במסה"],
-        correct: 2
+        correct: 1
     }
 ];
 
-// --- בניית דף התרגול ---
+// ניתוב דפים
+function router(page) {
+    window.scrollTo(0, 0);
+    app.innerHTML = '';
+    
+    switch(page) {
+        case 'home': renderHome(); break;
+        case 'videos': renderVideos(); break;
+        case 'exercises': renderQuizSystem(); break;
+        case 'contact': renderContact(); break;
+        default: renderHome();
+    }
+}
+
+// דף הבית
+function renderHome() {
+    app.innerHTML = `
+        <div class="container" style="text-align:center;">
+            <h1>ברוכים הבאים ל-Physics Master</h1>
+            <p>המרכז ללימודי פיזיקה בתיכון</p>
+            <div style="display: flex; gap: 20px; justify-content: center; margin-top: 50px;">
+                <button onclick="router('videos')" style="padding: 20px; font-size: 1.2rem; cursor:pointer;">צפייה בסרטונים</button>
+                <button onclick="router('exercises')" style="padding: 20px; font-size: 1.2rem; cursor:pointer;">תרגול שאלות</button>
+            </div>
+        </div>
+    `;
+}
+
+// דף סרטונים (דוגמה)
+function renderVideos() {
+    app.innerHTML = `
+        <div class="container">
+            <h2>סרטוני לימוד</h2>
+            <p>כאן יופיעו הסרטונים שלך...</p>
+            <button onclick="router('home')">חזור</button>
+        </div>
+    `;
+}
+
+// מערכת תרגול שאלות
 function renderQuizSystem() {
     let html = `
-        <div class="container" style="padding-top: 20px; max-width: 800px;">
-            <h2 style="text-align:center; margin-bottom:30px;">תרגול שאלות 📝</h2>
+        <div class="container">
+            <h2 style="text-align:center;">תרגול שאלות 📝</h2>
     `;
 
     quizData.forEach((q, index) => {
         html += `
             <div class="quiz-card">
                 <h3>שאלה ${index + 1}</h3>
-                <p style="font-size: 1.2rem; margin-bottom: 15px;">${q.question}</p>
+                <p>${q.question}</p>
                 <div class="options-grid">
                     ${q.options.map((opt, i) => `
-                        <button onclick="checkAnswer(this, ${index}, ${i})" class="option-btn">
-                            ${opt}
-                        </button>
+                        <button onclick="checkAnswer(this, ${index}, ${i})" class="option-btn">${opt}</button>
                     `).join('')}
                 </div>
                 <div id="feedback-${index}" class="feedback-msg"></div>
@@ -496,41 +531,27 @@ function renderQuizSystem() {
         `;
     });
 
-    html += `
-            <div style="text-align:center; margin-top:30px;">
-                <button onclick="router('home')" class="btn-back">חזור לדף הבית</button>
-            </div>
-        </div>
-    `;
-
+    html += `<center><button class="btn-back" onclick="router('home')">חזור לדף הבית</button></center></div>`;
     app.innerHTML = html;
 }
 
-// --- בדיקת תשובה ---
-function checkAnswer(btn, questionIndex, choiceIndex) {
-    const question = quizData[questionIndex];
-    const feedbackEl = document.getElementById(`feedback-${questionIndex}`);
+function checkAnswer(btn, qIdx, choiceIdx) {
+    const q = quizData[qIdx];
+    const feedback = document.getElementById(`feedback-${qIdx}`);
+    const btns = btn.parentElement.querySelectorAll('button');
     
-    // ניטרול הכפתורים באותה שאלה כדי שלא יוכלו ללחוץ שוב
-    const parent = btn.parentElement;
-    const allBtns = parent.getElementsByTagName('button');
-    for(let b of allBtns) {
-        b.disabled = true;
-        b.style.cursor = 'default';
-        if (b === btn) {
-             // סימון הבחירה של המשתמש
-        }
-    }
+    btns.forEach(b => b.disabled = true);
 
-    if (choiceIndex === question.correct) {
-        // תשובה נכונה
-        btn.style.background = '#10b981'; // ירוק
+    if (choiceIdx === q.correct) {
+        btn.style.background = '#10b981';
         btn.style.color = 'white';
-        feedbackEl.innerHTML = '<span style="color:#10b981; font-weight:bold;">✅ כל הכבוד! תשובה נכונה.</span>';
+        feedback.innerHTML = '✅ נכון מאוד!';
     } else {
-        // תשובה שגויה
-        btn.style.background = '#ef4444'; // אדום
+        btn.style.background = '#ef4444';
         btn.style.color = 'white';
-        feedbackEl.innerHTML = `<span style="color:#ef4444; font-weight:bold;">❌ טעות. התשובה הנכונה היא: ${question.options[question.correct]}</span>`;
+        feedback.innerHTML = `❌ טעות. התשובה הנכונה היא: ${q.options[q.correct]}`;
     }
 }
+
+// טעינת דף הבית בכניסה ראשונה
+renderHome();
