@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhysicsMaster | בגרות בפיזיקה ולימודי כיתה י'</title>
+    <title>PhysicsMaster | מערכת למידה מתקדמת</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <link rel="stylesheet" href="style.css">
@@ -17,35 +16,24 @@
 <body>
 
     <nav class="navbar">
-        <div class="logo" onclick="router('home')" style="cursor: pointer;">
-            <i class="fa-solid fa-atom fa-spin"></i> פיזיקה בכיף
+        <div class="logo" onclick="router('home')">
+            <i class="fa-solid fa-atom fa-spin"></i> PhysicsMaster
         </div>
-        <ul class="nav-links" id="navLinks">
-            <li onclick="router('home')">בית</li>
-            <li onclick="router('lessons')">הסברים</li>
-            <li onclick="router('exercises')">תרגול</li>
-            <li onclick="router('videos')">סרטונים</li>
-            <li onclick="router('exams')">בגרויות</li>
-            <li onclick="router('simulation')">סימולציה</li>
-            <li onclick="router('contact')">צור קשר</li>
-        </ul>
+        <div class="nav-links">
+            <span onclick="scrollToSection('learning')">מרכז למידה</span>
+            <span onclick="scrollToSection('about')">אודות</span>
+            <span onclick="scrollToSection('testimonials')">תגובות</span>
+            <span onclick="scrollToSection('contact')">צור קשר</span>
+        </div>
         <div class="admin-btn" onclick="router('admin')">
-            <i class="fa-solid fa-lock"></i>
-        </div>
-        <div class="hamburger" onclick="toggleMenu()">
-            <i class="fa-solid fa-bars"></i>
+            <i class="fa-solid fa-user-shield"></i> ניהול
         </div>
     </nav>
 
     <main id="app-container"></main>
 
     <footer>
-        <div class="footer-content">
-            <p>© 2024 PhysicsMaster - כל הזכויות שמורות.</p>
-            <p class="credit-note">
-                <i class="fa-solid fa-graduation-cap"></i> בהצלחה בבגרות!
-            </p>
-        </div>
+        <p>© 2024 PhysicsMaster - כל הזכויות שמורות.</p>
     </footer>
 
     <script src="script.js"></script>
