@@ -1,377 +1,753 @@
 :root {
+
     --primary: #2563eb;
+
     --dark: #0f172a;
+
     --light-glass: rgba(255, 255, 255, 0.85); /* צבע זכוכית בהיר */
+
     --accent: #f59e0b;
+
 }
+
+
 
 * {
+
     margin: 0;
+
     padding: 0;
+
     box-sizing: border-box;
+
 }
+
+
 
 body {
+
     font-family: 'Rubik', sans-serif;
+
     color: #1e293b;
+
     overflow-x: hidden;
+
     
+
     /* --- תמונת הרקע החדשה לכל האתר --- */
+
     /* תמונה של רשת מדעית/פיזיקלית בגווני כחול */
+
     background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)),
+
                 url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2070&auto=format&fit=crop');
+
     
+
     background-size: cover;       /* מכסה את כל המסך */
+
     background-attachment: fixed; /* הרקע נשאר קבוע בגלילה */
+
     background-position: center;
+
 }
+
+
 
 /* --- ניווט --- */
+
 .navbar {
+
     display: flex;
+
     justify-content: space-between;
+
     align-items: center;
+
     padding: 15px 40px;
+
     background: rgba(255, 255, 255, 0.95); /* כמעט אטום */
+
     backdrop-filter: blur(10px); /* טשטוש הרקע */
+
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+
     position: sticky;
+
     top: 0;
+
     z-index: 1000;
+
 }
+
+
 
 .logo {
+
     font-size: 1.8rem;
+
     font-weight: 900;
+
     color: var(--primary);
+
     cursor: pointer;
+
     font-family: 'Heebo', sans-serif;
+
 }
+
+
 
 .nav-links span {
+
     margin: 0 20px;
+
     cursor: pointer;
+
     font-weight: 500;
+
     transition: 0.3s;
+
     font-size: 1.1rem;
+
     color: #334155;
+
 }
+
+
 
 .nav-links span:hover { color: var(--primary); }
+
 .admin-btn { cursor: pointer; color: #64748b; font-size: 1.2rem; }
 
+
+
 /* --- עיצוב האזורים (Sections) --- */
+
 section {
+
     padding: 60px 5%;
+
     min-height: 90vh;
+
     display: flex;
+
     flex-direction: column;
+
     justify-content: center;
+
     align-items: center;
+
     text-align: center;
+
     
+
     /* רווח בין סקשנים */
+
     margin-bottom: 40px;
+
 }
+
+
 
 /* עיצוב מיוחד לכרטיסים/אזורים עם רקע לבן חצי-שקוף */
+
 #about, #testimonials, #contact, #learning {
+
     background: var(--light-glass); /* רקע זכוכית */
+
     backdrop-filter: blur(10px);    /* טשטוש */
+
     border-radius: 30px;            /* פינות עגולות */
+
     margin: 40px auto;              /* מירכוז */
+
     width: 90%;                     /* רוחב האזור */
+
     max-width: 1400px;
+
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); /* צל עדין */
+
     border: 1px solid rgba(255, 255, 255, 0.18);
+
 }
+
+
 
 .section-title {
+
     font-size: 3rem;
+
     margin-bottom: 40px;
+
     color: var(--dark);
+
     font-weight: 900;
+
     text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+
 }
+
+
 
 /* --- Hero (החלק העליון) --- */
+
 .hero {
+
     height: 90vh;
+
     /* הופך את ההירו לשקוף לגמרי כדי שיראו את הרקע הראשי של האתר */
+
     background: transparent; 
+
     color: white;
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
     text-align: center;
+
     flex-direction: column;
+
 }
+
+
 
 .hero h1 { 
+
     font-size: 5rem; 
+
     margin-bottom: 20px; 
+
     text-shadow: 0 0 20px rgba(37, 99, 235, 0.8); /* זוהר כחול */
+
     font-weight: 900;
+
 }
+
 .hero p { 
+
     font-size: 1.6rem; 
+
     margin-bottom: 40px; 
+
     color: #e2e8f0;
+
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+
 }
+
+
 
 /* --- גריד וכרטיסים --- */
+
 .grid-full {
+
     display: grid;
+
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+
     gap: 30px;
+
     width: 100%;
+
     max-width: 1400px;
+
     padding: 20px;
+
 }
+
+
 
 .card {
+
     height: 320px;
+
     border-radius: 20px;
+
     position: relative;
+
     overflow: hidden;
+
     cursor: pointer;
+
     box-shadow: 0 10px 30px rgba(0,0,0,0.2); /* צל חזק יותר */
+
     transition: transform 0.4s ease, box-shadow 0.4s ease;
+
     background-size: cover;
+
     background-position: center;
+
     border: 2px solid white; /* מסגרת לבנה דקה */
+
 }
+
+
 
 .card:hover { 
+
     transform: translateY(-10px); 
+
     box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+
 }
+
+
 
 .card-overlay {
+
     position: absolute;
+
     inset: 0;
+
     background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.2) 100%);
+
     display: flex;
+
     flex-direction: column;
+
     justify-content: flex-end;
+
     padding: 30px;
+
     color: white;
+
     text-align: right;
+
 }
+
+
 
 .card h3 { font-size: 1.8rem; margin-bottom: 10px; font-weight: 700; }
+
 .card p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 20px; }
 
+
+
 /* כפתורים */
+
 .card-btn {
+
     align-self: flex-start;
+
     background: var(--primary);
+
     color: white;
+
     padding: 10px 25px;
+
     border-radius: 50px;
+
     font-weight: bold;
+
     border: none;
+
     box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+
 }
+
+
 
 .btn-main {
+
     padding: 15px 50px;
+
     font-size: 1.4rem;
+
     background: var(--accent);
+
     color: white;
+
     border: none;
+
     border-radius: 50px;
+
     cursor: pointer;
+
     font-weight: bold;
+
     box-shadow: 0 0 20px rgba(245, 158, 11, 0.6);
+
     transition: 0.3s;
+
 }
+
 .btn-main:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(245, 158, 11, 0.8); }
 
+
+
 .btn-back {
+
     margin: 30px auto;
+
     display: block;
+
     background: #475569;
+
     color: white;
+
     padding: 12px 35px;
+
     border: none;
+
     border-radius: 50px;
+
     cursor: pointer;
+
     font-size: 1.2rem;
+
     transition: 0.3s;
+
 }
+
 .btn-back:hover { background: #334155; }
+
+
 
 /* --- תגובות בגלילה אופקית (Carousel) --- */
 
+
+
 /* המיכל שמחזיק את כל הכרטיסים */
+
 .testimonials-scroll-container {
+
     display: flex;             /* מסדר את הפריטים בשורה */
+
     overflow-x: auto;          /* מאפשר גלילה לצדדים */
+
     gap: 30px;                 /* רווח בין הכרטיסים */
+
     padding: 20px 10px 40px 10px; /* ריפוד (למטה 40 כדי שיהיה מקום לצל) */
+
     width: 100%;
+
     
+
     /* גלילה חלקה ונעימה */
+
     scroll-behavior: smooth;
+
     
+
     /* דואג שהכרטיס "יתמגנט" למרכז בגלילה (אופציונלי אך מומלץ) */
+
     scroll-snap-type: x mandatory;
+
     
+
     /* הסתרת פס הגלילה (Scrollbar) בדפדפנים מודרניים למראה נקי */
+
     scrollbar-width: none; /* Firefox */
+
 }
+
+
 
 /* הסתרת פס הגלילה ב-Chrome/Safari */
+
 .testimonials-scroll-container::-webkit-scrollbar {
+
     display: none;
+
 }
+
+
 
 /* הכרטיס עצמו */
+
 .testimonial-card {
+
     min-width: 320px;          /* רוחב מינימלי קבוע לכל כרטיס כדי שלא יתכווץ */
+
     max-width: 320px;          /* גם רוחב מקסימלי */
+
     background: white;
+
     padding: 30px;
+
     border-radius: 20px;
+
     text-align: center;
+
     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+
     
+
     /* כדי שהכרטיסים לא יקטנו */
+
     flex-shrink: 0;
+
     
+
     /* המיגנוט לגלילה */
+
     scroll-snap-align: center;
+
     
+
     transition: transform 0.3s ease;
+
 }
+
+
 
 .testimonial-card:hover {
+
     transform: translateY(-5px);
+
     box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+
 }
+
+
 
 .profile-img {
+
     width: 80px;
+
     height: 80px;
+
     border-radius: 50%;
+
     margin-bottom: 15px;
+
     object-fit: cover;
+
     border: 3px solid var(--primary);
+
 }
+
+
 
 .testimonial-card h4 {
+
     margin-bottom: 10px;
+
     color: var(--dark);
+
     font-size: 1.2rem;
+
 }
+
+
 
 .testimonial-card p {
+
     font-style: italic;
+
     color: #475569;
+
     font-size: 0.95rem;
+
     line-height: 1.5;
+
 }
+
+
 
 .testimonial-card {
+
     background: white;
+
     padding: 40px;
+
     border-radius: 20px;
+
     text-align: center;
+
     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+
 }
+
+
 
 .form-container {
+
     max-width: 600px;
+
     width: 100%;
+
     margin: 0 auto;
+
     background: white;
+
     padding: 50px;
+
     border-radius: 25px;
+
     box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+
 }
+
+
 
 input, textarea {
+
     width: 100%;
+
     padding: 15px;
+
     margin-bottom: 20px;
+
     border: 1px solid #cbd5e1;
+
     border-radius: 12px;
+
     font-size: 1rem;
+
     background: #f8fafc;
+
 }
+
+
 
 /* --- פוטר --- */
+
 footer {
+
     text-align: center;
+
     padding: 30px;
+
     background: rgba(15, 23, 42, 0.95);
+
     color: #94a3b8;
+
     backdrop-filter: blur(10px);
+
 }
+
+
 
 /* --- עיצוב כפתורי גלילה לתגובות (החלק שחסר) --- */
+
 .carousel-wrapper {
+
     position: relative;
+
     width: 100%;
+
     max-width: 1200px; /* רוחב מקסימלי כדי שהחיצים לא יהיו רחוקים מדי */
+
     margin: 0 auto;
+
     display: flex;
+
     align-items: center;
+
 }
+
+
 
 .scroll-btn {
+
     position: absolute;
+
     top: 50%;
+
     transform: translateY(-50%);
+
     background: var(--primary);
+
     color: white;
+
     border: none;
+
     width: 45px;
+
     height: 45px;
+
     border-radius: 50%;
+
     cursor: pointer;
+
     z-index: 10;
+
     font-size: 1.2rem;
+
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+
     transition: 0.3s;
+
     display: flex;
+
     align-items: center;
+
     justify-content: center;
+
 }
+
+
 
 .scroll-btn:hover {
+
     background: var(--dark);
+
     transform: translateY(-50%) scale(1.1);
+
 }
+
+
 
 .prev-btn { left: -25px; } /* ממקם את החץ השמאלי */
+
 .next-btn { right: -25px; } /* ממקם את החץ הימני */
 
+
+
 /* בטלפון נסתיר את החיצים כי יש מגע (Swipe) */
+
 @media (max-width: 768px) {
+
     .scroll-btn { display: none; }
+
     .prev-btn, .next-btn { display: none; }
+
 }
+
+
 
 .summary-card {
+
     background: white;
+
     padding: 40px;
+
     border-radius: 30px;
+
     margin-top: 40px;
+
     box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+
     border: 3px solid var(--primary);
+
     animation: slideIn 0.5s ease-out;
+
     text-align: center;
+
     width: 100%;
+
 }
+
+
 
 @keyframes slideIn {
+
     from { opacity: 0; transform: translateY(30px); }
+
     to { opacity: 1; transform: translateY(0); }
+
 }
 
+
+
 .question-block {
+
     transition: all 0.4s ease;
+
 }
