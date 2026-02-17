@@ -75,28 +75,28 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+    
     <div id="auth-ui">
-        <div id="logged-in-view" style="display: none;" class="profile-pill">
-            <span id="display-name">תלמיד</span>
-            <div class="user-avatar" id="user-photo"><i class="fa-solid fa-user"></i></div>
-            <button onclick="handleLogout()" style="cursor:pointer; border:none; background:none; color:#ef4444; font-weight: bold; margin-right: 10px;">התנתק</button>
-        </div>
-        <div id="logged-out-view">
-            <button class="btn-main" onclick="toggleModal(true)" style="padding: 8px 20px; font-size: 0.9rem;">התחברות / הרשמה</button>
-        </div>
+    <div id="logged-in-view" style="display: none;" class="profile-pill">
+        <span id="display-name">טוען...</span>
+        <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+        <button onclick="handleLogout()" class="btn-logout">התנתק</button>
     </div>
+    <div id="logged-out-view">
+        <button class="btn-main" onclick="toggleModal(true)">התחברות / הרשמה</button>
+    </div>
+</div>
 
-    <div id="login-modal" class="modal-overlay">
-        <div class="login-box">
-            <h2 id="modal-title">התחברות</h2>
-            <input type="email" id="auth-email" placeholder="אימייל">
-            <input type="password" id="auth-pass" placeholder="סיסמה">
-            <button class="btn-main" id="main-auth-btn" style="width:100%" onclick="handleAuth()">שלח</button>
-            <p style="margin-top:15px; cursor:pointer; color:#3b82f6; font-size: 0.9rem;" onclick="toggleAuthMode()" id="toggle-text">אין לך חשבון? הירשם כאן</p>
-            <button onclick="toggleModal(false)" style="margin-top:10px; background:none; border:none; color:#666; cursor: pointer;">ביטול</button>
-        </div>
+<div id="login-modal" class="modal-overlay">
+    <div class="login-box">
+        <h2 id="modal-title">התחברות</h2>
+        <input type="email" id="auth-email" placeholder="אימייל">
+        <input type="password" id="auth-pass" placeholder="סיסמה">
+        <button class="btn-main" style="width:100%" onclick="handleAuth()">בצע פעולה</button>
+        <p onclick="toggleAuthMode()" id="toggle-text" style="cursor:pointer; color:#3b82f6; margin-top:15px;">אין לך חשבון? הירשם כאן</p>
+        <button onclick="toggleModal(false)" style="margin-top:10px; background:none; border:none; cursor:pointer;">ביטול</button>
     </div>
+</div>
 
     <nav class="navbar">
         <div class="logo" onclick="router('home')">
@@ -183,3 +183,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
