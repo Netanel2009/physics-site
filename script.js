@@ -508,3 +508,62 @@ function checkAnswers(exId) {
     resultDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
+// אתחול Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyBzZVWudrgjb-Qi-ln5Qm0u4L0PUlwbjUc",
+  authDomain: "physicsmaster-app.firebaseapp.com",
+  projectId: "physicsmaster-app",
+  storageBucket: "physicsmaster-app.firebasestorage.app",
+  messagingSenderId: "389250837755",
+  appId: "1:389250837755:web:c088a4021e28ce0132945e"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+let isSignUpMode = false;
+
+// מאזין למצב התחברות
+auth.onAuthStateChanged(user => {
+    if (user) {
+        document.getElementById('logged-in-view').style.display = 'flex';
+        document.getElementById('logged-out-view').style.display = 'none';
+        document.getElementById('display-name').innerText = user.email.split('@')[0];
+    } else {
+        document.getElementById('logged-in-view').style.display = 'none';
+        document.getElementById('logged-out-view').style.display = 'block';
+    }
+});
+
+function toggleModal(show) {
+    document.getElementById('login-modal').style.display = show ? 'flex' : 'none';
+}
+
+function toggleAuthMode() {
+    isSignUpMode = !isSignUpMode;
+    document.getElementById('modal-title').innerText = isSignUpMode ? 'הרשמה' : 'התחברות';
+    document.getElementById('toggle-text').innerText = isSignUpMode ? 'כבר יש לך חשבון? התחבר' : 'אין לך חשבון? הירשם כאן';
+}
+
+async function handleAuth() {
+    const email = document.getElementById('auth-email').value;
+    const pass = document.getElementById('auth-pass').value;
+
+    try {
+        if (isSignUpMode) {
+            await auth.createUserWithEmailAndPassword(email, pass);
+            alert("נרשמת בהצלחה!");
+        } else {
+            await auth.signInWithEmailAndPassword(email, pass);
+            alert("התחברת בהצלחה!");
+        }
+        toggleModal(false);
+    } catch (error) {
+        alert("שגיאה: " + error.message);
+    }
+}
+
+function handleLogout() {
+    auth.signOut();
+}
+
