@@ -463,6 +463,11 @@ function checkAnswers(exId) {
     let score = 0;
     let summaryHTML = '';
     
+    // --- הוסף את השורה הזו כדי למחוק תוצאות קודמות לפני בדיקה חדשה ---
+    const oldResult = document.getElementById('exercise-results');
+    if (oldResult) oldResult.remove(); 
+    // -----------------------------------------------------------
+
     questions.forEach((q, i) => {
         const selected = document.querySelector(`input[name="q${i}"]:checked`);
         const questionDiv = document.getElementsByName(`q${i}`)[0].closest('.question-block');
@@ -471,20 +476,35 @@ function checkAnswers(exId) {
         
         if (isCorrect) {
             score++;
-            questionDiv.style.border = "2px solid #22c55e"; // מסגרת ירוקה
+            questionDiv.style.border = "2px solid #22c55e";
             questionDiv.style.background = "#f0fdf4";
         } else {
-            questionDiv.style.border = "2px solid #ef4444"; // מסגרת אדומה
+            questionDiv.style.border = "2px solid #ef4444";
             questionDiv.style.background = "#fef2f2";
         }
         
-        // בניית פירוט לסיכום
         summaryHTML += `
             <div style="text-align:right; margin-bottom:10px; color: ${isCorrect ? '#15803d' : '#b91c1c'}">
                 <strong>שאלה ${i+1}:</strong> ${isCorrect ? '✅ צדקת!' : `❌ טעית (התשובה הנכונה: ${q.a})`}
             </div>
         `;
     });
+
+    const finalScore = Math.round((score / questions.length) * 100);
+
+    const resultDiv = document.createElement('div');
+    resultDiv.id = 'exercise-results';
+    resultDiv.className = 'summary-card';
+    resultDiv.innerHTML = `
+        <h3 style="font-size: 2rem; margin-bottom: 15px;">סיכום התוצאות 🏁</h3>
+        <div style="font-size: 1.5rem; font-weight: 900; margin-bottom: 20px;">ציון סופי: ${finalScore}</div>
+        <div style="margin-bottom: 25px;">${summaryHTML}</div>
+        <button class="btn-main" onclick="router('exercise_list', 'mechanics')">חזור לרשימת התרגילים</button>
+    `;
+
+    document.getElementById('exercise-container').after(resultDiv);
+    resultDiv.scrollIntoView({ behavior: 'smooth' });
+}
 
     const finalScore = Math.round((score / questions.length) * 100);
 
@@ -566,4 +586,5 @@ async function handleAuth() {
 function handleLogout() {
     auth.signOut();
 }
+
 
