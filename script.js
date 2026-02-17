@@ -507,3 +507,4 @@ function checkAnswers(exId) {
     // גלילה חלקה לתוצאה
     resultDiv.scrollIntoView({ behavior: 'smooth' });
 }
+
