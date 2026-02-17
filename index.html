@@ -3,47 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhysicsMaster | מערכת למידה מתקדמת</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    
+    <title>Physics Master - לומדים פיזיקה בקלות</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <nav class="navbar">
-        <ul id="navLinks"> <li onclick="router('home')">דף הבית</li>
-    <li onclick="router('videos')">סרטונים</li>
-
-    <li onclick="router('exercises')">תרגול שאלות 📝</li>
-    <li onclick="router('contact')">צור קשר</li>
-
-</ul>
-        <div class="logo" onclick="router('home')">
-            <i class="fa-solid fa-atom fa-spin"></i> PhysicsMaster
-        </div>
-        <div class="nav-links">
-            <span onclick="scrollToSection('learning')">מרכז למידה</span>
-            <span onclick="scrollToSection('about')">אודות</span>
-            <span onclick="scrollToSection('testimonials')">תגובות</span>
-            <span onclick="scrollToSection('contact')">צור קשר</span>
-        </div>
-        <div class="admin-btn" onclick="router('admin')">
-            <i class="fa-solid fa-user-shield"></i> ניהול
-        </div>
+    <nav>
+        <div class="logo" onclick="router('home')">Physics Master</div>
+        <ul id="navLinks">
+            <li onclick="router('home')">דף הבית</li>
+            <li onclick="router('videos')">סרטונים</li>
+            <li onclick="router('exercises')">תרגול שאלות 📝</li>
+            <li onclick="router('contact')">צור קשר</li>
+        </ul>
     </nav>
 
-    <main id="app-container"></main>
-
-    <footer>
-        <p>© 2024 PhysicsMaster - כל הזכויות שמורות.</p>
-    </footer>
+    <div id="app">
+        </div>
 
     <script src="script.js"></script>
 </body>
 </html>
-
