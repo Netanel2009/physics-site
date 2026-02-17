@@ -10,8 +10,8 @@
     
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,7 +20,7 @@
         <div class="logo" onclick="router('home')" style="cursor: pointer;">
             <i class="fa-solid fa-atom fa-spin"></i> פיזיקה בכיף
         </div>
-        <ul class="nav-links">
+        <ul class="nav-links" id="navLinks">
             <li onclick="router('home')">בית</li>
             <li onclick="router('lessons')">הסברים</li>
             <li onclick="router('exercises')">תרגול</li>
@@ -37,8 +37,7 @@
         </div>
     </nav>
 
-    <main id="app-container">
-        </main>
+    <main id="app-container"></main>
 
     <footer>
         <div class="footer-content">
@@ -51,5 +50,4 @@
 
     <script src="script.js"></script>
 </body>
-
 </html>
