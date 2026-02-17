@@ -131,18 +131,22 @@ const contentData = {
 // --- ניהול הניתוב ---
 const app = document.getElementById('app-container');
 
-function router(view, data = null) {
+function router(page) {
     window.scrollTo(0, 0);
     app.innerHTML = '';
+    const nav = document.getElementById('navLinks');
+    if (nav) nav.classList.remove('active');
 
-    switch(view) {
-        case 'home': renderHomePage(); break;
-        case 'learning_main': renderLearningCategories(); break;
-        case 'subject_select': renderSubjects(data); break; // data = category type (explain/exercise)
-        case 'content_list': renderContentList(data); break; // data = subject id (mechanics)
-        case 'folder_view': renderFolderContent(data); break; // data = folder id
+    switch(page) {
+        case 'home': renderHome(); break;
+        case 'videos': renderVideos(); break;
+        
+        // --- הוספנו את זה: ---
+        case 'exercises': renderQuizSystem(); break;
+        
+        case 'contact': renderContact(); break;
         case 'admin': renderAdminLogin(); break;
-        default: renderHomePage();
+        default: renderHome();
     }
 }
 
@@ -449,3 +453,84 @@ function scrollTestimonials(direction) {
     });
 }
 
+// --- נתוני השאלות ---
+const quizData = [
+    {
+        question: "גוף נופל נפילה חופשית ממנוחה. מהי מהירותו לאחר 3 שניות? (g=10)",
+        options: ["10 m/s", "20 m/s", "30 m/s", "45 m/s"],
+        correct: 2 // התשובה הנכונה היא האינדקס ה-2 (מתחילים לספור מ-0), כלומר "30"
+    },
+    {
+        question: "מהו החוק השני של ניוטון?",
+        options: ["F = m/a", "F = m*a", "F = m*v", "אף תשובה אינה נכונה"],
+        correct: 1 // התשובה היא F=ma
+    },
+    {
+        question: "אם נזרוק כדור אופקית, מה יקרה למהירות האופקית שלו (בהזנחת חיכוך)?",
+        options: ["תגדל כל הזמן", "תקטן כל הזמן", "תישאר קבועה", "תלויה במסה"],
+        correct: 2
+    }
+];
+
+// --- בניית דף התרגול ---
+function renderQuizSystem() {
+    let html = `
+        <div class="container" style="padding-top: 20px; max-width: 800px;">
+            <h2 style="text-align:center; margin-bottom:30px;">תרגול שאלות 📝</h2>
+    `;
+
+    quizData.forEach((q, index) => {
+        html += `
+            <div class="quiz-card">
+                <h3>שאלה ${index + 1}</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 15px;">${q.question}</p>
+                <div class="options-grid">
+                    ${q.options.map((opt, i) => `
+                        <button onclick="checkAnswer(this, ${index}, ${i})" class="option-btn">
+                            ${opt}
+                        </button>
+                    `).join('')}
+                </div>
+                <div id="feedback-${index}" class="feedback-msg"></div>
+            </div>
+        `;
+    });
+
+    html += `
+            <div style="text-align:center; margin-top:30px;">
+                <button onclick="router('home')" class="btn-back">חזור לדף הבית</button>
+            </div>
+        </div>
+    `;
+
+    app.innerHTML = html;
+}
+
+// --- בדיקת תשובה ---
+function checkAnswer(btn, questionIndex, choiceIndex) {
+    const question = quizData[questionIndex];
+    const feedbackEl = document.getElementById(`feedback-${questionIndex}`);
+    
+    // ניטרול הכפתורים באותה שאלה כדי שלא יוכלו ללחוץ שוב
+    const parent = btn.parentElement;
+    const allBtns = parent.getElementsByTagName('button');
+    for(let b of allBtns) {
+        b.disabled = true;
+        b.style.cursor = 'default';
+        if (b === btn) {
+             // סימון הבחירה של המשתמש
+        }
+    }
+
+    if (choiceIndex === question.correct) {
+        // תשובה נכונה
+        btn.style.background = '#10b981'; // ירוק
+        btn.style.color = 'white';
+        feedbackEl.innerHTML = '<span style="color:#10b981; font-weight:bold;">✅ כל הכבוד! תשובה נכונה.</span>';
+    } else {
+        // תשובה שגויה
+        btn.style.background = '#ef4444'; // אדום
+        btn.style.color = 'white';
+        feedbackEl.innerHTML = `<span style="color:#ef4444; font-weight:bold;">❌ טעות. התשובה הנכונה היא: ${question.options[question.correct]}</span>`;
+    }
+}
