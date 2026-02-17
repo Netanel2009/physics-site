@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Physics Master - לומדים פיזיקה בקלות</title>
+    <title>Physics Master</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
 
-    <nav>
+    <nav class="navbar">
         <div class="logo" onclick="router('home')">Physics Master</div>
-        <ul id="navLinks">
-            <li onclick="router('home')">דף הבית</li>
-            <li onclick="router('videos')">סרטונים</li>
-            <li onclick="router('exercises')">תרגול שאלות 📝</li>
-            <li onclick="router('contact')">צור קשר</li>
-        </ul>
+        <div class="nav-links" id="navLinks">
+            <span onclick="router('home')">דף הבית</span>
+            <span onclick="router('videos')">סרטונים</span>
+            <span onclick="router('exercises')">תרגול שאלות</span>
+            <span onclick="router('contact')">צור קשר</span>
+        </div>
     </nav>
 
     <div id="app">
