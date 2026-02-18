@@ -17,7 +17,7 @@ import {
     setDoc, 
     doc, 
     deleteDoc,
-    getDoc
+    getDoc  // הוספנו את זה כדי לבדוק משתמש בודד
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -42,450 +42,643 @@ let authMode = 'login';
 /* =========================================
    3. נתונים (Data)
    ========================================= */
-window.contentData = { /* ... כל התוכן שלך כפי שהגדרת ... */ };
-window.questionsBank = { /* ... כל השאלות שלך ... */ };
-const testimonialsData = [ /* ... */ ];
+window.contentData = {
+    categories: [
+        { id: 'explanations', title: 'סרטונים 📚', image: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)" },
+        { id: 'exercises', title: 'תרגול שאלות 📝', image: "linear-gradient(135deg, #f59e0b 0%, #b45309 100%)" },
+        { id: 'simulations', title: 'סימולציות 🧪', image: "linear-gradient(135deg, #10b981 0%, #047857 100%)" }
+    ],
+    subjects: [
+        { id: 'mechanics', title: 'מכניקה', desc: 'קינמטיקה, דינמיקה, אנרגיה ותנע', image: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' },
+        { id: 'electricity', title: 'חשמל ומגנטיות', desc: 'אלקטרוסטטיקה ומעגלים', image: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' },
+        { id: 'radiation', title: 'קרינה וחומר', desc: 'אופטיקה ופיזיקה מודרנית', image: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }
+    ],
+    mechanics_content: [
+        { type: 'folder', id: 'kinematics_folder', title: 'קינמטיקה', image: 'linear-gradient(to right, #3b82f6, #60a5fa)', desc: 'תנועה בקו ישר, נפילה חופשית וזריקות' },
+        { type: 'folder', id: 'energy_momentum_folder', title: 'תנע ואנרגיה', image: 'linear-gradient(to right, #10b981, #34d399)', desc: 'שימור תנע, עבודה ואנרגיה מכנית' },
+        { type: 'video', title: 'תנועה הרמונית', url: 'https://youtu.be/FFj3V4CiElI', desc: 'קפיצים ומטוטלות' }
+    ],
+    mechanics_exercises: [
+        { id: 'ex_kinematics', title: 'תרגול קינמטיקה', desc: 'שאלות על תנועה שוות תאוצה', image: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' },
+        { id: 'ex_momentum', title: 'תרגול תנע', desc: 'התנגשויות ומתקף', image: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }
+    ],
+    kinematics_folder: [{ type: 'video', title: 'קינמטיקה (בסיס)', url: 'https://youtu.be/q8K73P4hft8', desc: 'תנועה בקו ישר ונפילה חופשית' }],
+    energy_momentum_folder: [{ type: 'video', title: 'שימור תנע', url: 'https://youtu.be/6k8Hd3wPoU0', desc: 'התנגשויות ומתקף' }]
+};
+
+window.questionsBank = {
+    'ex_kinematics': [
+        { q: "גוף מתחיל לנוע ממנוחה בתאוצה קבועה של 2m/s². מה יהיה המרחק שיעבור הגוף כעבור 5 שניות?", a: "25 מ'", options: ["10 מ'", "25 מ'", "50 מ'", "100 מ'"] },
+        { q: "כדור נזרק אנכית מעלה במהירות של 30m/s (בהנחה ש-g=10). תוך כמה זמן יגיע הכדור לשיא הגובה?", a: "3 שניות", options: ["1 שניה", "3 שניות", "5 שניות", "30 שניות"] }
+    ],
+    'ex_momentum': [
+        { q: "מהי ההגדרה הפיזיקלית של תנע?", a: "מכפלת המסה במהירות", options: ["מכפלת המסה בתאוצה", "מכפלת המסה במהירות", "האנרגיה הקינטית של הגוף", "הכוח הפועל על הגוף"] }
+    ]
+};
+
+const testimonialsData = [
+    { name: "יהונתן אדיב", text: "הסרטונים המפורטים לא הותירו לי שום בעיה בפתרון התרגילים. מומלץ בחום!", img: "https://i.pravatar.cc/150?u=1" },
+    { name: "סתיו שיריזלי", text: "הסימולציות עוזרות להבין את החומר באמת, ולא רק לשנן נוסחאות.", img: "https://i.pravatar.cc/150?u=2" },
+    { name: "ניתי ווליך", text: "האתר הכי טוב שמצאתי לבגרות. הכל מסודר, נקי וברור מאוד.", img: "https://i.pravatar.cc/150?u=3" }
+];
 
 /* =========================================
-   4. מערכת XP ורמות
+   4. מערכת XP ורמות (Gamification)
    ========================================= */
-let playerStats = { level: 1, currentXP: 0, xpNeeded: 100 };
+let playerStats = {
+    level: 1,
+    currentXP: 0,
+    xpNeeded: 100
+};
 
-async function saveStatsToDB() {
-    const user = auth.currentUser;
-    if(!user) return;
-    const userRef = doc(db, "users", user.uid);
-    await setDoc(userRef, {
-        xp: playerStats.currentXP,
-        level: playerStats.level,
-        xpNeeded: playerStats.xpNeeded
-    }, { merge: true });
-}
-
-async function loadStats() {
-    const user = auth.currentUser;
-    if(!user) return;
-    const userRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(userRef);
-    if(docSnap.exists()){
-        const data = docSnap.data();
-        playerStats.level = data.level || 1;
-        playerStats.currentXP = data.xp || 0;
-        playerStats.xpNeeded = data.xpNeeded || 100;
-    } else {
-        playerStats = { level: 1, currentXP: 0, xpNeeded: 100 };
-        await saveStatsToDB();
+function loadStats() {
+    if (localStorage.getItem('physicsMasterStats')) {
+        playerStats = JSON.parse(localStorage.getItem('physicsMasterStats'));
     }
     updateXPUI();
 }
 
-async function addXP(amount) {
+function addXP(amount) {
     playerStats.currentXP += amount;
     checkLevelUp();
-    await saveStatsToDB();
+    saveStats();
     updateXPUI();
 }
 
 function checkLevelUp() {
     let leveledUp = false;
-    while(playerStats.currentXP >= playerStats.xpNeeded){
+    while (playerStats.currentXP >= playerStats.xpNeeded) {
         playerStats.currentXP -= playerStats.xpNeeded;
         playerStats.level++;
         playerStats.xpNeeded = Math.floor(playerStats.xpNeeded * 1.2);
         leveledUp = true;
     }
-    if(leveledUp) triggerLevelUpEffect();
+    if (leveledUp) triggerLevelUpEffect();
 }
 
-function updateXPUI(){
+function saveStats() {
+    localStorage.setItem('physicsMasterStats', JSON.stringify(playerStats));
+}
+
+function updateXPUI() {
     const levelEl = document.getElementById('current-level');
     const xpEl = document.getElementById('current-xp');
     const neededEl = document.getElementById('xp-needed');
     const barEl = document.getElementById('xp-bar');
-    if(levelEl) levelEl.innerText = playerStats.level;
-    if(xpEl) xpEl.innerText = Math.floor(playerStats.currentXP);
-    if(neededEl) neededEl.innerText = playerStats.xpNeeded;
+
+    if (levelEl) levelEl.innerText = playerStats.level;
+    if (xpEl) xpEl.innerText = Math.floor(playerStats.currentXP);
+    if (neededEl) neededEl.innerText = playerStats.xpNeeded;
+    
     const percentage = (playerStats.currentXP / playerStats.xpNeeded) * 100;
-    if(barEl) barEl.style.width = percentage + '%';
+    if (barEl) barEl.style.width = percentage + '%';
 }
 
-function triggerLevelUpEffect(){
+function triggerLevelUpEffect() {
     const widget = document.querySelector('.level-circle');
-    if(widget){
+    if(widget) {
         widget.classList.add('level-up-anim');
         const msg = document.createElement('div');
         msg.innerText = "Level Up! 🎉";
         msg.style.cssText = "position:fixed; bottom:100px; right:30px; background:#f59e0b; color:white; padding:10px 20px; border-radius:20px; font-weight:bold; z-index:3000; animation:slideIn 0.5s ease-out;";
         document.body.appendChild(msg);
-        setTimeout(()=>{ widget.classList.remove('level-up-anim'); msg.remove(); },2000);
+        
+        setTimeout(() => {
+            widget.classList.remove('level-up-anim');
+            msg.remove();
+        }, 2000);
     }
 }
 
 /* =========================================
-   5. פונקציות רינדור
+   5. פונקציות ניתוב (Router)
    ========================================= */
-function renderHomePage(){
-    const app = document.getElementById('app-container');
-    app.innerHTML = '';
-    const hero = document.createElement('div');
-    hero.className = 'hero';
-    hero.innerHTML = `
-        <h1>PhysicsMaster 🚀</h1>
-        <p>המקום שלך להצטיין בפיזיקה לבגרות</p>
-    `;
-    const startBtn = document.createElement('button');
-    startBtn.className = 'btn-main';
-    startBtn.innerText = 'התחל ללמוד';
-    startBtn.addEventListener('click',()=>scrollToSection('learning'));
-    hero.appendChild(startBtn);
-    app.appendChild(hero);
+window.router = function(view, data = null) {
+    window.scrollTo(0, 0);
+    const appContainer = document.getElementById('app-container');
+    appContainer.innerHTML = '';
 
-    const learning = document.createElement('section');
-    learning.id = 'learning';
-    const title = document.createElement('h2');
-    title.className = 'section-title';
-    title.innerText = '📚 מרכז הלמידה';
-    learning.appendChild(title);
-
-    const grid = document.createElement('div');
-    grid.className = 'grid-full';
-
-    window.contentData.categories.forEach(cat=>{
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.style.background = cat.image;
-        card.style.backgroundSize = 'cover';
-        card.addEventListener('click',()=>handleCategoryClick(cat.id));
-        const overlay = document.createElement('div');
-        overlay.className = 'card-overlay';
-        overlay.innerHTML = `<h3>${cat.title}</h3><button class='card-btn'>כנס לקטגוריה</button>`;
-        card.appendChild(overlay);
-        grid.appendChild(card);
-    });
-    learning.appendChild(grid);
-    app.appendChild(learning);
-}
-
-// renderSubjects, renderContentList, renderExerciseList, renderFolderContent, renderActiveExercise
-// – יש לכתוב אותם באופן דומה עם createElement + addEventListener כדי להיות בטוחים
-
-/* =========================================
-   8. Auth + טעינת XP
-   ========================================= */
-onAuthStateChanged(auth,async(user)=>{
-    const authModal = document.getElementById('auth-modal');
-    const userProfile = document.getElementById('user-profile');
-    const loginBtn = document.getElementById('login-trigger-btn');
-    const xpWidget = document.getElementById('level-widget');
-
-    if(user){
-        if(authModal) authModal.style.display='none';
-        if(userProfile) userProfile.style.display='flex';
-        if(loginBtn) loginBtn.style.display='none';
-        if(xpWidget) xpWidget.style.display='flex';
-        document.getElementById('user-name-display').innerText = user.displayName||user.email;
-        await loadStats();
-    } else {
-        if(authModal) authModal.style.display='flex';
-        if(userProfile) userProfile.style.display='none';
-        if(loginBtn) loginBtn.style.display='block';
-        if(xpWidget) xpWidget.style.display='none';
-        playerStats = { level:1, currentXP:0, xpNeeded:100 };
-        updateXPUI();
+    switch(view) {
+        case 'home': renderHomePage(); break;
+        case 'subject_select': 
+            pageMode = data; 
+            renderSubjects(); 
+            break;
+        case 'content_list': renderContentList(data); break; 
+        case 'exercise_list': renderExerciseList(data); break;
+        case 'folder_view': renderFolderContent(data); break;
+        case 'active_exercise': renderActiveExercise(data); break;
+        case 'admin': loadAdminPage(); break;
+        default: renderHomePage();
     }
-});
+};
 
 /* =========================================
-   שאר הקוד שלך נשאר ללא שינוי (Admin, Delete User, Loader וכו')
-   ========================================= */
-
-/* =========================================
-   פונקציות רינדור ותוכן מלא
-   ========================================= */
-
-/* =========================================
-   פונקציות רינדור ותוכן מלא
+   6. פונקציות הרינדור (Render Functions)
    ========================================= */
 
 function renderHomePage() {
     const app = document.getElementById('app-container');
-    app.innerHTML = '';
-    
-    const hero = document.createElement('div');
-    hero.className = 'hero';
-    hero.innerHTML = `
-        <h1>PhysicsMaster 🚀</h1>
-        <p>המקום שלך להצטיין בפיזיקה לבגרות</p>
-        <button class="btn-main" id="start-learning-btn">התחל ללמוד</button>
+    app.innerHTML = `
+        <div class="hero">
+            <h1>PhysicsMaster 🚀</h1>
+            <p>המקום שלך להצטיין בפיזיקה לבגרות</p>
+            <button class="btn-main" onclick="scrollToSection('learning')">התחל ללמוד</button>
+        </div>
+
+        <section id="learning">
+            <h2 class="section-title">📚 מרכז הלמידה</h2>
+            <div class="grid-full">
+                ${window.contentData.categories.map(cat => `
+                    <div class="card" onclick="handleCategoryClick('${cat.id}')" style="background: ${cat.image}; background-size: cover;">
+                        <div class="card-overlay">
+                            <h3>${cat.title}</h3>
+                            <button class="card-btn">כנס לקטגוריה</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </section>
+
+        <section id="about" style="background:white; padding: 80px 10%; border-radius: 50px;">
+             <h2 class="section-title">🔍 אודות PhysicsMaster</h2>
+             <p style="font-size:1.2rem; text-align:center;">הופכים את הפיזיקה מחובה – לחוויה.</p>
+        </section>
+
+        <section id="testimonials">
+            <h2 class="section-title">💬 תגובות</h2>
+            <div class="carousel-wrapper">
+                <button class="scroll-btn prev-btn" onclick="scrollTestimonials(-1)"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="testimonials-scroll-container" id="testimonials-container">
+                    ${testimonialsData.map(t => `
+                        <div class="testimonial-card">
+                            <img src="${t.img}" class="profile-img">
+                            <h4>${t.name}</h4>
+                            <p>"${t.text}"</p>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="scroll-btn next-btn" onclick="scrollTestimonials(1)"><i class="fa-solid fa-chevron-left"></i></button>
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2 class="section-title">📬 צור קשר</h2>
+            <div class="form-container">
+                <form onsubmit="handleContact(event)">
+                    <input type="text" placeholder="שם מלא" required>
+                    <input type="email" placeholder="אימייל" required>
+                    <textarea rows="5" placeholder="הודעה..." required></textarea>
+                    <button type="submit" class="btn-main" style="width:100%">שלח הודעה</button>
+                </form>
+            </div>
+        </section>
     `;
-    app.appendChild(hero);
-
-    const learningSection = document.createElement('section');
-    learningSection.id = 'learning';
-    learningSection.innerHTML = `<h2 class="section-title">📚 מרכז הלמידה</h2>`;
-    const grid = document.createElement('div');
-    grid.className = 'grid-full';
-    
-    window.contentData.categories.forEach(cat => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.style.background = cat.image;
-        card.style.backgroundSize = 'cover';
-        const overlay = document.createElement('div');
-        overlay.className = 'card-overlay';
-        overlay.innerHTML = `
-            <h3>${cat.title}</h3>
-            <button class="card-btn">כנס לקטגוריה</button>
-        `;
-        overlay.querySelector('button').addEventListener('click', () => handleCategoryClick(cat.id));
-        card.appendChild(overlay);
-        grid.appendChild(card);
-    });
-    
-    learningSection.appendChild(grid);
-    app.appendChild(learningSection);
-
-    // חיבור כפתור התחלת למידה
-    document.getElementById('start-learning-btn').addEventListener('click', () => scrollToSection('learning'));
 }
 
 function renderSubjects() {
     const app = document.getElementById('app-container');
-    app.innerHTML = '';
-    const section = document.createElement('section');
-    section.style.minHeight = '100vh';
-    section.style.paddingTop = '40px';
-    section.innerHTML = `<h2 class="section-title">${pageMode === 'exercises' ? 'תרגול שאלות' : 'סרטונים והסברים'}</h2>`;
-    const grid = document.createElement('div');
-    grid.className = 'grid-full';
-    
-    window.contentData.subjects.forEach(sub => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.style.background = sub.image;
-        const overlay = document.createElement('div');
-        overlay.className = 'card-overlay';
-        overlay.innerHTML = `
-            <h3>${sub.title}</h3>
-            <p>${sub.desc}</p>
-            <button class="card-btn">בחר נושא</button>
-        `;
-        overlay.querySelector('button').addEventListener('click', () => handleSubjectClick(sub.id));
-        card.appendChild(overlay);
-        grid.appendChild(card);
-    });
-    section.appendChild(grid);
-
-    const backBtn = document.createElement('button');
-    backBtn.className = 'btn-back';
-    backBtn.textContent = 'חזור לדף הבית';
-    backBtn.addEventListener('click', () => router('home'));
-    section.appendChild(backBtn);
-
-    app.appendChild(section);
+    app.innerHTML = `
+        <section style="min-height:100vh; padding-top:40px;">
+            <h2 class="section-title">${pageMode === 'exercises' ? 'תרגול שאלות' : 'סרטונים והסברים'}</h2>
+            <div class="grid-full">
+                ${window.contentData.subjects.map(sub => `
+                    <div class="card" onclick="handleSubjectClick('${sub.id}')" style="background: ${sub.image}">
+                        <div class="card-overlay">
+                            <h3>${sub.title}</h3>
+                            <p>${sub.desc}</p>
+                            <button class="card-btn">בחר נושא</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="btn-back" onclick="router('home')">חזור לדף הבית</button>
+        </section>
+    `;
 }
 
 function renderContentList(subjectId) {
     const items = window.contentData[subjectId + '_content'];
     const app = document.getElementById('app-container');
-    app.innerHTML = '';
-
-    const section = document.createElement('section');
-    section.style.minHeight = '100vh';
-    section.style.paddingTop = '40px';
-    section.innerHTML = `<h2 class="section-title">תכנים</h2>`;
-    const grid = document.createElement('div');
-    grid.className = 'grid-full';
-
-    items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        if (item.type === 'folder') {
-            card.style.background = item.image;
-            const overlay = document.createElement('div');
-            overlay.className = 'card-overlay';
-            overlay.innerHTML = `
-                <div style="font-size:3rem; margin-bottom:10px;"><i class="fa-solid fa-folder-open"></i></div>
-                <h3>${item.title}</h3>
-                <button class="card-btn">פתח תיקייה</button>
-            `;
-            overlay.querySelector('button').addEventListener('click', () => router('folder_view', item.id));
-            card.appendChild(overlay);
-        } else {
-            card.style.backgroundImage = `url('${getYoutubeThumb(item.url)}')`;
-            const overlay = document.createElement('div');
-            overlay.className = 'card-overlay';
-            overlay.innerHTML = `
-                <div style="font-size:3rem; margin-bottom:10px; color:#ef4444;"><i class="fa-brands fa-youtube"></i></div>
-                <h3>${item.title}</h3>
-                <button class="card-btn">צפה בסרטון</button>
-            `;
-            overlay.querySelector('button').addEventListener('click', () => window.open(item.url));
-            card.appendChild(overlay);
-        }
-        grid.appendChild(card);
-    });
-
-    section.appendChild(grid);
-    const backBtn = document.createElement('button');
-    backBtn.className = 'btn-back';
-    backBtn.textContent = 'חזור לנושאים';
-    backBtn.addEventListener('click', () => router('subject_select', 'explanations'));
-    section.appendChild(backBtn);
-
-    app.appendChild(section);
+    app.innerHTML = `
+        <section style="min-height:100vh; padding-top:40px;">
+            <h2 class="section-title">תכנים</h2>
+            <div class="grid-full">
+                ${items.map(item => {
+                    if (item.type === 'folder') {
+                        return `
+                            <div class="card" onclick="router('folder_view', '${item.id}')" style="background: ${item.image}">
+                                <div class="card-overlay">
+                                    <div style="font-size:3rem; margin-bottom:10px;"><i class="fa-solid fa-folder-open"></i></div>
+                                    <h3>${item.title}</h3>
+                                    <button class="card-btn">פתח תיקייה</button>
+                                </div>
+                            </div>`;
+                    } else {
+                        const thumb = getYoutubeThumb(item.url);
+                        return `
+                            <div class="card" onclick="window.open('${item.url}')" style="background-image: url('${thumb}')">
+                                <div class="card-overlay">
+                                    <div style="font-size:3rem; margin-bottom:10px; color:#ef4444;"><i class="fa-brands fa-youtube"></i></div>
+                                    <h3>${item.title}</h3>
+                                    <button class="card-btn">צפה בסרטון</button>
+                                </div>
+                            </div>`;
+                    }
+                }).join('')}
+            </div>
+            <button class="btn-back" onclick="router('subject_select', 'explanations')">חזור לנושאים</button>
+        </section>
+    `;
 }
 
 function renderExerciseList(subjectId) {
     const items = window.contentData[subjectId + '_exercises'];
     const app = document.getElementById('app-container');
-    app.innerHTML = '';
-
-    const section = document.createElement('section');
-    section.style.minHeight = '100vh';
-    section.style.paddingTop = '40px';
-    section.innerHTML = `<h2 class="section-title">רשימת תרגול</h2>`;
-    const grid = document.createElement('div');
-    grid.className = 'grid-full';
-
-    items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.style.background = item.image;
-        const overlay = document.createElement('div');
-        overlay.className = 'card-overlay';
-        overlay.innerHTML = `
-            <div style="font-size:3rem; margin-bottom:10px;"><i class="fa-solid fa-pen-to-square"></i></div>
-            <h3>${item.title}</h3>
-            <button class="card-btn">התחל תרגול</button>
-        `;
-        overlay.querySelector('button').addEventListener('click', () => router('active_exercise', item.id));
-        card.appendChild(overlay);
-        grid.appendChild(card);
-    });
-
-    section.appendChild(grid);
-    const backBtn = document.createElement('button');
-    backBtn.className = 'btn-back';
-    backBtn.textContent = 'חזור לנושאים';
-    backBtn.addEventListener('click', () => router('subject_select', 'exercises'));
-    section.appendChild(backBtn);
-
-    app.appendChild(section);
+    app.innerHTML = `
+        <section style="min-height:100vh; padding-top:40px;">
+            <h2 class="section-title">רשימת תרגול</h2>
+            <div class="grid-full">
+                ${items.map(item => `
+                    <div class="card" onclick="router('active_exercise', '${item.id}')" style="background: ${item.image}">
+                        <div class="card-overlay">
+                            <div style="font-size:3rem; margin-bottom:10px;"><i class="fa-solid fa-pen-to-square"></i></div>
+                            <h3>${item.title}</h3>
+                            <button class="card-btn">התחל תרגול</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="btn-back" onclick="router('subject_select', 'exercises')">חזור לנושאים</button>
+        </section>
+    `;
 }
 
 function renderFolderContent(folderId) {
     const items = window.contentData[folderId];
     const app = document.getElementById('app-container');
-    app.innerHTML = '';
-
-    const section = document.createElement('section');
-    section.style.minHeight = '100vh';
-    section.style.paddingTop = '40px';
-    section.innerHTML = `<h2 class="section-title">תוכן התיקייה</h2>`;
-    const grid = document.createElement('div');
-    grid.className = 'grid-full';
-
-    items.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.style.backgroundImage = `url('${getYoutubeThumb(item.url)}')`;
-        const overlay = document.createElement('div');
-        overlay.className = 'card-overlay';
-        overlay.innerHTML = `
-            <h3>${item.title}</h3>
-            <button class="card-btn">צפה בסרטון</button>
-        `;
-        overlay.querySelector('button').addEventListener('click', () => window.open(item.url));
-        card.appendChild(overlay);
-        grid.appendChild(card);
-    });
-
-    section.appendChild(grid);
-    const backBtn = document.createElement('button');
-    backBtn.className = 'btn-back';
-    backBtn.textContent = 'חזור';
-    backBtn.addEventListener('click', () => router('content_list', 'mechanics'));
-    section.appendChild(backBtn);
-
-    app.appendChild(section);
+    app.innerHTML = `
+        <section style="min-height:100vh; padding-top:40px;">
+            <h2 class="section-title">תוכן התיקייה</h2>
+            <div class="grid-full">
+                ${items.map(item => `
+                    <div class="card" onclick="window.open('${item.url}')" style="background-image: url('${getYoutubeThumb(item.url)}')">
+                        <div class="card-overlay">
+                            <h3>${item.title}</h3>
+                            <button class="card-btn">צפה בסרטון</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="btn-back" onclick="router('content_list', 'mechanics')">חזור</button>
+        </section>
+    `;
 }
 
 function renderActiveExercise(exId) {
     const questions = window.questionsBank[exId];
     const app = document.getElementById('app-container');
-    app.innerHTML = '';
-
-    if (!questions) {
-        const section = document.createElement('section');
-        section.innerHTML = `<h2 class="section-title">אין שאלות עדיין</h2>`;
-        const backBtn = document.createElement('button');
-        backBtn.className = 'btn-back';
-        backBtn.textContent = 'חזור';
-        backBtn.addEventListener('click', () => router('home'));
-        section.appendChild(backBtn);
-        app.appendChild(section);
-        return;
+    
+    if (!questions) { 
+        app.innerHTML = `<section><h2 class="section-title">אין שאלות עדיין</h2><button class="btn-back" onclick="router('home')">חזור</button></section>`; 
+        return; 
     }
 
-    const section = document.createElement('section');
-    section.style.minHeight = '100vh';
-    section.style.paddingTop = '40px';
-    section.innerHTML = `<h2 class="section-title">תרגול שאלות</h2>`;
-
-    const formContainer = document.createElement('div');
-    formContainer.className = 'form-container';
-    formContainer.style.textAlign = 'right';
-    formContainer.style.direction = 'rtl';
-    formContainer.style.maxWidth = '800px';
-    const exerciseDiv = document.createElement('div');
-    exerciseDiv.id = 'exercise-container';
-
-    questions.forEach((q, i) => {
-        const qBlock = document.createElement('div');
-        qBlock.className = 'question-block';
-        qBlock.style.marginBottom = '30px';
-        qBlock.style.border = '2px solid #f1f5f9';
-        qBlock.style.padding = '25px';
-        qBlock.style.borderRadius = '20px';
-        qBlock.style.background = '#fff';
-        qBlock.innerHTML = `<p style="font-size:1.3rem; font-weight:700; margin-bottom:15px; color: var(--dark);">${i+1}. ${q.q}</p>`;
-
-        const optionsDiv = document.createElement('div');
-        optionsDiv.className = 'options-group';
-        q.options.forEach(opt => {
-            const label = document.createElement('label');
-            label.style.display = 'block';
-            label.style.margin = '12px 0';
-            label.style.cursor = 'pointer';
-            label.style.fontSize = '1.1rem';
-            label.style.padding = '8px';
-            label.innerHTML = `<input type="radio" name="q${i}" value="${opt}" style="margin-left:10px;"> ${opt}`;
-            optionsDiv.appendChild(label);
-        });
-
-        qBlock.appendChild(optionsDiv);
-        exerciseDiv.appendChild(qBlock);
-    });
-
-    formContainer.appendChild(exerciseDiv);
-    const submitBtn = document.createElement('button');
-    submitBtn.className = 'btn-main';
-    submitBtn.style.width = '100%';
-    submitBtn.style.marginTop = '20px';
-    submitBtn.innerHTML = `<i class="fa-solid fa-check-double"></i> בדוק תשובות`;
-    submitBtn.addEventListener('click', () => checkAnswers(exId));
-    formContainer.appendChild(submitBtn);
-
-    section.appendChild(formContainer);
-
-    const backBtn = document.createElement('button');
-    backBtn.className = 'btn-back';
-    backBtn.textContent = 'חזור לרשימה';
-    backBtn.addEventListener('click', () => router('exercise_list', 'mechanics'));
-    section.appendChild(backBtn);
-
-    app.appendChild(section);
+    let html = `
+        <section style="min-height:100vh; padding-top:40px;">
+            <h2 class="section-title">תרגול שאלות</h2>
+            <div class="form-container" style="text-align:right; direction:rtl; max-width:800px;">
+                <div id="exercise-container">
+                    ${questions.map((q, i) => `
+                        <div class="question-block" style="margin-bottom:30px; border: 2px solid #f1f5f9; padding:25px; border-radius:20px; background: #fff;">
+                            <p style="font-size:1.3rem; font-weight:700; margin-bottom:15px; color: var(--dark);">${i+1}. ${q.q}</p>
+                            <div class="options-group">
+                                ${q.options.map(opt => `
+                                    <label style="display:block; margin:12px 0; cursor:pointer; font-size:1.1rem; padding:8px;">
+                                        <input type="radio" name="q${i}" value="${opt}" style="margin-left:10px;"> ${opt}
+                                    </label>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="btn-main" style="width:100%; margin-top:20px;" onclick="checkAnswers('${exId}')">
+                    <i class="fa-solid fa-check-double"></i> בדוק תשובות
+                </button>
+            </div>
+            <button class="btn-back" onclick="router('exercise_list', 'mechanics')">חזור לרשימה</button>
+        </section>
+    `;
+    app.innerHTML = html;
 }
 
+/* =========================================
+   7. פונקציות לוגיקה כלליות
+   ========================================= */
+
+window.handleCategoryClick = function(catId) {
+    if (catId === 'explanations' || catId === 'exercises') {
+        window.router('subject_select', catId);
+    } else {
+        alert('קטגוריה זו בבנייה כרגע...');
+    }
+};
+
+window.handleSubjectClick = function(subId) {
+    if (subId !== 'mechanics') {
+        alert('נושא זה יעלה בקרוב!');
+        return;
+    }
+    if (pageMode === 'exercises') {
+        window.router('exercise_list', 'mechanics');
+    } else {
+        window.router('content_list', 'mechanics');
+    }
+};
+
+window.scrollToSection = function(id) {
+    if (!document.getElementById(id)) {
+        window.router('home');
+        setTimeout(() => {
+            const el = document.getElementById(id);
+            if(el) el.scrollIntoView({behavior: 'smooth'});
+        }, 100);
+    } else {
+        document.getElementById(id).scrollIntoView({behavior: 'smooth'});
+    }
+};
+
+window.scrollTestimonials = function(direction) {
+    const container = document.getElementById('testimonials-container');
+    if(container) container.scrollBy({ left: direction * 350 * -1, behavior: 'smooth' });
+};
+
+window.handleContact = function(e) {
+    e.preventDefault();
+    alert('ההודעה נשלחה בהצלחה!');
+};
+
+window.checkAnswers = function(exId) {
+    const questions = window.questionsBank[exId];
+    let correctCount = 0;
+    let summaryHTML = '';
+    
+    questions.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const questionDiv = document.getElementsByName(`q${i}`)[0].closest('.question-block');
+        let isCorrect = selected && selected.value === q.a;
+        
+        if (isCorrect) {
+            correctCount++;
+            addXP(50);
+            questionDiv.style.border = "2px solid #22c55e";
+            questionDiv.style.background = "#f0fdf4";
+        } else {
+            questionDiv.style.border = "2px solid #ef4444";
+            questionDiv.style.background = "#fef2f2";
+        }
+        summaryHTML += `<div style="text-align:right; margin-bottom:10px; color: ${isCorrect ? '#15803d' : '#b91c1c'}">
+            <strong>שאלה ${i+1}:</strong> ${isCorrect ? '✅ צדקת! (+50 XP)' : `❌ טעית (התשובה הנכונה: ${q.a})`}
+        </div>`;
+    });
+
+    const finalScore = Math.round((correctCount / questions.length) * 100);
+    if(finalScore === 100) addXP(100);
+
+    const resultDiv = document.getElementById('exercise-results') || document.createElement('div');
+    resultDiv.id = 'exercise-results';
+    resultDiv.className = 'summary-card';
+    resultDiv.innerHTML = `
+        <h3 style="font-size: 2rem; margin-bottom: 15px;">סיכום התוצאות 🏁</h3>
+        <div style="font-size: 1.5rem; font-weight: 900; margin-bottom: 20px;">ציון סופי: ${finalScore}</div>
+        <div style="margin-bottom: 25px;">${summaryHTML}</div>
+        <button class="btn-main" onclick="router('exercise_list', 'mechanics')">חזור לרשימת התרגילים</button>
+    `;
+
+    if (!document.getElementById('exercise-results')) {
+        document.getElementById('exercise-container').after(resultDiv);
+    }
+    resultDiv.scrollIntoView({ behavior: 'smooth' });
+};
+
+window.checkDeviceSupport = function() {
+    if (window.innerWidth < 768) {
+        document.body.innerHTML = `
+            <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f3f4f6; text-align: center; direction: rtl;">
+                <i class="fa-solid fa-desktop" style="font-size: 5rem; color: #ef4444; margin-bottom: 20px;"></i>
+                <h1 style="font-size: 2rem;">האתר מותאם למחשב בלבד</h1>
+                <p>לצפייה בסימולציות ופתרון תרגילים בנוחות,<br>אנא עברו למחשב נייד או נייח.</p>
+            </div>
+        `;
+        return false;
+    }
+    return true;
+};
+
+function getYoutubeThumb(url) {
+    if (!url) return '';
+    let vidId = '';
+    if (url.includes('youtu.be')) vidId = url.split('/').pop().split('?')[0];
+    else if (url.includes('v=')) vidId = url.split('v=')[1].split('&')[0];
+    return `https://img.youtube.com/vi/${vidId}/hqdefault.jpg`;
+}
+
+/* =========================================
+   8. מערכת Auth (Firebase)
+   ========================================= */
+window.switchTab = (mode) => {
+    authMode = mode;
+    document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+    document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+    document.getElementById('name-field').style.display = mode === 'signup' ? 'block' : 'none';
+    document.getElementById('auth-title').innerText = mode === 'signup' ? 'יצירת חשבון' : 'ברוכים הבאים';
+    document.getElementById('auth-error').innerText = '';
+};
+
+window.handleLogout = () => {
+    signOut(auth);
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const authForm = document.getElementById('auth-form');
+    if(authForm) {
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const name = document.getElementById('auth-name') ? document.getElementById('auth-name').value : "";
+            const errorEl = document.getElementById('auth-error');
+
+            try {
+                if (authMode === 'signup') {
+                    // יצירת משתמש ב-Auth
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                    await updateProfile(userCredential.user, { displayName: name });
+                    
+                    // שמירת המשתמש ב-Firestore
+                    await setDoc(doc(db, "users", userCredential.user.uid), {
+                        name: name,
+                        email: email,
+                        role: 'student',
+                        joinDate: new Date().toLocaleDateString('he-IL'),
+                        uid: userCredential.user.uid
+                    });
+                    
+                    alert("נרשמת בהצלחה! ברוכים הבאים.");
+                } else {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                }
+                document.getElementById('auth-modal').style.display = 'none';
+            } catch (error) {
+                console.error("Auth Error:", error);
+                errorEl.innerText = "שגיאה: אימייל, סיסמה או בעיה בשרת.";
+            }
+        });
+    }
+});
+
+// --- בודק משתמש מחובר (ומנתק אם הוא נמחק) ---
+onAuthStateChanged(auth, async (user) => {
+    const authModal = document.getElementById('auth-modal');
+    const userProfile = document.getElementById('user-profile');
+    const loginBtn = document.getElementById('login-trigger-btn');
+    const xpWidget = document.getElementById('level-widget');
+
+    if (user) {
+        // בדיקה: האם המשתמש קיים ב-Database?
+        const userDocRef = doc(db, "users", user.uid);
+        const userSnapshot = await getDoc(userDocRef);
+
+        if (!userSnapshot.exists()) {
+            console.log("User not found in DB, logging out.");
+            await signOut(auth);
+            // אם המשתמש כבר לא מחובר, אל תמשיך להציג פרופיל
+            location.reload(); 
+            return;
+        }
+
+        if(authModal) authModal.style.display = 'none';
+        if(userProfile) userProfile.style.display = 'flex';
+        if(loginBtn) loginBtn.style.display = 'none';
+        if(xpWidget) xpWidget.style.display = 'flex';
+        
+        document.getElementById('user-name-display').innerText = user.displayName || user.email;
+        document.body.classList.remove('not-logged-in');
+        
+        loadStats();
+    } else {
+        if(authModal) authModal.style.display = 'flex';
+        if(userProfile) userProfile.style.display = 'none';
+        if(loginBtn) loginBtn.style.display = 'block';
+        if(xpWidget) xpWidget.style.display = 'none';
+        document.body.classList.add('not-logged-in');
+    }
+});
+
+/* =========================================
+   9. דף אדמין (טעינת משתמשים) - מניעת מחיקה עצמית
+   ========================================= */
+async function loadAdminPage() {
+    const app = document.getElementById('app-container');
+    app.innerHTML = '<div style="text-align:center; margin-top:50px;">טוען משתמשים... <i class="fa-solid fa-spinner fa-spin"></i></div>';
+
+    const currentUser = auth.currentUser; // מי אני?
+
+    try {
+        const users = [];
+        const querySnapshot = await getDocs(collection(db, "users"));
+        querySnapshot.forEach((doc) => {
+            users.push(doc.data());
+        });
+
+        let html = `
+            <div class="admin-container animation-fade-in">
+                <div class="admin-header">
+                    <h2><i class="fa-solid fa-users-gear"></i> ניהול משתמשים (${users.length})</h2>
+                </div>
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>שם מלא</th>
+                            <th>אימייל</th>
+                            <th>תאריך הצטרפות</th>
+                            <th>תפקיד</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        if (users.length === 0) {
+            html += `<tr><td colspan="5" style="text-align:center;">אין משתמשים רשומים.</td></tr>`;
+        } else {
+            users.forEach(user => {
+                const roleClass = user.role === 'admin' ? 'role-admin' : 'role-student';
+                const roleText = user.role === 'admin' ? 'מנהל' : 'תלמיד';
+                
+                // בדיקה האם זה המשתמש המחובר כרגע
+                const isMe = currentUser && user.uid === currentUser.uid;
+                let deleteButton = '';
+                
+                if (isMe) {
+                    deleteButton = `<span style="font-size:0.8rem; color:#999; font-weight:bold;">(אני)</span>`;
+                } else {
+                    deleteButton = `
+                        <button class="action-btn delete-btn" title="מחק" onclick="deleteUser('${user.uid}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    `;
+                }
+
+                html += `
+                    <tr>
+                        <td><strong>${user.name}</strong></td>
+                        <td>${user.email}</td>
+                        <td>${user.joinDate}</td>
+                        <td><span class="role-badge ${roleClass}">${roleText}</span></td>
+                        <td>
+                            ${deleteButton}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        html += `
+                    </tbody>
+                </table>
+                <button class="btn-back" onclick="router('home')">חזרה לדף הבית</button>
+            </div>
+        `;
+        app.innerHTML = html;
+    } catch (error) {
+        console.error("Error loading users:", error);
+        app.innerHTML = `<h3 style="text-align:center; color:red;">שגיאה בטעינת נתונים: ${error.message}</h3><button class="btn-back" onclick="router('home')">חזור</button>`;
+    }
+}
+
+async function deleteUser(uid) {
+    if(confirm('האם אתה בטוח שברצונך למחוק את המשתמש מהרשימה?')) {
+        try {
+            await deleteDoc(doc(db, "users", uid));
+            alert('המשתמש נמחק בהצלחה');
+            loadAdminPage();
+        } catch (error) {
+            console.error("Error deleting user:", error);
+            alert("שגיאה במחיקה: " + error.message);
+        }
+    }
+}
+
+// חשיפת פונקציות לחלון הגלובלי (חשוב ל-Modules)
+window.deleteUser = deleteUser;
+
+/* =========================================
+   10. אתחול ראשוני
+   ========================================= */
+window.onload = function() {
+    if (window.checkDeviceSupport()) {
+        window.router('home');
+    }
+};
 
