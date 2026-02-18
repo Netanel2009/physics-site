@@ -16,7 +16,8 @@ import {
     getDocs, 
     setDoc, 
     doc, 
-    deleteDoc 
+    deleteDoc,
+    getDoc  // הוספנו את זה כדי לבדוק משתמש בודד
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -536,13 +537,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-onAuthStateChanged(auth, (user) => {
+// --- בודק משתמש מחובר (ומנתק אם הוא נמחק) ---
+onAuthStateChanged(auth, async (user) => {
     const authModal = document.getElementById('auth-modal');
     const userProfile = document.getElementById('user-profile');
     const loginBtn = document.getElementById('login-trigger-btn');
     const xpWidget = document.getElementById('level-widget');
 
     if (user) {
+        // בדיקה: האם המשתמש קיים ב-Database?
+        const userDocRef = doc(db, "users", user.uid);
+        const userSnapshot = await getDoc(userDocRef);
+
+        if (!userSnapshot.exists()) {
+            console.log("User not found in DB, logging out.");
+            await signOut(auth);
+            // אם המשתמש כבר לא מחובר, אל תמשיך להציג פרופיל
+            location.reload(); 
+            return;
+        }
+
         if(authModal) authModal.style.display = 'none';
         if(userProfile) userProfile.style.display = 'flex';
         if(loginBtn) loginBtn.style.display = 'none';
@@ -562,11 +576,13 @@ onAuthStateChanged(auth, (user) => {
 });
 
 /* =========================================
-   9. דף אדמין (טעינת משתמשים)
+   9. דף אדמין (טעינת משתמשים) - מניעת מחיקה עצמית
    ========================================= */
 async function loadAdminPage() {
     const app = document.getElementById('app-container');
     app.innerHTML = '<div style="text-align:center; margin-top:50px;">טוען משתמשים... <i class="fa-solid fa-spinner fa-spin"></i></div>';
+
+    const currentUser = auth.currentUser; // מי אני?
 
     try {
         const users = [];
@@ -600,6 +616,20 @@ async function loadAdminPage() {
                 const roleClass = user.role === 'admin' ? 'role-admin' : 'role-student';
                 const roleText = user.role === 'admin' ? 'מנהל' : 'תלמיד';
                 
+                // בדיקה האם זה המשתמש המחובר כרגע
+                const isMe = currentUser && user.uid === currentUser.uid;
+                let deleteButton = '';
+                
+                if (isMe) {
+                    deleteButton = `<span style="font-size:0.8rem; color:#999; font-weight:bold;">(אני)</span>`;
+                } else {
+                    deleteButton = `
+                        <button class="action-btn delete-btn" title="מחק" onclick="deleteUser('${user.uid}')">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    `;
+                }
+
                 html += `
                     <tr>
                         <td><strong>${user.name}</strong></td>
@@ -607,9 +637,7 @@ async function loadAdminPage() {
                         <td>${user.joinDate}</td>
                         <td><span class="role-badge ${roleClass}">${roleText}</span></td>
                         <td>
-                            <button class="action-btn delete-btn" title="מחק" onclick="deleteUser('${user.uid}')">
-                                <i class="fa-solid fa-trash"></i>
-                            </button>
+                            ${deleteButton}
                         </td>
                     </tr>
                 `;
