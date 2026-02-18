@@ -147,7 +147,9 @@ window.router = function(view, data = null) {
             break;
 
         case 'content_list': renderContentList(data); break; 
-
+        case 'admin':
+            loadAdminPage(); // <-- הוסף את זה
+            break;
         case 'exercise_list': renderExerciseList(data); break;
 
         case 'folder_view': renderFolderContent(data); break;
@@ -911,3 +913,86 @@ window.onload = function() {
     }
 
 };
+
+// פונקציה לטעינת דף המנהל
+function loadAdminPage() {
+    const app = document.getElementById('app-container');
+    
+    // בדיקה בסיסית - האם המשתמש מחובר? (בהמשך נוסיף בדיקה אם הוא אדמין)
+    // if (!currentUser || currentUser.role !== 'admin') {
+    //     alert("אין לך גישה לדף זה");
+    //     router('home');
+    //     return;
+    // }
+
+    // נתונים לדוגמה (Mock Data) - בהמשך זה יבוא מה-DB
+    const users = [
+        { id: 1, name: "דניאל כהן", email: "daniel@example.com", role: "admin", joinDate: "12/01/2024" },
+        { id: 2, name: "מיכל לוי", email: "michal@example.com", role: "student", joinDate: "15/01/2024" },
+        { id: 3, name: "יוסי ישראלי", email: "yossi@example.com", role: "student", joinDate: "20/02/2024" },
+        { id: 4, name: "רון ארד", email: "ron@example.com", role: "student", joinDate: "22/02/2024" }
+    ];
+
+    let html = `
+        <div class="admin-container animation-fade-in">
+            <div class="admin-header">
+                <h2><i class="fa-solid fa-users-gear"></i> ניהול משתמשים</h2>
+                <button class="btn-main" style="font-size: 1rem; padding: 10px 20px;">
+                    <i class="fa-solid fa-plus"></i> הוסף משתמש
+                </button>
+            </div>
+
+            <table class="users-table">
+                <thead>
+                    <tr>
+                        <th>שם מלא</th>
+                        <th>אימייל</th>
+                        <th>תאריך הצטרפות</th>
+                        <th>תפקיד</th>
+                        <th>פעולות</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    // יצירת השורות בטבלה
+    users.forEach(user => {
+        const roleClass = user.role === 'admin' ? 'role-admin' : 'role-student';
+        const roleText = user.role === 'admin' ? 'מנהל' : 'תלמיד';
+
+        html += `
+            <tr>
+                <td><strong>${user.name}</strong></td>
+                <td>${user.email}</td>
+                <td>${user.joinDate}</td>
+                <td><span class="role-badge ${roleClass}">${roleText}</span></td>
+                <td>
+                    <button class="action-btn" title="ערוך"><i class="fa-solid fa-pen-to-square" style="color: var(--primary)"></i></button>
+                    <button class="action-btn delete-btn" title="מחק" onclick="deleteUser(${user.id})"><i class="fa-solid fa-trash"></i></button>
+                </td>
+            </tr>
+        `;
+    });
+
+    html += `
+                </tbody>
+            </table>
+            
+            <button class="btn-back" onclick="router('home')">חזרה לדף הבית</button>
+        </div>
+    `;
+
+    app.innerHTML = html;
+}
+
+// פונקציית עזר למחיקה (לדוגמה)
+function deleteUser(id) {
+    if(confirm('האם אתה בטוח שברצונך למחוק משתמש זה?')) {
+        alert('משתמש מספר ' + id + ' נמחק (בכאילו)');
+        // כאן תהיה הקריאה לשרת למחיקה
+        loadAdminPage(); // ריענון הטבלה
+    }
+}
+
+window.deleteUser = deleteUser;
+
