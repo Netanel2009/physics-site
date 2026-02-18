@@ -507,3 +507,68 @@ function checkAnswers(exId) {
     // גלילה חלקה לתוצאה
     resultDiv.scrollIntoView({ behavior: 'smooth' });
 }
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+let currentMode = 'login';
+
+// פונקציה להחלפת טאבים
+window.switchTab = (mode) => {
+    currentMode = mode;
+    document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+    document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+    document.getElementById('name-field').style.display = mode === 'signup' ? 'block' : 'none';
+    document.getElementById('auth-title').innerText = mode === 'signup' ? 'יצירת חשבון' : 'ברוכים הבאים';
+    document.getElementById('auth-error').innerText = '';
+};
+
+// טיפול בטופס (הרשמה או כניסה)
+document.getElementById('auth-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('auth-email').value;
+    const pass = document.getElementById('auth-pass').value;
+    const name = document.getElementById('auth-name').value;
+    const errorEl = document.getElementById('auth-error');
+
+    try {
+        if (currentMode === 'signup') {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+            await updateProfile(userCredential.user, { displayName: name });
+        } else {
+            await signInWithEmailAndPassword(auth, email, pass);
+        }
+        document.getElementById('auth-modal').style.display = 'none';
+    } catch (error) {
+        errorEl.innerText = "שגיאה: " + error.message;
+    }
+});
+
+// האזנה למצב המשתמש (מחובר/מנותק)
+onAuthStateChanged(auth, (user) => {
+    const authModal = document.getElementById('auth-modal');
+    const userProfile = document.getElementById('user-profile');
+    const loginBtn = document.getElementById('login-trigger-btn');
+
+    if (user) {
+        authModal.style.display = 'none';
+        userProfile.style.display = 'flex';
+        loginBtn.style.display = 'none';
+        document.getElementById('user-name-display').innerText = user.displayName || user.email;
+        document.body.classList.remove('not-logged-in');
+    } else {
+        authModal.style.display = 'flex';
+        userProfile.style.display = 'none';
+        loginBtn.style.display = 'block';
+        document.body.classList.add('not-logged-in');
+    }
+});
+
+// התנתקות
+window.handleLogout = () => {
+    signOut(auth);
+};
+
