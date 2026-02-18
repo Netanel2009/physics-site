@@ -11,92 +11,9 @@
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-
-    <style>
-        /* העיצוב המקורי של ממשק המשתמש בצד ימין */
-        #auth-ui { 
-            position: fixed; 
-            top: 20px; 
-            right: 20px; 
-            z-index: 2000; 
-            direction: rtl; 
-            font-family: sans-serif; 
-        }
-        .profile-pill { 
-            background: white; 
-            padding: 5px 15px; 
-            border-radius: 50px; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
-            border: 2px solid #3b82f6; 
-        }
-        .user-avatar { 
-            width: 35px; 
-            height: 35px; 
-            border-radius: 50%; 
-            background: #ddd; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            overflow: hidden; 
-        }
-        .user-avatar i { font-size: 1.2rem; color: #666; }
-        
-        .modal-overlay { 
-            position: fixed; 
-            top:0; left:0; 
-            width:100%; height:100%; 
-            background: rgba(0,0,0,0.6); 
-            display: none; 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 3000; 
-        }
-        .login-box { 
-            background: white; 
-            padding: 30px; 
-            border-radius: 20px; 
-            width: 350px; 
-            text-align: center; 
-        }
-        .login-box input { 
-            width: 100%; 
-            padding: 10px; 
-            margin: 10px 0; 
-            border: 1px solid #ddd; 
-            border-radius: 8px; 
-            box-sizing: border-box; 
-        }
-    </style>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    
-    <div id="auth-ui">
-    <div id="logged-in-view" style="display: none;" class="profile-pill">
-        <span id="display-name">טוען...</span>
-        <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
-        <button onclick="handleLogout()" class="btn-logout">התנתק</button>
-    </div>
-    <div id="logged-out-view">
-        <button class="btn-main" onclick="toggleModal(true)">התחברות / הרשמה</button>
-    </div>
-</div>
-
-<div id="login-modal" class="modal-overlay">
-    <div class="login-box">
-        <h2 id="modal-title">התחברות</h2>
-        <input type="email" id="auth-email" placeholder="אימייל">
-        <input type="password" id="auth-pass" placeholder="סיסמה">
-        <button class="btn-main" style="width:100%" onclick="handleAuth()">בצע פעולה</button>
-        <p onclick="toggleAuthMode()" id="toggle-text" style="cursor:pointer; color:#3b82f6; margin-top:15px;">אין לך חשבון? הירשם כאן</p>
-        <button onclick="toggleModal(false)" style="margin-top:10px; background:none; border:none; cursor:pointer;">ביטול</button>
-    </div>
-</div>
 
     <nav class="navbar">
         <div class="logo" onclick="router('home')">
@@ -119,68 +36,6 @@
         <p>© 2024 PhysicsMaster - כל הזכויות שמורות.</p>
     </footer>
 
-    <script>
-        // --- אתחול Firebase ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyBzZVWudrgjb-Qi-ln5Qm0u4L0PUlwbjUc",
-            authDomain: "physicsmaster-app.firebaseapp.com",
-            projectId: "physicsmaster-app",
-            storageBucket: "physicsmaster-app.firebasestorage.app",
-            messagingSenderId: "389250837755",
-            appId: "1:389250837755:web:c088a4021e28ce0132945e"
-        };
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-
-        // --- לוגיקת משתמשים ---
-        let isSignUpMode = false;
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('logged-in-view').style.display = 'flex';
-                document.getElementById('logged-out-view').style.display = 'none';
-                document.getElementById('display-name').innerText = user.email.split('@')[0];
-            } else {
-                document.getElementById('logged-in-view').style.display = 'none';
-                document.getElementById('logged-out-view').style.display = 'block';
-            }
-        });
-
-        function toggleModal(show) {
-            document.getElementById('login-modal').style.display = show ? 'flex' : 'none';
-        }
-
-        function toggleAuthMode() {
-            isSignUpMode = !isSignUpMode;
-            document.getElementById('modal-title').innerText = isSignUpMode ? 'הרשמה' : 'התחברות';
-            document.getElementById('toggle-text').innerText = isSignUpMode ? 'כבר יש לך חשבון? התחבר' : 'אין לך חשבון? הירשם כאן';
-        }
-
-        async function handleAuth() {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
-            try {
-                if (isSignUpMode) {
-                    await auth.createUserWithEmailAndPassword(email, pass);
-                    alert("נרשמת בהצלחה!");
-                } else {
-                    await auth.signInWithEmailAndPassword(email, pass);
-                    alert("התחברת בהצלחה!");
-                }
-                toggleModal(false);
-            } catch (error) {
-                alert("שגיאה: " + error.message);
-            }
-        }
-
-        function handleLogout() {
-            auth.signOut();
-        }
-
-        // כאן מגיע שאר הקוד של ה-Router וה-contentData שהיה לך קודם...
-        // (השארתי את זה קצר כדי שתוכל להדביק את ה-contentData שלך לפה)
-    </script>
     <script src="script.js"></script>
 </body>
 </html>
-
