@@ -546,6 +546,69 @@ footer {
 .role-admin { background: #fee2e2; color: #dc2626; }
 .role-student { background: #dbeafe; color: #2563eb; }
 
+/* --- XP Widget --- */
+.level-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.9);
+    padding: 15px 20px;
+    border-radius: 30px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 1000;
+    direction: ltr;
+}
+
+.level-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    font-weight: 900;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+.level-up-anim {
+    animation: levelUpPulse 0.5s ease;
+}
+
+@keyframes levelUpPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+
+.xp-container {
+    width: 150px;
+    height: 12px;
+    background: #cbd5e1;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.xp-bar {
+    height: 100%;
+    width: 0%;
+    background: #f59e0b;
+    border-radius: 10px 0 0 10px;
+    transition: width 0.5s ease;
+}
+
+.xp-text {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #334155;
+}
+
+
 /* כפתורי פעולה בטבלה */
 .action-btn {
     border: none;
@@ -557,3 +620,4 @@ footer {
 }
 
 .delete-btn:hover { color: #dc2626; transform: scale(1.2); }
+
