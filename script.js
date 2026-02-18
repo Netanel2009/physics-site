@@ -169,6 +169,9 @@ onAuthStateChanged(auth, async (user) => {
     const xpWidget = document.getElementById('level-widget');
 
     if(user){
+        // אפס את ה-XP הגלובלי לפני טעינת המשתמש החדש
+        playerStats = { level:1, currentXP:0, xpNeeded:100 };
+
         const userDocRef = doc(db, "users", user.uid);
         const userSnapshot = await getDoc(userDocRef);
 
@@ -183,14 +186,21 @@ onAuthStateChanged(auth, async (user) => {
         if(loginBtn) loginBtn.style.display = 'none';
         if(xpWidget) xpWidget.style.display = 'flex';
         document.getElementById('user-name-display').innerText = user.displayName || user.email;
+
+        // טען XP ייחודי למשתמש המחובר
         await loadStats(user);
     } else {
         if(authModal) authModal.style.display = 'flex';
         if(userProfile) userProfile.style.display = 'none';
         if(loginBtn) loginBtn.style.display = 'block';
         if(xpWidget) xpWidget.style.display = 'none';
+
+        // אפס את ה-XP כשאין משתמש מחובר
+        playerStats = { level:1, currentXP:0, xpNeeded:100 };
+        updateXPUI();
     }
 });
+
 
 /* =========================================
    6. בדיקת תשובות והוספת XP
@@ -239,3 +249,4 @@ window.checkAnswers = function(exId){
     }
     resultDiv.scrollIntoView({behavior:'smooth'});
 };
+
