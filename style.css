@@ -352,6 +352,19 @@ input, textarea {
 .user-profile {
     position: relative;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+/* יצירת "גשר" שקוף בין התמונה לתפריט כדי שלא ייסגר */
+.user-profile::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 15px; /* ממלא את הרווח */
+    background: transparent;
 }
 
 .user-profile img {
@@ -363,10 +376,16 @@ input, textarea {
 
 .profile-dropdown {
     position: absolute;
-    top: 50px;
-    left: 0; /* בגלל שהפרופיל בצד שמאל של המסך */
+    top: 100%; /* מתחיל בדיוק מתחת לאלמנט ההורה */
+    margin-top: 10px; /* מרווח ויזואלי */
+    left: 0; 
     background: white;
-    min-width: 160px;
+    
+    /* תיקון רוחב עבור האימייל */
+    min-width: 200px;
+    width: max-content; /* מתרחב לפי הטקסט הכי ארוך */
+    white-space: nowrap; /* מונע שבירת שורות */
+    
     box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     border-radius: 12px;
     padding: 15px;
@@ -419,3 +438,4 @@ footer {
     color: #94a3b8;
     backdrop-filter: blur(10px);
 }
+
