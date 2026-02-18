@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     
     <link rel="stylesheet" href="style.css">
@@ -16,62 +15,68 @@
 <body>
 
     <nav class="navbar">
-        <div id="auth-section" style="display: flex; align-items: center; gap: 15px;">
-    <div id="user-profile" class="user-profile" style="display: none;">
-        <img id="user-photo" src="https://via.placeholder.com/40" alt="Profile">
-        <div class="profile-dropdown">
-            <p id="user-name-display"></p>
-            <hr>
-            <span onclick="handleLogout()">התנתק</span>
-        </div>
-    </div>
-    <button id="login-trigger-btn" class="btn-main" style="padding: 8px 20px; font-size: 1rem;">התחברות</button>
-</div>
-
-<div id="auth-modal" class="auth-overlay">
-    <div class="auth-card">
-        <div class="auth-tabs">
-            <button id="tab-login" class="active" onclick="switchTab('login')">כניסה</button>
-            <button id="tab-signup" onclick="switchTab('signup')">הרשמה</button>
-        </div>
-        
-        <form id="auth-form">
-            <h2 id="auth-title">ברוכים הבאים</h2>
-            <p id="auth-subtitle">התחברו כדי להתחיל ללמוד פיזיקה</p>
-            
-            <div id="name-field" style="display: none;">
-                <input type="text" id="auth-name" placeholder="שם מלא">
-            </div>
-            <input type="email" id="auth-email" placeholder="אימייל" required>
-            <input type="password" id="auth-pass" placeholder="סיסמה (לפחות 6 תווים)" required>
-            
-            <button type="submit" id="auth-submit" class="btn-main" style="width: 100%;">המשך</button>
-            <p id="auth-error" style="color: #ef4444; margin-top: 10px; font-size: 0.9rem;"></p>
-        </form>
-        </div>
-        </div>
         <div class="logo" onclick="router('home')">
             <i class="fa-solid fa-atom fa-spin"></i> PhysicsMaster
         </div>
+
         <div class="nav-links">
             <span onclick="scrollToSection('learning')">מרכז למידה</span>
             <span onclick="scrollToSection('about')">אודות</span>
             <span onclick="scrollToSection('testimonials')">תגובות</span>
             <span onclick="scrollToSection('contact')">צור קשר</span>
+            <span onclick="router('admin')" style="font-size: 0.9rem; opacity: 0.7;"><i class="fa-solid fa-user-shield"></i></span>
         </div>
-        <div class="admin-btn" onclick="router('admin')">
-            <i class="fa-solid fa-user-shield"></i> ניהול
+
+        <div id="auth-section">
+            <button id="login-trigger-btn" class="btn-main" onclick="document.getElementById('auth-modal').style.display='flex'">
+                התחברות
+            </button>
+
+            <div id="user-profile" class="user-profile" style="display: none;">
+                <img id="user-photo" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile">
+                <div class="profile-dropdown">
+                    <p id="user-name-display">שם משתמש</p>
+                    <hr>
+                    <span onclick="handleLogout()">התנתק <i class="fa-solid fa-right-from-bracket"></i></span>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <main id="app-container"></main>
+    <main id="app-container">
+        </main>
 
     <footer>
         <p>© 2024 PhysicsMaster - כל הזכויות שמורות.</p>
     </footer>
 
+    <div id="auth-modal" class="auth-overlay" style="display: none;">
+        <div class="auth-card">
+            <button onclick="document.getElementById('auth-modal').style.display='none'" style="position:absolute; top:10px; left:10px; background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+
+            <div class="auth-tabs">
+                <button id="tab-login" class="active" onclick="switchTab('login')">כניסה</button>
+                <button id="tab-signup" onclick="switchTab('signup')">הרשמה</button>
+            </div>
+            
+            <form id="auth-form">
+                <h2 id="auth-title">ברוכים הבאים</h2>
+                <p id="auth-subtitle" style="margin-bottom: 20px;">התחברו כדי להתחיל ללמוד פיזיקה</p>
+                
+                <div id="name-field" style="display: none;">
+                    <input type="text" id="auth-name" placeholder="שם מלא">
+                </div>
+                
+                <input type="email" id="auth-email" placeholder="אימייל" required>
+                <input type="password" id="auth-pass" placeholder="סיסמה (לפחות 6 תווים)" required>
+                
+                <button type="submit" id="auth-submit" class="btn-main" style="width: 100%; margin-top: 15px;">המשך</button>
+                <p id="auth-error" style="color: #ef4444; margin-top: 10px; font-size: 0.9rem; font-weight: bold;"></p>
+            </form>
+        </div>
+    </div>
+
     <script type="module" src="script.js"></script>
+
 </body>
 </html>
-
-
