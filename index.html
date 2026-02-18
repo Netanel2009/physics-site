@@ -6,6 +6,7 @@
     <title>PhysicsMaster | מערכת למידה מתקדמת</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -15,7 +16,7 @@
 <body>
 
     <nav class="navbar">
-        <div class="logo" onclick="router('home')">
+        <div class="logo" onclick="location.reload()">
             <i class="fa-solid fa-atom fa-spin"></i> PhysicsMaster
         </div>
 
@@ -24,7 +25,6 @@
             <span onclick="scrollToSection('about')">אודות</span>
             <span onclick="scrollToSection('testimonials')">תגובות</span>
             <span onclick="scrollToSection('contact')">צור קשר</span>
-            <span onclick="router('admin')" style="font-size: 0.9rem; opacity: 0.7;"><i class="fa-solid fa-user-shield"></i></span>
         </div>
 
         <div id="auth-section">
@@ -36,6 +36,7 @@
                 <img id="user-photo" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile">
                 <div class="profile-dropdown">
                     <p id="user-name-display">שם משתמש</p>
+                    <p id="user-email-display" style="font-size:0.8rem; color:#666;">user@email.com</p>
                     <hr>
                     <span onclick="handleLogout()">התנתק <i class="fa-solid fa-right-from-bracket"></i></span>
                 </div>
@@ -44,7 +45,30 @@
     </nav>
 
     <main id="app-container">
-        </main>
+        <section id="home" class="hero">
+            <h1>ללמוד פיזיקה אחרת</h1>
+            <p>הצטרפו לאלפי תלמידים שלומדים פיזיקה בצורה אינטראקטיבית ומהנה.</p>
+            <button class="btn-main" onclick="document.getElementById('learning').scrollIntoView({behavior: 'smooth'})">התחל ללמוד</button>
+        </section>
+
+        <section id="learning">
+            <h2 class="section-title">מרכז למידה</h2>
+            <div class="grid-full" id="topics-grid">
+                </div>
+        </section>
+    </main>
+
+    <div id="level-widget" class="level-widget" style="display:none;"> <div class="level-circle">
+            <span class="level-label">LVL</span>
+            <span id="current-level">0</span>
+        </div>
+        <div class="xp-track">
+            <div id="xp-bar" class="xp-bar"></div>
+            <div class="xp-info">
+                <span id="current-xp">0</span> / <span id="xp-needed">100</span> XP
+            </div>
+        </div>
+    </div>
 
     <footer>
         <p>© 2024 PhysicsMaster - כל הזכויות שמורות.</p>
@@ -61,7 +85,7 @@
             
             <form id="auth-form">
                 <h2 id="auth-title">ברוכים הבאים</h2>
-                <p id="auth-subtitle" style="margin-bottom: 20px;">התחברו כדי להתחיל ללמוד פיזיקה</p>
+                <p id="auth-subtitle" style="margin-bottom: 20px;">התחברו כדי להתחיל ללמוד</p>
                 
                 <div id="name-field" style="display: none;">
                     <input type="text" id="auth-name" placeholder="שם מלא">
