@@ -16,14 +16,14 @@ body {
     color: #1e293b;
     overflow-x: hidden;
     
-    /* --- תמונת הרקע החדשה לכל האתר --- */
-    /* תמונה של רשת מדעית/פיזיקלית בגווני כחול */
+    /* --- תמונת הרקע --- */
     background: linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)),
                 url('https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2070&auto=format&fit=crop');
     
-    background-size: cover;       /* מכסה את כל המסך */
-    background-attachment: fixed; /* הרקע נשאר קבוע בגלילה */
+    background-size: cover;
+    background-attachment: fixed;
     background-position: center;
+    min-height: 100vh;
 }
 
 /* --- ניווט --- */
@@ -32,8 +32,8 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 15px 40px;
-    background: rgba(255, 255, 255, 0.95); /* כמעט אטום */
-    backdrop-filter: blur(10px); /* טשטוש הרקע */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     position: sticky;
     top: 0;
@@ -58,7 +58,13 @@ body {
 }
 
 .nav-links span:hover { color: var(--primary); }
-.admin-btn { cursor: pointer; color: #64748b; font-size: 1.2rem; }
+
+/* התאמה למובייל - הסתרת הקישורים או התאמת הריפוד */
+@media (max-width: 768px) {
+    .navbar { padding: 15px 15px; }
+    .nav-links { display: none; } /* נסתיר קישורים במובייל כדי לא לשבור עיצוב */
+    .logo { font-size: 1.4rem; }
+}
 
 /* --- עיצוב האזורים (Sections) --- */
 section {
@@ -69,20 +75,17 @@ section {
     justify-content: center;
     align-items: center;
     text-align: center;
-    
-    /* רווח בין סקשנים */
     margin-bottom: 40px;
 }
 
-/* עיצוב מיוחד לכרטיסים/אזורים עם רקע לבן חצי-שקוף */
 #about, #testimonials, #contact, #learning {
-    background: var(--light-glass); /* רקע זכוכית */
-    backdrop-filter: blur(10px);    /* טשטוש */
-    border-radius: 30px;            /* פינות עגולות */
-    margin: 40px auto;              /* מירכוז */
-    width: 90%;                     /* רוחב האזור */
+    background: var(--light-glass);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    margin: 40px auto;
+    width: 90%;
     max-width: 1400px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); /* צל עדין */
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
     border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
@@ -94,10 +97,9 @@ section {
     text-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-/* --- Hero (החלק העליון) --- */
+/* --- Hero --- */
 .hero {
     height: 90vh;
-    /* הופך את ההירו לשקוף לגמרי כדי שיראו את הרקע הראשי של האתר */
     background: transparent; 
     color: white;
     display: flex;
@@ -110,7 +112,7 @@ section {
 .hero h1 { 
     font-size: 5rem; 
     margin-bottom: 20px; 
-    text-shadow: 0 0 20px rgba(37, 99, 235, 0.8); /* זוהר כחול */
+    text-shadow: 0 0 20px rgba(37, 99, 235, 0.8);
     font-weight: 900;
 }
 .hero p { 
@@ -120,7 +122,7 @@ section {
     text-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
-/* --- גריד וכרטיסים --- */
+/* --- כרטיסים וגריד --- */
 .grid-full {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -136,11 +138,11 @@ section {
     position: relative;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2); /* צל חזק יותר */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     transition: transform 0.4s ease, box-shadow 0.4s ease;
-    background-size: cover;
-    background-position: center;
-    border: 2px solid white; /* מסגרת לבנה דקה */
+    background-size: cover !important; /* חשוב מאוד כדי שהתמונות ימלאו את הכרטיס */
+    background-position: center !important;
+    border: 2px solid white;
 }
 
 .card:hover { 
@@ -161,9 +163,6 @@ section {
 }
 
 .card h3 { font-size: 1.8rem; margin-bottom: 10px; font-weight: 700; }
-.card p { font-size: 1.1rem; opacity: 0.9; margin-bottom: 20px; }
-
-/* כפתורים */
 .card-btn {
     align-self: flex-start;
     background: var(--primary);
@@ -175,6 +174,7 @@ section {
     box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
 }
 
+/* --- כפתורים כלליים --- */
 .btn-main {
     padding: 15px 50px;
     font-size: 1.4rem;
@@ -203,47 +203,38 @@ section {
 }
 .btn-back:hover { background: #334155; }
 
-/* --- תגובות בגלילה אופקית (Carousel) --- */
-
-/* המיכל שמחזיק את כל הכרטיסים */
-.testimonials-scroll-container {
-    display: flex;             /* מסדר את הפריטים בשורה */
-    overflow-x: auto;          /* מאפשר גלילה לצדדים */
-    gap: 30px;                 /* רווח בין הכרטיסים */
-    padding: 20px 10px 40px 10px; /* ריפוד (למטה 40 כדי שיהיה מקום לצל) */
+/* --- Carousel תגובות --- */
+.carousel-wrapper {
+    position: relative;
     width: 100%;
-    
-    /* גלילה חלקה ונעימה */
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+}
+
+.testimonials-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 30px;
+    padding: 20px 10px 40px 10px;
+    width: 100%;
     scroll-behavior: smooth;
-    
-    /* דואג שהכרטיס "יתמגנט" למרכז בגלילה (אופציונלי אך מומלץ) */
     scroll-snap-type: x mandatory;
-    
-    /* הסתרת פס הגלילה (Scrollbar) בדפדפנים מודרניים למראה נקי */
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none;
 }
+.testimonials-scroll-container::-webkit-scrollbar { display: none; }
 
-/* הסתרת פס הגלילה ב-Chrome/Safari */
-.testimonials-scroll-container::-webkit-scrollbar {
-    display: none;
-}
-
-/* הכרטיס עצמו */
 .testimonial-card {
-    min-width: 320px;          /* רוחב מינימלי קבוע לכל כרטיס כדי שלא יתכווץ */
-    max-width: 320px;          /* גם רוחב מקסימלי */
+    min-width: 320px;
+    max-width: 320px;
     background: white;
     padding: 30px;
     border-radius: 20px;
     text-align: center;
     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    
-    /* כדי שהכרטיסים לא יקטנו */
     flex-shrink: 0;
-    
-    /* המיגנוט לגלילה */
     scroll-snap-align: center;
-    
     transition: transform 0.3s ease;
 }
 
@@ -259,66 +250,6 @@ section {
     margin-bottom: 15px;
     object-fit: cover;
     border: 3px solid var(--primary);
-}
-
-.testimonial-card h4 {
-    margin-bottom: 10px;
-    color: var(--dark);
-    font-size: 1.2rem;
-}
-
-.testimonial-card p {
-    font-style: italic;
-    color: #475569;
-    font-size: 0.95rem;
-    line-height: 1.5;
-}
-
-.testimonial-card {
-    background: white;
-    padding: 40px;
-    border-radius: 20px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
-
-.form-container {
-    max-width: 600px;
-    width: 100%;
-    margin: 0 auto;
-    background: white;
-    padding: 50px;
-    border-radius: 25px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-}
-
-input, textarea {
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 20px;
-    border: 1px solid #cbd5e1;
-    border-radius: 12px;
-    font-size: 1rem;
-    background: #f8fafc;
-}
-
-/* --- פוטר --- */
-footer {
-    text-align: center;
-    padding: 30px;
-    background: rgba(15, 23, 42, 0.95);
-    color: #94a3b8;
-    backdrop-filter: blur(10px);
-}
-
-/* --- עיצוב כפתורי גלילה לתגובות (החלק שחסר) --- */
-.carousel-wrapper {
-    position: relative;
-    width: 100%;
-    max-width: 1200px; /* רוחב מקסימלי כדי שהחיצים לא יהיו רחוקים מדי */
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
 }
 
 .scroll-btn {
@@ -340,42 +271,37 @@ footer {
     align-items: center;
     justify-content: center;
 }
+.scroll-btn:hover { background: var(--dark); }
+.prev-btn { left: -25px; }
+.next-btn { right: -25px; }
 
-.scroll-btn:hover {
-    background: var(--dark);
-    transform: translateY(-50%) scale(1.1);
-}
-
-.prev-btn { left: -25px; } /* ממקם את החץ השמאלי */
-.next-btn { right: -25px; } /* ממקם את החץ הימני */
-
-/* בטלפון נסתיר את החיצים כי יש מגע (Swipe) */
 @media (max-width: 768px) {
     .scroll-btn { display: none; }
-    .prev-btn, .next-btn { display: none; }
 }
 
-.summary-card {
-    background: white;
-    padding: 40px;
-    border-radius: 30px;
-    margin-top: 40px;
-    box-shadow: 0 15px 50px rgba(0,0,0,0.15);
-    border: 3px solid var(--primary);
-    animation: slideIn 0.5s ease-out;
-    text-align: center;
+/* --- טפסים --- */
+.form-container {
+    max-width: 600px;
     width: 100%;
+    margin: 0 auto;
+    background: white;
+    padding: 50px;
+    border-radius: 25px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
 }
 
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(30px); }
-    to { opacity: 1; transform: translateY(0); }
+input, textarea {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 1rem;
+    background: #f8fafc;
+    color: #333; /* הוספתי צבע טקסט ברור */
 }
 
-.question-block {
-    transition: all 0.4s ease;
-}
-
+/* --- Auth & Profile --- */
 .auth-overlay {
     position: fixed;
     inset: 0;
@@ -388,7 +314,7 @@ footer {
 }
 
 .auth-card {
-    background: var(--light-glass);
+    background: rgba(255, 255, 255, 0.95);
     padding: 40px;
     border-radius: 25px;
     width: 100%;
@@ -422,6 +348,7 @@ footer {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
+/* פרופיל משתמש */
 .user-profile {
     position: relative;
     cursor: pointer;
@@ -437,14 +364,14 @@ footer {
 .profile-dropdown {
     position: absolute;
     top: 50px;
-    left: 0;
+    left: 0; /* בגלל שהפרופיל בצד שמאל של המסך */
     background: white;
-    min-width: 150px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    min-width: 160px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     border-radius: 12px;
-    padding: 10px;
+    padding: 15px;
     display: none;
-    text-align: right;
+    text-align: center;
     z-index: 100;
 }
 
@@ -456,10 +383,39 @@ footer {
     color: #ef4444;
     font-weight: bold;
     display: block;
-    margin-top: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.profile-dropdown span:hover { opacity: 0.7; }
+
+/* תוצאות תרגיל */
+.summary-card {
+    background: white;
+    padding: 40px;
+    border-radius: 30px;
+    margin-top: 40px;
+    box-shadow: 0 15px 50px rgba(0,0,0,0.15);
+    border: 3px solid var(--primary);
+    animation: slideIn 0.5s ease-out;
+    text-align: center;
+    width: 100%;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 body.not-logged-in {
     overflow: hidden;
 }
 
+/* --- Footer --- */
+footer {
+    text-align: center;
+    padding: 30px;
+    background: rgba(15, 23, 42, 0.95);
+    color: #94a3b8;
+    backdrop-filter: blur(10px);
+}
