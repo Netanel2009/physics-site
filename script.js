@@ -203,6 +203,10 @@ onAuthStateChanged(auth,async(user)=>{
    פונקציות רינדור ותוכן מלא
    ========================================= */
 
+/* =========================================
+   פונקציות רינדור ותוכן מלא
+   ========================================= */
+
 function renderHomePage() {
     const app = document.getElementById('app-container');
     app.innerHTML = '';
@@ -483,3 +487,5 @@ function renderActiveExercise(exId) {
 
     app.appendChild(section);
 }
+
+
