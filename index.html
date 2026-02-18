@@ -16,6 +16,40 @@
 <body>
 
     <nav class="navbar">
+        <div id="auth-section" style="display: flex; align-items: center; gap: 15px;">
+    <div id="user-profile" class="user-profile" style="display: none;">
+        <img id="user-photo" src="https://via.placeholder.com/40" alt="Profile">
+        <div class="profile-dropdown">
+            <p id="user-name-display"></p>
+            <hr>
+            <span onclick="handleLogout()">התנתק</span>
+        </div>
+    </div>
+    <button id="login-trigger-btn" class="btn-main" style="padding: 8px 20px; font-size: 1rem;">התחברות</button>
+</div>
+
+<div id="auth-modal" class="auth-overlay">
+    <div class="auth-card">
+        <div class="auth-tabs">
+            <button id="tab-login" class="active" onclick="switchTab('login')">כניסה</button>
+            <button id="tab-signup" onclick="switchTab('signup')">הרשמה</button>
+        </div>
+        
+        <form id="auth-form">
+            <h2 id="auth-title">ברוכים הבאים</h2>
+            <p id="auth-subtitle">התחברו כדי להתחיל ללמוד פיזיקה</p>
+            
+            <div id="name-field" style="display: none;">
+                <input type="text" id="auth-name" placeholder="שם מלא">
+            </div>
+            <input type="email" id="auth-email" placeholder="אימייל" required>
+            <input type="password" id="auth-pass" placeholder="סיסמה (לפחות 6 תווים)" required>
+            
+            <button type="submit" id="auth-submit" class="btn-main" style="width: 100%;">המשך</button>
+            <p id="auth-error" style="color: #ef4444; margin-top: 10px; font-size: 0.9rem;"></p>
+        </form>
+        </div>
+        </div>
         <div class="logo" onclick="router('home')">
             <i class="fa-solid fa-atom fa-spin"></i> PhysicsMaster
         </div>
@@ -39,3 +73,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
