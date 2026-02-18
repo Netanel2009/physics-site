@@ -869,3 +869,68 @@ footer {
     backdrop-filter: blur(10px);
 
 }
+/* --- עיצוב דף ניהול וטבלה --- */
+.admin-container {
+    background: var(--light-glass);
+    backdrop-filter: blur(10px);
+    border-radius: 30px;
+    padding: 40px;
+    max-width: 1000px;
+    margin: 40px auto;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    overflow-x: auto; /* למקרה שהטבלה רחבה מדי במובייל */
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.users-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.users-table th, .users-table td {
+    padding: 15px;
+    text-align: right;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.users-table th {
+    background: var(--primary);
+    color: white;
+    font-weight: 700;
+}
+
+.users-table tr:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.role-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+
+.role-admin { background: #fee2e2; color: #dc2626; }
+.role-student { background: #dbeafe; color: #2563eb; }
+
+.action-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    margin: 0 5px;
+    transition: 0.2s;
+}
+
+.delete-btn:hover { color: #dc2626; transform: scale(1.2); }
