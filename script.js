@@ -249,4 +249,3 @@ window.checkAnswers = function(exId){
     }
     resultDiv.scrollIntoView({behavior:'smooth'});
 };
-
