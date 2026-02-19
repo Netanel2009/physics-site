@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,10 +8,11 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
     <nav class="navbar">
@@ -18,19 +20,12 @@
             <i class="fa-solid fa-atom fa-spin"></i> PhysicsMaster
         </div>
 
-        <div class="nav-links" id="nav-links">
+        <div class="nav-links">
             <span onclick="scrollToSection('learning')">מרכז למידה</span>
             <span onclick="scrollToSection('about')">אודות</span>
             <span onclick="scrollToSection('testimonials')">תגובות</span>
             <span onclick="scrollToSection('contact')">צור קשר</span>
-            <span onclick="router('admin')" style="font-size: 0.9rem; opacity: 0.7;">
-                <i class="fa-solid fa-user-shield"></i>
-            </span>
-        </div>
-
-        <!-- Hamburger Menu -->
-        <div class="hamburger" id="hamburger">
-            <i class="fas fa-bars"></i>
+            <span onclick="router('admin')" style="font-size: 0.9rem; opacity: 0.7;"><i class="fa-solid fa-user-shield"></i></span>
         </div>
 
         <div id="auth-section">
@@ -49,40 +44,32 @@
         </div>
     </nav>
 
-    <!-- XP Widget -->
-    <div id="level-widget" class="level-widget">
-        <div class="level-circle" id="level-circle"></div>
-        <div class="xp-info">
-            <p>Level: <span id="current-level">1</span></p>
-            <p>XP: <span id="current-xp">0</span>/<span id="xp-needed">100</span></p>
-            <div class="xp-bar-bg">
-                <div class="xp-bar" id="xp-bar"></div>
-            </div>
-        </div>
-    </div>
-
     <main id="app-container"></main>
 
     <footer>
         <p>© 2024 PhysicsMaster - כל הזכויות שמורות.</p>
     </footer>
 
-    <!-- Auth Modal -->
     <div id="auth-modal" class="auth-overlay" style="display: none;">
         <div class="auth-card">
             <button onclick="document.getElementById('auth-modal').style.display='none'" style="position:absolute; top:10px; left:10px; background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+
             <div class="auth-tabs">
                 <button id="tab-login" class="active" onclick="switchTab('login')">כניסה</button>
                 <button id="tab-signup" onclick="switchTab('signup')">הרשמה</button>
             </div>
+
             <form id="auth-form">
                 <h2 id="auth-title">ברוכים הבאים</h2>
                 <p id="auth-subtitle" style="margin-bottom: 20px;">התחברו כדי להתחיל ללמוד פיזיקה</p>
+
                 <div id="name-field" style="display: none;">
                     <input type="text" id="auth-name" placeholder="שם מלא">
                 </div>
+
                 <input type="email" id="auth-email" placeholder="אימייל" required>
                 <input type="password" id="auth-pass" placeholder="סיסמה (לפחות 6 תווים)" required>
+
                 <button type="submit" id="auth-submit" class="btn-main" style="width: 100%; margin-top: 15px;">המשך</button>
                 <p id="auth-error" style="color: #ef4444; margin-top: 10px; font-size: 0.9rem; font-weight: bold;"></p>
             </form>
@@ -90,11 +77,5 @@
     </div>
 
     <script type="module" src="script.js"></script>
-    <script>
-        // Hamburger toggle
-        const hamburger = document.getElementById('hamburger');
-        const navLinks = document.getElementById('nav-links');
-        hamburger.addEventListener('click', () => navLinks.classList.toggle('active'));
-    </script>
 </body>
 </html>
