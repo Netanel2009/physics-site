@@ -1,93 +1,59 @@
 <!DOCTYPE html>
-<html lang="he" dir="rtl">
+<html lang="he">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhysicsMaster | מערכת למידה מתקדמת</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>XP Dashboard</title>
+<link rel="stylesheet" href="styles.css"> <!-- קובץ CSS שלך -->
+<script defer src="script.js"></script> <!-- קובץ JS שלך -->
 </head>
 <body>
 
-<nav class="navbar">
-    <div class="logo" onclick="router('home')">
-        <i class="fa-solid fa-atom fa-spin"></i> PhysicsMaster
+<header>
+    <div class="logo">XP Dashboard</div>
+
+    <nav class="nav-links">
+        <a href="#">בית</a>
+        <a href="#">כרטיסים</a>
+        <a href="#">סטטיסטיקה</a>
+        <a href="#">פרופיל</a>
+    </nav>
+
+    <!-- Hamburger Menu -->
+    <div class="hamburger" id="hamburger">
+        <i class="fas fa-bars"></i>
     </div>
+</header>
 
-    <div class="nav-links">
-        <span onclick="scrollToSection('learning')">מרכז למידה</span>
-        <span onclick="scrollToSection('about')">אודות</span>
-        <span onclick="scrollToSection('testimonials')">תגובות</span>
-        <span onclick="scrollToSection('contact')">צור קשר</span>
-        <span onclick="router('admin')" style="font-size: 0.9rem; opacity: 0.7;"><i class="fa-solid fa-user-shield"></i></span>
-    </div>
-
-    <div id="auth-section">
-        <button id="login-trigger-btn" class="btn-main" onclick="document.getElementById('auth-modal').style.display='flex'">
-            התחברות
-        </button>
-
-        <div id="user-profile" class="user-profile" style="display: none;">
-            <img id="user-photo" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile">
-            <div class="profile-dropdown">
-                <p id="user-name-display">שם משתמש</p>
-                <hr>
-                <span onclick="handleLogout()">התנתק <i class="fa-solid fa-right-from-bracket"></i></span>
-            </div>
+<main>
+    <section class="cards-container">
+        <div class="card">
+            <div class="level-circle"></div>
+            <h3>כרטיס 1</h3>
+            <p>תיאור קצר</p>
         </div>
-    </div>
-</nav>
-
-<!-- XP Widget -->
-<div id="level-widget" class="level-widget" style="display:none;">
-    <div class="level-circle">
-        <span id="current-level">1</span>
-    </div>
-    <div class="xp-container">
-        <div id="xp-bar" class="xp-bar"></div>
-    </div>
-    <div class="xp-text">
-        <span id="current-xp">0</span> / <span id="xp-needed">100</span> XP
-    </div>
-</div>
-
-<main id="app-container"></main>
-
-<footer>
-    <p>© 2026 PhysicsMaster - כל הזכויות שמורות.</p>
-</footer>
-
-<div id="auth-modal" class="auth-overlay" style="display: none;">
-    <div class="auth-card">
-        <button onclick="document.getElementById('auth-modal').style.display='none'" style="position:absolute; top:10px; left:10px; background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
-
-        <div class="auth-tabs">
-            <button id="tab-login" class="active" onclick="switchTab('login')">כניסה</button>
-            <button id="tab-signup" onclick="switchTab('signup')">הרשמה</button>
+        <div class="card">
+            <div class="level-circle"></div>
+            <h3>כרטיס 2</h3>
+            <p>תיאור קצר</p>
         </div>
-        
-        <form id="auth-form">
-            <h2 id="auth-title">ברוכים הבאים</h2>
-            <p id="auth-subtitle" style="margin-bottom: 20px;">התחברו כדי להתחיל ללמוד פיזיקה</p>
-            
-            <div id="name-field" style="display: none;">
-                <input type="text" id="auth-name" placeholder="שם מלא">
-            </div>
-            
-            <input type="email" id="auth-email" placeholder="אימייל" required>
-            <input type="password" id="auth-pass" placeholder="סיסמה (לפחות 6 תווים)" required>
-            
-            <button type="submit" id="auth-submit" class="btn-main" style="width: 100%; margin-top: 15px;">המשך</button>
-            <p id="auth-error" style="color: #ef4444; margin-top: 10px; font-size: 0.9rem; font-weight: bold;"></p>
-        </form>
-    </div>
-</div>
+        <div class="card">
+            <div class="level-circle"></div>
+            <h3>כרטיס 3</h3>
+            <p>תיאור קצר</p>
+        </div>
+    </section>
+</main>
 
-<script type="module" src="script.js"></script>
+<script>
+    // JavaScript עבור Hamburger Menu
+    const hamburger = document.getElementById('hamburger');
+    const navLinks = document.querySelector('nav.nav-links');
+
+    hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('active');
+    });
+</script>
+
 </body>
 </html>
