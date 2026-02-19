@@ -1,6 +1,3 @@
-/* =========================================
-   1. הגדרות Firebase
-   ========================================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
     getAuth, 
@@ -10,6 +7,7 @@ import {
     signOut, 
     updateProfile 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
 import { 
     getFirestore, 
     collection, 
@@ -17,11 +15,12 @@ import {
     setDoc, 
     doc, 
     deleteDoc,
-    getDoc  // הוספנו את זה כדי לבדוק משתמש בודד
+    getDoc,
+    updateDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBzZVWudrgjb-Qi-ln5Qm0u4L0PUlwbjUc",
+    apiKey: "YOUR_KEY",
     authDomain: "physicsmaster-app.firebaseapp.com",
     projectId: "physicsmaster-app",
     storageBucket: "physicsmaster-app.firebasestorage.app",
@@ -34,10 +33,16 @@ const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
 
 /* =========================================
-   2. משתנים גלובליים ומצב (State)
+   2. מצב גלובלי
    ========================================= */
-let pageMode = 'explanations'; 
+let pageMode = 'explanations';
 let authMode = 'login';
+
+let playerStats = {
+    level: 1,
+    currentXP: 0,
+    xpNeeded: 100
+};
 
 /* =========================================
    3. נתונים (Data)
@@ -83,41 +88,47 @@ const testimonialsData = [
 ];
 
 /* =========================================
-   4. מערכת XP ורמות (Gamification)
+   3. XP SYSTEM - עכשיו מחובר ל-Firestore
    ========================================= */
-let playerStats = {
-    level: 1,
-    currentXP: 0,
-    xpNeeded: 100
-};
 
-function loadStats() {
-    if (localStorage.getItem('physicsMasterStats')) {
-        playerStats = JSON.parse(localStorage.getItem('physicsMasterStats'));
+async function loadStatsFromDB(uid) {
+    const userRef = doc(db, "users", uid);
+    const snap = await getDoc(userRef);
+
+    if (snap.exists() && snap.data().stats) {
+        playerStats = snap.data().stats;
+    } else {
+        await updateDoc(userRef, {
+            stats: playerStats
+        });
     }
+
     updateXPUI();
+}
+
+async function saveStatsToDB(uid) {
+    const userRef = doc(db, "users", uid);
+    await updateDoc(userRef, {
+        stats: playerStats
+    });
 }
 
 function addXP(amount) {
     playerStats.currentXP += amount;
     checkLevelUp();
-    saveStats();
     updateXPUI();
+
+    const user = auth.currentUser;
+    if (user) saveStatsToDB(user.uid);
 }
 
 function checkLevelUp() {
-    let leveledUp = false;
     while (playerStats.currentXP >= playerStats.xpNeeded) {
         playerStats.currentXP -= playerStats.xpNeeded;
         playerStats.level++;
         playerStats.xpNeeded = Math.floor(playerStats.xpNeeded * 1.2);
-        leveledUp = true;
+        triggerLevelUpEffect();
     }
-    if (leveledUp) triggerLevelUpEffect();
-}
-
-function saveStats() {
-    localStorage.setItem('physicsMasterStats', JSON.stringify(playerStats));
 }
 
 function updateXPUI() {
@@ -126,27 +137,21 @@ function updateXPUI() {
     const neededEl = document.getElementById('xp-needed');
     const barEl = document.getElementById('xp-bar');
 
-    if (levelEl) levelEl.innerText = playerStats.level;
-    if (xpEl) xpEl.innerText = Math.floor(playerStats.currentXP);
-    if (neededEl) neededEl.innerText = playerStats.xpNeeded;
-    
+    if (!levelEl) return;
+
+    levelEl.innerText = playerStats.level;
+    xpEl.innerText = playerStats.currentXP;
+    neededEl.innerText = playerStats.xpNeeded;
+
     const percentage = (playerStats.currentXP / playerStats.xpNeeded) * 100;
-    if (barEl) barEl.style.width = percentage + '%';
+    barEl.style.width = percentage + "%";
 }
 
 function triggerLevelUpEffect() {
     const widget = document.querySelector('.level-circle');
-    if(widget) {
+    if(widget){
         widget.classList.add('level-up-anim');
-        const msg = document.createElement('div');
-        msg.innerText = "Level Up! 🎉";
-        msg.style.cssText = "position:fixed; bottom:100px; right:30px; background:#f59e0b; color:white; padding:10px 20px; border-radius:20px; font-weight:bold; z-index:3000; animation:slideIn 0.5s ease-out;";
-        document.body.appendChild(msg);
-        
-        setTimeout(() => {
-            widget.classList.remove('level-up-anim');
-            msg.remove();
-        }, 2000);
+        setTimeout(() => widget.classList.remove('level-up-anim'), 800);
     }
 }
 
@@ -484,58 +489,57 @@ function getYoutubeThumb(url) {
 }
 
 /* =========================================
-   8. מערכת Auth (Firebase)
+   4. AUTH
    ========================================= */
-window.switchTab = (mode) => {
-    authMode = mode;
-    document.getElementById('tab-login').classList.toggle('active', mode === 'login');
-    document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
-    document.getElementById('name-field').style.display = mode === 'signup' ? 'block' : 'none';
-    document.getElementById('auth-title').innerText = mode === 'signup' ? 'יצירת חשבון' : 'ברוכים הבאים';
-    document.getElementById('auth-error').innerText = '';
+
+window.handleLogout = async () => {
+    await signOut(auth);
 };
 
-window.handleLogout = () => {
-    signOut(auth);
-};
+onAuthStateChanged(auth, async (user) => {
 
-document.addEventListener('DOMContentLoaded', () => {
-    const authForm = document.getElementById('auth-form');
-    if(authForm) {
-        authForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
-            const name = document.getElementById('auth-name') ? document.getElementById('auth-name').value : "";
-            const errorEl = document.getElementById('auth-error');
+    const userProfile = document.getElementById('user-profile');
+    const loginBtn = document.getElementById('login-trigger-btn');
+    const xpWidget = document.getElementById('level-widget');
 
-            try {
-                if (authMode === 'signup') {
-                    // יצירת משתמש ב-Auth
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-                    await updateProfile(userCredential.user, { displayName: name });
-                    
-                    // שמירת המשתמש ב-Firestore
-                    await setDoc(doc(db, "users", userCredential.user.uid), {
-                        name: name,
-                        email: email,
-                        role: 'student',
-                        joinDate: new Date().toLocaleDateString('he-IL'),
-                        uid: userCredential.user.uid
-                    });
-                    
-                    alert("נרשמת בהצלחה! ברוכים הבאים.");
-                } else {
-                    await signInWithEmailAndPassword(auth, email, pass);
-                }
-                document.getElementById('auth-modal').style.display = 'none';
-            } catch (error) {
-                console.error("Auth Error:", error);
-                errorEl.innerText = "שגיאה: אימייל, סיסמה או בעיה בשרת.";
-            }
-        });
+    if (user) {
+
+        const userDocRef = doc(db, "users", user.uid);
+        const userSnapshot = await getDoc(userDocRef);
+
+        if (!userSnapshot.exists()) {
+            await signOut(auth);
+            location.reload();
+            return;
+        }
+
+        userProfile.style.display = 'flex';
+        loginBtn.style.display = 'none';
+        xpWidget.style.display = 'flex';
+
+        document.getElementById('user-name-display').innerText =
+            user.displayName || user.email;
+
+        // 🔥 טוען XP מהמשתמש הספציפי
+        await loadStatsFromDB(user.uid);
+
+    } else {
+
+        userProfile.style.display = 'none';
+        loginBtn.style.display = 'block';
+        xpWidget.style.display = 'none';
+
+        // איפוס זמני כשאין משתמש
+        playerStats = {
+            level: 1,
+            currentXP: 0,
+            xpNeeded: 100
+        };
+
+        updateXPUI();
     }
 });
+
 
 // --- בודק משתמש מחובר (ומנתק אם הוא נמחק) ---
 onAuthStateChanged(auth, async (user) => {
@@ -670,6 +674,61 @@ async function deleteUser(uid) {
     }
 }
 
+/* =========================================
+   5. בעת הרשמה – יצירת stats
+   ========================================= */
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const authForm = document.getElementById('auth-form');
+
+    if(authForm){
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const name = document.getElementById('auth-name').value;
+
+            try {
+
+                if(authMode === 'signup'){
+
+                    const userCredential =
+                        await createUserWithEmailAndPassword(auth, email, pass);
+
+                    await updateProfile(userCredential.user, {
+                        displayName: name
+                    });
+
+                    await setDoc(doc(db, "users", userCredential.user.uid), {
+                        name: name,
+                        email: email,
+                        role: 'student',
+                        joinDate: new Date().toLocaleDateString('he-IL'),
+                        uid: userCredential.user.uid,
+                        stats: {
+                            level: 1,
+                            currentXP: 0,
+                            xpNeeded: 100
+                        }
+                    });
+
+                } else {
+
+                    await signInWithEmailAndPassword(auth, email, pass);
+                }
+
+                document.getElementById('auth-modal').style.display = 'none';
+
+            } catch (error) {
+                document.getElementById('auth-error').innerText =
+                    "שגיאה בהתחברות.";
+            }
+        });
+    }
+});
+
 // חשיפת פונקציות לחלון הגלובלי (חשוב ל-Modules)
 window.deleteUser = deleteUser;
 
@@ -681,4 +740,5 @@ window.onload = function() {
         window.router('home');
     }
 };
+
 
