@@ -619,5 +619,56 @@ footer {
     transition: 0.2s;
 }
 
+/* פיצוץ צבעוני מסביב */
+.level-up-anim {
+    animation: level-pulse 0.8s ease-out;
+}
+
+@keyframes level-pulse {
+    0% { transform: scale(1); box-shadow: 0 0 0 rgba(245, 158, 11, 0); }
+    50% { transform: scale(1.4); box-shadow: 0 0 30px rgba(245, 158, 11, 0.8); }
+    100% { transform: scale(1); box-shadow: 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+/* טקסט Level Up */
+.level-up-text {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.2rem;
+    font-weight: 900;
+    color: #f59e0b;
+    animation: fadeUp 1.2s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes fadeUp {
+    0% { opacity: 1; transform: translate(-50%, 0); }
+    100% { opacity: 0; transform: translate(-50%, -50px); }
+}
+.card, .card-btn {
+    cursor: pointer;
+}
+
+/* הוספת transition לרקע */
+.card {
+    transition: transform 0.4s ease, box-shadow 0.4s ease, background-image 0.5s ease;
+}
+.card:hover {
+    background-size: 110% !important;
+}
+.hamburger {
+    display: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: var(--primary);
+}
+@media (max-width: 768px) {
+    .hamburger { display: block; }
+}
+
+
 .delete-btn:hover { color: #dc2626; transform: scale(1.2); }
+
 
