@@ -114,13 +114,20 @@ async function saveStatsToDB(uid) {
 }
 
 function addXP(amount) {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const prevXP = playerStats.currentXP;
     playerStats.currentXP += amount;
     checkLevelUp();
     updateXPUI();
 
-    const user = auth.currentUser;
-    if (user) saveStatsToDB(user.uid);
+    // עדכון רק אם XP השתנה בפועל
+    if (playerStats.currentXP !== prevXP) {
+        saveStatsToDB(user.uid);
+    }
 }
+
 
 function checkLevelUp() {
     while (playerStats.currentXP >= playerStats.xpNeeded) {
@@ -727,6 +734,7 @@ window.onload = function() {
         window.router('home');
     }
 };
+
 
 
 
