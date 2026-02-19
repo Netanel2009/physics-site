@@ -705,6 +705,20 @@ document.addEventListener('DOMContentLoaded', () => {
 // חשיפת פונקציות לחלון הגלובלי (חשוב ל-Modules)
 window.deleteUser = deleteUser;
 
+function toggleMobileMenu() {
+    const navLinks = document.querySelector('.nav-links');
+    if(navLinks.style.display === 'flex') navLinks.style.display = 'none';
+    else navLinks.style.display = 'flex';
+    navLinks.style.flexDirection = 'column';
+    navLinks.style.background = 'rgba(255,255,255,0.95)';
+    navLinks.style.position = 'absolute';
+    navLinks.style.top = '60px';
+    navLinks.style.right = '0';
+    navLinks.style.padding = '20px';
+    navLinks.style.borderRadius = '10px';
+}
+
+
 /* =========================================
    10. אתחול ראשוני
    ========================================= */
@@ -713,6 +727,7 @@ window.onload = function() {
         window.router('home');
     }
 };
+
 
 
 
