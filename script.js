@@ -149,11 +149,24 @@ function updateXPUI() {
 
 function triggerLevelUpEffect() {
     const widget = document.querySelector('.level-circle');
-    if(widget){
-        widget.classList.add('level-up-anim');
-        setTimeout(() => widget.classList.remove('level-up-anim'), 800);
-    }
+    if (!widget) return;
+
+    // הוספת אנימציה של פיצוץ צבעוני
+    widget.classList.add('level-up-anim');
+
+    // יצירת טקסט "Level Up!"
+    const levelUpText = document.createElement('div');
+    levelUpText.innerText = 'Level Up!';
+    levelUpText.className = 'level-up-text';
+    widget.appendChild(levelUpText);
+
+    // הסרה אחרי האנימציה
+    setTimeout(() => {
+        widget.classList.remove('level-up-anim');
+        levelUpText.remove();
+    }, 1200);
 }
+
 
 /* =========================================
    5. פונקציות ניתוב (Router)
@@ -497,17 +510,17 @@ window.handleLogout = async () => {
 };
 
 onAuthStateChanged(auth, async (user) => {
-
     const userProfile = document.getElementById('user-profile');
     const loginBtn = document.getElementById('login-trigger-btn');
     const xpWidget = document.getElementById('level-widget');
+    const authModal = document.getElementById('auth-modal');
 
     if (user) {
-
         const userDocRef = doc(db, "users", user.uid);
-        const userSnapshot = await getDoc(userDocRef);
+        const snap = await getDoc(userDocRef);
 
-        if (!userSnapshot.exists()) {
+        if (!snap.exists()) {
+            console.log("User not in DB, logging out.");
             await signOut(auth);
             location.reload();
             return;
@@ -516,66 +529,19 @@ onAuthStateChanged(auth, async (user) => {
         userProfile.style.display = 'flex';
         loginBtn.style.display = 'none';
         xpWidget.style.display = 'flex';
+        if(authModal) authModal.style.display = 'none';
 
-        document.getElementById('user-name-display').innerText =
-            user.displayName || user.email;
+        document.getElementById('user-name-display').innerText = user.displayName || user.email;
 
-        // 🔥 טוען XP מהמשתמש הספציפי
         await loadStatsFromDB(user.uid);
-
     } else {
-
         userProfile.style.display = 'none';
         loginBtn.style.display = 'block';
         xpWidget.style.display = 'none';
-
-        // איפוס זמני כשאין משתמש
-        playerStats = {
-            level: 1,
-            currentXP: 0,
-            xpNeeded: 100
-        };
-
-        updateXPUI();
-    }
-});
-
-
-// --- בודק משתמש מחובר (ומנתק אם הוא נמחק) ---
-onAuthStateChanged(auth, async (user) => {
-    const authModal = document.getElementById('auth-modal');
-    const userProfile = document.getElementById('user-profile');
-    const loginBtn = document.getElementById('login-trigger-btn');
-    const xpWidget = document.getElementById('level-widget');
-
-    if (user) {
-        // בדיקה: האם המשתמש קיים ב-Database?
-        const userDocRef = doc(db, "users", user.uid);
-        const userSnapshot = await getDoc(userDocRef);
-
-        if (!userSnapshot.exists()) {
-            console.log("User not found in DB, logging out.");
-            await signOut(auth);
-            // אם המשתמש כבר לא מחובר, אל תמשיך להציג פרופיל
-            location.reload(); 
-            return;
-        }
-
-        if(authModal) authModal.style.display = 'none';
-        if(userProfile) userProfile.style.display = 'flex';
-        if(loginBtn) loginBtn.style.display = 'none';
-        if(xpWidget) xpWidget.style.display = 'flex';
-        
-        document.getElementById('user-name-display').innerText = user.displayName || user.email;
-        document.body.classList.remove('not-logged-in');
-        
-        loadStats();
-    } else {
         if(authModal) authModal.style.display = 'flex';
-        if(userProfile) userProfile.style.display = 'none';
-        if(loginBtn) loginBtn.style.display = 'block';
-        if(xpWidget) xpWidget.style.display = 'none';
-        document.body.classList.add('not-logged-in');
+
+        playerStats = { level: 1, currentXP: 0, xpNeeded: 100 };
+        updateXPUI();
     }
 });
 
@@ -662,6 +628,12 @@ async function loadAdminPage() {
 }
 
 async function deleteUser(uid) {
+    const currentUser = auth.currentUser;
+    if(uid === currentUser.uid){
+        alert("לא ניתן למחוק את עצמך!");
+        return;
+    }
+
     if(confirm('האם אתה בטוח שברצונך למחוק את המשתמש מהרשימה?')) {
         try {
             await deleteDoc(doc(db, "users", uid));
@@ -673,6 +645,7 @@ async function deleteUser(uid) {
         }
     }
 }
+
 
 /* =========================================
    5. בעת הרשמה – יצירת stats
@@ -740,5 +713,6 @@ window.onload = function() {
         window.router('home');
     }
 };
+
 
 
