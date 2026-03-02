@@ -629,32 +629,77 @@ footer {
     pointer-events: auto;
 }
 
-/* כותרת */
-
-
-
-
 #loading-screen {
     position: fixed;
     inset: 0;
-    background: linear-gradient(135deg, #0f172a, #1e293b);
+    background: radial-gradient(circle at center, #1e293b, #0f172a, #020617);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 9999;
-    animation: fadeOut 1s ease forwards 2s;
+    overflow: hidden;
 }
 
+/* אנימציית רקע זז */
+
 .loader-content {
+    position: relative;
     text-align: center;
     color: white;
-    animation: popIn 1s ease;
+    z-index: 2;
+    animation: introPop 1.2s ease-out;
 }
 
 .loader-content i {
-    font-size: 4rem;
+    font-size: 5rem;
     margin-bottom: 20px;
-    animation: spin 2s linear infinite;
+    color: #3b82f6;
+    text-shadow: 0 0 30px rgba(59,130,246,0.8);
+    animation: pulseGlow 2s infinite;
+}
+
+.loader-content h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    letter-spacing: 2px;
+
+    background: linear-gradient(90deg, #3b82f6, #f59e0b);
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+}
+
+@keyframes introPop {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+        filter: blur(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
+    }
+}
+
+@keyframes pulseGlow {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+/* יציאה חלקה יותר */
+#loading-screen.fade-out {
+    animation: smoothExit 0.8s ease forwards;
+}
+
+@keyframes smoothExit {
+    to {
+        opacity: 0;
+        transform: scale(1.1);
+        visibility: hidden;
+    }
 }
 
 @keyframes popIn {
@@ -753,5 +798,104 @@ footer {
     font-weight: bold;
 }
 
-.delete-btn:hover { color: #dc2626; transform: scale(1.2); }
+#particles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 1;
+}
 
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0.7;
+    animation: floatUp linear infinite;
+}
+
+@keyframes floatUp {
+    from {
+        transform: translateY(100vh);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(-10vh);
+        opacity: 1;
+    }
+}
+
+#leaderboard-sidebar {
+    position: fixed;
+    top: 200px;
+    right: 0; /* אם תרצה בצד ימין → שנה ל-right:0 */
+    width: 260px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 20px 20px 20px 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    z-index: 1500;
+}
+
+#leaderboard-sidebar h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: 900;
+    color: var(--dark);
+}
+
+.leaderboard-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    transition: 0.3s;
+}
+
+.leaderboard-item.top1 {
+    background: linear-gradient(135deg, gold, #ffd700);
+    color: black;
+    animation: glowTop 1.5s infinite alternate;
+}
+
+.leaderboard-item.top2 {
+    background: linear-gradient(135deg, #c0c0c0, #e5e5e5);
+}
+
+.leaderboard-item.top3 {
+    background: linear-gradient(135deg, #cd7f32, #b87333);
+    color: white;
+}
+
+@keyframes glowTop {
+    from { box-shadow: 0 0 10px gold; }
+    to { box-shadow: 0 0 25px gold; }
+}
+
+.action-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    margin: 0 5px;
+    transition: 0.2s;
+}
+
+.action-btn:hover {
+    transform: scale(1.2);
+}
+
+.action-btn i {
+    color: #2563eb;
+}
+
+.action-btn:hover i {
+    color: #1e40af;
+}
+
+.delete-btn:hover { color: #dc2626; transform: scale(1.2); }
