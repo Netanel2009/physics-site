@@ -556,67 +556,51 @@ footer {
     transition: 0.2s;
 }
 
-.custom-modal {
-    display: none; 
-    position: fixed;
-    z-index: 9999;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(15, 23, 42, 0.8); /* רקע כהה שקוף */
-    backdrop-filter: blur(8px); /* אפקט טשטוש יפה */
+.level-widget {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-right: 15px;
+}
+
+.level-circle {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: white;
+    border-radius: 50%;
+    display: flex;
     align-items: center;
     justify-content: center;
-    animation: fadeIn 0.3s ease;
+    font-weight: 900;
+    box-shadow: 0 0 15px rgba(37,99,235,0.6);
 }
 
-.modal-content {
-    background: white;
-    padding: 30px;
-    border-radius: 24px;
-    width: 90%;
-    max-width: 400px;
+.xp-container {
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+}
+
+.xp-bar-bg {
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.xp-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    transition: width 0.5s ease;
+}
+
+.xp-text {
+    font-size: 0.75rem;
     text-align: center;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-    position: relative;
-}
-
-.modal-header i {
-    font-size: 3rem;
-    color: #3b82f6;
-    margin-bottom: 15px;
-}
-
-.modal-content input {
-    width: 100%;
-    padding: 12px;
-    margin-top: 15px;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    font-size: 1rem;
-    text-align: center;
-    transition: border-color 0.3s;
-}
-
-.modal-content input:focus {
-    outline: none;
-    border-color: #3b82f6;
-}
-
-.close-modal {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #94a3b8;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+    margin-top: 3px;
+    font-weight: 600;
 }
 
 .delete-btn:hover { color: #dc2626; transform: scale(1.2); }
-
