@@ -1,6 +1,16 @@
 /* =========================================
    1. הגדרות Firebase
    ========================================= */
+import { 
+    getFirestore, 
+    collection, 
+    getDocs, 
+    setDoc, 
+    doc, 
+    deleteDoc,
+    getDoc,
+    updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
     getAuth, 
@@ -91,17 +101,12 @@ let playerStats = {
     xpNeeded: 100
 };
 
-function loadStats() {
-    if (localStorage.getItem('physicsMasterStats')) {
-        playerStats = JSON.parse(localStorage.getItem('physicsMasterStats'));
-    }
-    updateXPUI();
-}
 
-function addXP(amount) {
+
+async function addXP(amount) {
     playerStats.currentXP += amount;
     checkLevelUp();
-    saveStats();
+    await saveStatsToDB();
     updateXPUI();
 }
 
@@ -116,8 +121,17 @@ function checkLevelUp() {
     if (leveledUp) triggerLevelUpEffect();
 }
 
-function saveStats() {
-    localStorage.setItem('physicsMasterStats', JSON.stringify(playerStats));
+async function saveStatsToDB() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const userRef = doc(db, "users", user.uid);
+
+    await updateDoc(userRef, {
+        level: playerStats.level,
+        currentXP: playerStats.currentXP,
+        xpNeeded: playerStats.xpNeeded
+    });
 }
 
 function updateXPUI() {
@@ -130,7 +144,9 @@ function updateXPUI() {
     if (xpEl) xpEl.innerText = Math.floor(playerStats.currentXP);
     if (neededEl) neededEl.innerText = playerStats.xpNeeded;
     
-    const percentage = (playerStats.currentXP / playerStats.xpNeeded) * 100;
+    const percentage = playerStats.xpNeeded
+  ? (playerStats.currentXP / playerStats.xpNeeded) * 100
+  : 0;
     if (barEl) barEl.style.width = percentage + '%';
 }
 
@@ -151,30 +167,8 @@ function triggerLevelUpEffect() {
 }
 
 /* =========================================
-   עדכון פונקציות האדמין
+   5. פונקציות ניתוב (Router)
    ========================================= */
-
-window.closeAdminModal = function() {
-    document.getElementById('admin-auth-modal').style.display = 'none';
-    document.getElementById('admin-pw-error').style.display = 'none';
-    document.getElementById('admin-pw-input').value = '';
-};
-
-window.submitAdminPassword = function() {
-    const input = document.getElementById('admin-pw-input');
-    const errorMsg = document.getElementById('admin-pw-error');
-    
-    if (input.value === "admin123") {
-        closeAdminModal();
-        loadAdminPage(); // הפונקציה המקורית שלך שטוענת את דף האדמין
-    } else {
-        errorMsg.style.display = 'block';
-        input.style.borderColor = '#ef4444';
-        input.value = '';
-    }
-};
-
-// עדכון ה-Router
 window.router = function(view, data = null) {
     window.scrollTo(0, 0);
     const appContainer = document.getElementById('app-container');
@@ -190,12 +184,7 @@ window.router = function(view, data = null) {
         case 'exercise_list': renderExerciseList(data); break;
         case 'folder_view': renderFolderContent(data); break;
         case 'active_exercise': renderActiveExercise(data); break;
-        
-        // כאן השינוי: במקום prompt, פותחים את המודאל היפה
-        case 'admin': 
-            document.getElementById('admin-auth-modal').style.display = 'flex';
-            break;
-            
+        case 'admin': loadAdminPage(); break;
         default: renderHomePage();
     }
 };
@@ -447,6 +436,7 @@ window.handleContact = function(e) {
 
 window.checkAnswers = function(exId) {
     const questions = window.questionsBank[exId];
+    if (document.getElementById('exercise-results')) return;
     let correctCount = 0;
     let summaryHTML = '';
     
@@ -564,6 +554,23 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+async function loadStatsFromDB(uid) {
+    const userRef = doc(db, "users", uid);
+    const snapshot = await getDoc(userRef);
+
+    if (snapshot.exists()) {
+        const data = snapshot.data();
+
+        playerStats = {
+            level: data.level || 1,
+            currentXP: data.currentXP || 0,
+            xpNeeded: data.xpNeeded || 100
+        };
+
+        updateXPUI();
+    }
+}
+
 // --- בודק משתמש מחובר (ומנתק אם הוא נמחק) ---
 onAuthStateChanged(auth, async (user) => {
     const authModal = document.getElementById('auth-modal');
@@ -592,7 +599,7 @@ onAuthStateChanged(auth, async (user) => {
         document.getElementById('user-name-display').innerText = user.displayName || user.email;
         document.body.classList.remove('not-logged-in');
         
-        loadStats();
+        await loadStatsFromDB(user.uid);
     } else {
         if(authModal) authModal.style.display = 'flex';
         if(userProfile) userProfile.style.display = 'none';
