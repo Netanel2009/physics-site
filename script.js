@@ -8,8 +8,7 @@ import {
     setDoc, 
     doc, 
     deleteDoc,
-    getDoc,
-    updateDoc
+    getDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
@@ -20,15 +19,7 @@ import {
     signOut, 
     updateProfile 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { 
-    getFirestore, 
-    collection, 
-    getDocs, 
-    setDoc, 
-    doc, 
-    deleteDoc,
-    getDoc  // הוספנו את זה כדי לבדוק משתמש בודד
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 
 const firebaseConfig = {
     apiKey: "AIzaSyBzZVWudrgjb-Qi-ln5Qm0u4L0PUlwbjUc",
@@ -127,11 +118,11 @@ async function saveStatsToDB() {
 
     const userRef = doc(db, "users", user.uid);
 
-    await updateDoc(userRef, {
-        level: playerStats.level,
-        currentXP: playerStats.currentXP,
-        xpNeeded: playerStats.xpNeeded
-    });
+    await setDoc(userRef, {
+    level: playerStats.level,
+    currentXP: playerStats.currentXP,
+    xpNeeded: playerStats.xpNeeded
+    }, { merge: true });
 }
 
 function updateXPUI() {
@@ -442,7 +433,7 @@ window.checkAnswers = function(exId) {
     
     questions.forEach((q, i) => {
         const selected = document.querySelector(`input[name="q${i}"]:checked`);
-        const questionDiv = document.getElementsByName(`q${i}`)[0].closest('.question-block');
+        const questionDiv = document.querySelector(`input[name="q${i}"]`)?.closest('.question-block');
         let isCorrect = selected && selected.value === q.a;
         
         if (isCorrect) {
