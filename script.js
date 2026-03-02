@@ -794,7 +794,7 @@ async function getAIResponse(message) {
         {
             method: "POST",
             headers: {
-                "Authorization": "Bearer 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",
+                "Authorization": "Bearer xxx",
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
