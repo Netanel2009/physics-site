@@ -11,6 +11,7 @@ import {
     getDoc,
     addDoc,
     query,
+    serverTimestamp,
     orderBy,
     onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -23,7 +24,6 @@ import {
     signOut, 
     updateProfile 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { serverTimestamp } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBzZVWudrgjb-Qi-ln5Qm0u4L0PUlwbjUc",
