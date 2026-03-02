@@ -71,6 +71,20 @@
         </div>
     </div>
 
+    <div id="admin-auth-modal" class="custom-modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeAdminModal()">&times;</span>
+        <div class="modal-header">
+            <i class="fa-solid fa-lock-open"></i>
+            <h3>אזור ניהול</h3>
+        </div>
+        <p>יש להזין סיסמת מנהל כדי להמשיך:</p>
+        <input type="password" id="admin-pw-input" placeholder="הכנס סיסמה...">
+        <div id="admin-pw-error" style="color: #ef4444; font-size: 0.9rem; margin-top: 10px; display: none;">סיסמה שגויה, נסה שוב.</div>
+        <button class="btn-main" onclick="submitAdminPassword()" style="width: 100%; margin-top: 15px;">כניסה</button>
+    </div>
+</div>
+
     <script type="module" src="script.js"></script>
 </body>
 </html>
