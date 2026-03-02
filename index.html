@@ -86,6 +86,32 @@
         </div>
     </div>
 
+    <!-- AI Chat Widget -->
+    <div id="ai-chat-box">
+        <div style="padding:10px; background:#3b82f6; color:white; text-align:center;">
+            צ'אט AI 🤖
+            <button onclick="toggleChat()" style="float:left; background:none; border:none; color:white; font-size:18px;">✖</button>
+        </div>
+
+        <div id="chat-messages" style="flex:1; padding:10px; overflow-y:auto;"></div>
+
+        <div style="display:flex; border-top:1px solid #eee;">
+            <input id="chat-input" type="text" placeholder="כתוב הודעה..."
+                style="flex:1; padding:10px; border:none;">
+            <button onclick="sendMessage()"
+                style="padding:10px; background:#3b82f6; color:white; border:none;">
+                שלח
+            </button>
+        </div>
+    </div>
+
+    <button onclick="toggleChat()"
+        style="position:fixed; bottom:20px; right:20px;
+            width:60px; height:60px; border-radius:50%;
+            background:#3b82f6; color:white; border:none;
+            font-size:24px; box-shadow:0 10px 25px rgba(0,0,0,0.3);">
+        🤖
+    </button>
     <script type="module" src="script.js"></script>
 </body>
 </html>
