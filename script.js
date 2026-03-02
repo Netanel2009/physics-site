@@ -151,8 +151,30 @@ function triggerLevelUpEffect() {
 }
 
 /* =========================================
-   5. פונקציות ניתוב (Router) - מעודכן עם סיסמה
+   עדכון פונקציות האדמין
    ========================================= */
+
+window.closeAdminModal = function() {
+    document.getElementById('admin-auth-modal').style.display = 'none';
+    document.getElementById('admin-pw-error').style.display = 'none';
+    document.getElementById('admin-pw-input').value = '';
+};
+
+window.submitAdminPassword = function() {
+    const input = document.getElementById('admin-pw-input');
+    const errorMsg = document.getElementById('admin-pw-error');
+    
+    if (input.value === "admin123") {
+        closeAdminModal();
+        loadAdminPage(); // הפונקציה המקורית שלך שטוענת את דף האדמין
+    } else {
+        errorMsg.style.display = 'block';
+        input.style.borderColor = '#ef4444';
+        input.value = '';
+    }
+};
+
+// עדכון ה-Router
 window.router = function(view, data = null) {
     window.scrollTo(0, 0);
     const appContainer = document.getElementById('app-container');
@@ -169,15 +191,9 @@ window.router = function(view, data = null) {
         case 'folder_view': renderFolderContent(data); break;
         case 'active_exercise': renderActiveExercise(data); break;
         
-        // --- עדכון כאן: הגנת סיסמה לדף אדמין ---
+        // כאן השינוי: במקום prompt, פותחים את המודאל היפה
         case 'admin': 
-            const password = prompt("אנא הכנס סיסמת מנהל כדי להמשיך:");
-            if (password === "admin123") {
-                loadAdminPage(); 
-            } else {
-                alert("סיסמה שגויה! הגישה נדחתה.");
-                window.router('home'); // מחזיר לדף הבית אם הסיסמה שגויה
-            }
+            document.getElementById('admin-auth-modal').style.display = 'flex';
             break;
             
         default: renderHomePage();
