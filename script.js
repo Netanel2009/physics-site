@@ -5,11 +5,12 @@ import {
     getFirestore, 
     collection, 
     getDocs, 
-    setDoc, 
+    updateDoc,
     doc, 
     deleteDoc,
     getDoc,
     addDoc,
+    setDoc,
     query,
     orderBy,
     onSnapshot,
@@ -94,15 +95,17 @@ const testimonialsData = [
 let playerStats = {
     level: 1,
     currentXP: 0,
-    xpNeeded: 100
+    xpNeeded: 100,
+    totalXP: 0
 };
-
 
 
 async function addXP(amount) {
     playerStats.currentXP += amount;
+    playerStats.totalXP += amount;
+
     checkLevelUp();
-    await saveStatsToDB();
+    await saveStatsToDB(); // בלי פרמטר
     updateXPUI();
 }
 
@@ -121,13 +124,19 @@ async function saveStatsToDB() {
     const user = auth.currentUser;
     if (!user) return;
 
-    const userRef = doc(db, "users", user.uid);
+    try {
+        const userRef = doc(db, "users", user.uid);
 
-    await setDoc(userRef, {
-    level: playerStats.level,
-    currentXP: playerStats.currentXP,
-    xpNeeded: playerStats.xpNeeded
-    }, { merge: true });
+        await setDoc(userRef, {
+            level: playerStats.level,
+            currentXP: playerStats.currentXP,
+            xpNeeded: playerStats.xpNeeded,
+            totalXP: playerStats.totalXP
+        }, { merge: true });
+
+    } catch (error) {
+        console.error("Error saving stats:", error);
+    }
 }
 
 function updateXPUI() {
@@ -535,12 +544,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     // שמירת המשתמש ב-Firestore
                     await setDoc(doc(db, "users", userCredential.user.uid), {
-                        name: name,
-                        email: email,
-                        role: 'student',
-                        joinDate: new Date().toLocaleDateString('he-IL'),
-                        uid: userCredential.user.uid
-                    });
+                    name: name,
+                    email: email,
+                    role: 'student',
+                    joinDate: new Date().toLocaleDateString('he-IL'),
+                    uid: userCredential.user.uid,
+                    level: 1,
+                    currentXP: 0,
+                    xpNeeded: 100,
+                    totalXP: 0
+                }, { merge: true });
                     
                     alert("נרשמת בהצלחה! ברוכים הבאים.");
                 } else {
@@ -565,11 +578,13 @@ async function loadStatsFromDB(uid) {
         playerStats = {
             level: data.level || 1,
             currentXP: data.currentXP || 0,
-            xpNeeded: data.xpNeeded || 100
+            xpNeeded: data.xpNeeded || 100,
+            totalXP: data.totalXP || 0
         };
 
         updateXPUI();
     }
+    
 }
 
 // --- בודק משתמש מחובר (ומנתק אם הוא נמחק) ---
@@ -580,33 +595,42 @@ onAuthStateChanged(auth, async (user) => {
     const xpWidget = document.getElementById('level-widget');
 
     if (user) {
-        // בדיקה: האם המשתמש קיים ב-Database?
+
         const userDocRef = doc(db, "users", user.uid);
         const userSnapshot = await getDoc(userDocRef);
 
+        // 🔥 במקום logout — ניצור מסמך אם חסר
         if (!userSnapshot.exists()) {
-            console.log("User not found in DB, logging out.");
-            await signOut(auth);
-            // אם המשתמש כבר לא מחובר, אל תמשיך להציג פרופיל
-            location.reload(); 
-            return;
+            await setDoc(userDocRef, {
+                name: user.displayName || "",
+                email: user.email,
+                role: "student",
+                joinDate: new Date().toLocaleDateString('he-IL'),
+                uid: user.uid,
+                level: 1,
+                currentXP: 0,
+                xpNeeded: 100,
+                totalXP: 0
+            });
         }
 
         if(authModal) authModal.style.display = 'none';
         if(userProfile) userProfile.style.display = 'flex';
         if(loginBtn) loginBtn.style.display = 'none';
         if(xpWidget) xpWidget.style.display = 'flex';
-        
-        document.getElementById('user-name-display').innerText = user.displayName || user.email;
-        document.body.classList.remove('not-logged-in');
-        
+
+        document.getElementById('user-name-display').innerText =
+            user.displayName || user.email;
+
         await loadStatsFromDB(user.uid);
+
+        window.router('home');
     } else {
+
         if(authModal) authModal.style.display = 'flex';
         if(userProfile) userProfile.style.display = 'none';
         if(loginBtn) loginBtn.style.display = 'block';
         if(xpWidget) xpWidget.style.display = 'none';
-        document.body.classList.add('not-logged-in');
     }
 });
 
@@ -659,10 +683,16 @@ async function loadAdminPage() {
                     deleteButton = `<span style="font-size:0.8rem; color:#999; font-weight:bold;">(אני)</span>`;
                 } else {
                     deleteButton = `
-                        <button class="action-btn delete-btn" title="מחק" onclick="deleteUser('${user.uid}')">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    `;
+                    <button class="action-btn" title="איפוס XP" 
+                        onclick="resetUserXP('${user.uid}')">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+
+                    <button class="action-btn delete-btn" title="מחק" 
+                        onclick="deleteUser('${user.uid}')">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                `;
                 }
 
                 html += `
@@ -704,6 +734,27 @@ async function deleteUser(uid) {
         }
     }
 }
+
+async function resetUserXP(uid) {
+    if (!confirm("האם אתה בטוח שברצונך לאפס את ה-XP של המשתמש?")) return;
+
+    try {
+        await setDoc(doc(db, "users", uid), {
+            level: 1,
+            currentXP: 0,
+            xpNeeded: 100,
+            totalXP: 0
+        }, { merge: true });
+
+        alert("ה-XP אופס בהצלחה!");
+        loadAdminPage(); // רענון הטבלה
+    } catch (error) {
+        console.error("Error resetting XP:", error);
+        alert("שגיאה באיפוס XP");
+    }
+}
+
+window.resetUserXP = resetUserXP;
 
 // חשיפת פונקציות לחלון הגלובלי (חשוב ל-Modules)
 window.deleteUser = deleteUser;
@@ -842,11 +893,122 @@ window.toggleChat = function() {
     }
 };
 
+function startTypingAnimation() {
+    const text = "PhysicsMaster";
+    const el = document.getElementById("typing-logo");
+    if (!el) return;
+
+    let i = 0;
+    el.innerHTML = "";
+
+    const typing = setInterval(() => {
+        el.innerHTML += text[i];
+        i++;
+
+        if (i === text.length) {
+            clearInterval(typing);
+        }
+    }, 120);
+}
+
+function createParticles() {
+    const container = document.getElementById("particles");
+    if (!container) return;
+
+    for (let i = 0; i < 40; i++) {
+        const particle = document.createElement("div");
+        particle.classList.add("particle");
+
+        particle.style.left = Math.random() * 100 + "%";
+        particle.style.animationDuration = (3 + Math.random() * 5) + "s";
+        particle.style.animationDelay = Math.random() * 5 + "s";
+
+        container.appendChild(particle);
+    }
+}
+
 /* =========================================
-   12. אתחול ראשוני
+   12. leaderboard
    ========================================= */
+function listenToLeaderboard() {
+    const q = query(
+    collection(db, "users"),
+    orderBy("totalXP", "desc"),
+    orderBy("level", "desc")
+);
+
+    onSnapshot(q, (snapshot) => {
+        const users = [];
+
+        snapshot.forEach(docSnap => {
+    users.push({
+        id: docSnap.id,
+        ...docSnap.data()
+    });
+});
+
+        const top5 = users.slice(0, 5);
+        renderLeaderboard(top5);
+    });
+}
+
+function renderLeaderboard(users) {
+    const list = document.getElementById("leaderboard-list");
+    if (!list) return;
+
+    list.innerHTML = "";
+
+    users.forEach((user, index) => {
+        const div = document.createElement("div");
+        div.classList.add("leaderboard-item");
+
+        if (index === 0) div.classList.add("top1");
+        if (index === 1) div.classList.add("top2");
+        if (index === 2) div.classList.add("top3");
+
+        div.innerHTML = `
+            <span>${index + 1}. ${user.name || "אנונימי"}</span>
+            <span>⭐ ${user.totalXP || 0}</span>
+        `;
+
+        list.appendChild(div);
+    });
+}
+
+/* =========================================
+   13. אתחול ראשוני
+   ========================================= */
+
 window.onload = function() {
-    if (window.checkDeviceSupport()) {
+
+    if (!sessionStorage.getItem("loaderShown")) {
+
+        if (window.checkDeviceSupport()) {
+
+            createParticles();
+            startTypingAnimation();
+
+            setTimeout(() => {
+                const loader = document.getElementById('loading-screen');
+                if (loader) {
+                    loader.classList.add('fade-out');
+                    setTimeout(() => {
+                        loader.style.display = "none";
+                    }, 800);
+                }
+
+                window.router('home');
+            }, 3500);
+
+            sessionStorage.setItem("loaderShown", "true");
+        }
+
+    } else {
+        const loader = document.getElementById('loading-screen');
+        if (loader) loader.style.display = "none";
+
         window.router('home');
     }
+
+    listenToLeaderboard();
 };
