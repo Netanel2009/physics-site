@@ -14,9 +14,10 @@
 <body>
 
     <div id="loading-screen">
+    <div id="particles"></div>
     <div class="loader-content">
         <i class="fa-solid fa-atom"></i>
-        <h1>PhysicsMaster</h1>
+        <h1 id="typing-logo"></h1>
     </div>
 </div>
 
@@ -24,7 +25,6 @@
         <div class="logo" onclick="router('home')">
             <i class="fa-solid fa-atom fa-spin"></i> PhysicsMaster
         </div>
-
         <div class="nav-links">
             <span onclick="scrollToSection('learning')">מרכז למידה</span>
             <span onclick="scrollToSection('about')">אודות</span>
@@ -97,7 +97,7 @@
     <!-- AI Chat Widget -->
     <div id="ai-chat-box">
         <div style="padding:10px; background:#3b82f6; color:white; text-align:center;">
-            צ'אט AI 🤖
+            צ'אט שאלות 🤖
             <button onclick="toggleChat()" style="float:left; background:none; border:none; color:white; font-size:18px;">✖</button>
         </div>
 
@@ -114,6 +114,11 @@
             font-size:24px; box-shadow:0 10px 25px rgba(0,0,0,0.3);">
         🤖
     </button>
+    <!-- Leaderboard Sidebar -->
+    <div id="leaderboard-sidebar">
+        <h3>🏆 טופ 5</h3>
+        <div id="leaderboard-list"></div>
+    </div>
     <script type="module" src="script.js"></script>
 </body>
 </html>
