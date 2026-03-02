@@ -23,7 +23,7 @@ import {
     signOut, 
     updateProfile 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
+import { serverTimestamp } from "firebase/firestore";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBzZVWudrgjb-Qi-ln5Qm0u4L0PUlwbjUc",
@@ -783,10 +783,38 @@ window.sendMessage = async function() {
     input.value = "";
 
     // כאן בעתיד נחבר ל-AI אמיתי
-    const aiResponse = "כרגע זו תשובת דוגמה 🤖";
+    const aiResponse = await getAIResponse(text);
 
     await saveMessage(aiResponse, "ai");
 };
+
+async function getAIResponse(message) {
+    const response = await fetch(
+        "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2",
+        {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer hf_YOUR_TOKEN_HERE",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                inputs: "אתה מורה לפיזיקה שעונה בעברית בצורה ברורה.\n\nשאלה: " + message
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || data.error) {
+        return "המודל עדיין נטען ⏳ נסה שוב בעוד כמה שניות.";
+    }
+
+    if (Array.isArray(data) && data.length > 0) {
+        return data[0].generated_text;
+    }
+
+    return "לא התקבלה תשובה.";
+}
 
 async function saveMessage(text, sender) {
     const user = auth.currentUser;
@@ -797,7 +825,7 @@ async function saveMessage(text, sender) {
         {
             text: text,
             sender: sender,
-            timestamp: new Date()
+            timestamp: serverTimestamp()
         }
     );
 }
@@ -806,31 +834,43 @@ function loadChatHistory() {
     const user = auth.currentUser;
     if (!user) return;
 
+    const messagesDiv = document.getElementById('chat-messages');
+    if (!messagesDiv) return;
+
     const messagesRef = collection(db, "users", user.uid, "chat");
     const q = query(messagesRef, orderBy("timestamp"));
 
-    // 🔴 ביטול מאזין קודם
+    // 🔴 ביטול מאזין קודם אם קיים
     if (chatUnsubscribe) {
         chatUnsubscribe();
     }
 
     chatUnsubscribe = onSnapshot(q, (snapshot) => {
-        const messagesDiv = document.getElementById('chat-messages');
-        if (!messagesDiv) return;
-
         messagesDiv.innerHTML = "";
 
-        snapshot.forEach((doc) => {
-            const msg = doc.data();
-            const div = document.createElement('div');
+        snapshot.forEach((docSnap) => {
+            const msg = docSnap.data();
 
-            div.textContent = (msg.sender === "user" ? "אתה: " : "AI: ") + msg.text;
+            const div = document.createElement("div");
+            div.textContent = msg.text;
+
+            // עיצוב בסיסי לבועה
+            div.style.padding = "8px 12px";
+            div.style.borderRadius = "15px";
             div.style.marginBottom = "8px";
+            div.style.maxWidth = "80%";
+            div.style.wordBreak = "break-word";
 
-            if (msg.sender === "ai") {
-                div.style.color = "#3b82f6";
+            if (msg.sender === "user") {
+                div.style.background = "#3b82f6";
+                div.style.color = "white";
+                div.style.marginLeft = "auto";
+                div.style.textAlign = "right";
             } else {
-                div.style.fontWeight = "bold";
+                div.style.background = "#e2e8f0";
+                div.style.color = "#111827";
+                div.style.marginRight = "auto";
+                div.style.textAlign = "right";
             }
 
             messagesDiv.appendChild(div);
