@@ -681,7 +681,82 @@ footer {
     to { transform: translateY(0); opacity: 1; }
 }
 
+.chat-option {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 12px;
+    border: none;
+    background: #3b82f6;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
 
+.chat-option:hover {
+    background: #1e40af;
+}
+
+/* כותרת הצ'אט */
+.chat-title {
+    font-weight: 900;
+    font-size: 18px;
+    text-align: center;
+    margin: 10px 0 15px 0;
+}
+
+/* גריד */
+.chat-grid {
+    display: grid;
+    gap: 10px;
+}
+
+/* כרטיס קטגוריה */
+.chat-card {
+    background: linear-gradient(135deg,#3b82f6,#1e40af);
+    color: white;
+    padding: 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    transition: 0.2s;
+}
+
+.chat-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* שאלות */
+.chat-question {
+    background: #f1f5f9;
+    padding: 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.2s;
+    font-size: 14px;
+}
+
+.chat-question:hover {
+    background: #e2e8f0;
+}
+
+/* כפתור חזרה */
+.chat-back {
+    background: #64748b;
+    color: white;
+    border: none;
+    padding: 8px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
 
 .delete-btn:hover { color: #dc2626; transform: scale(1.2); }
 
