@@ -11,9 +11,9 @@ import {
     getDoc,
     addDoc,
     query,
-    serverTimestamp,
     orderBy,
-    onSnapshot
+    onSnapshot,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
@@ -756,10 +756,81 @@ window.verifyAdminPassword = function() {
 };
 
 /* =========================================
-   11. בינה מלאכותית
+   11. שאלות
    ========================================= */
-let chatUnsubscribe = null;
 
+function loadChatHistory() {
+    const messagesDiv = document.getElementById('chat-messages');
+    if (!messagesDiv) return;
+
+    messagesDiv.innerHTML = `
+        <div class="chat-title">
+            🤖 מרכז העזרה
+        </div>
+
+        <div class="chat-grid">
+
+            <div class="chat-card" onclick="showChatQuestions('technical')">
+                🛠
+                <span>שאלות טכניות</span>
+            </div>
+
+            <div class="chat-card" onclick="showChatQuestions('understanding')">
+                🧠
+                <span>שאלות הבנה</span>
+            </div>
+
+            <div class="chat-card" onclick="showChatQuestions('contact')">
+                📩
+                <span>יצירת קשר</span>
+            </div>
+
+        </div>
+    `;
+}
+window.showChatQuestions = function(category) {
+    const messagesDiv = document.getElementById('chat-messages');
+    if (!messagesDiv) return;
+
+    let questions = [];
+
+    if (category === 'technical') {
+        questions = [
+            "איך אני מתחבר לאתר?",
+            "למה התרגילים לא נשמרים?",
+            "איך מאפסים XP?"
+        ];
+    }
+
+    if (category === 'understanding') {
+        questions = [
+            "מה זה קינמטיקה?",
+            "מה זה תאוצה?",
+            "מה זה תנע?"
+        ];
+    }
+
+    if (category === 'contact') {
+        questions = [
+            "איך אפשר ליצור קשר?",
+            "איך מדווחים על בעיה?"
+        ];
+    }
+
+    messagesDiv.innerHTML = `
+        <button class="chat-back" onclick="loadChatHistory()">
+            ⬅ חזרה
+        </button>
+
+        <div class="chat-grid">
+            ${questions.map(q => `
+                <div class="chat-question" onclick="alert('${q}')">
+                    ${q}
+                </div>
+            `).join('')}
+        </div>
+    `;
+};
 window.toggleChat = function() {
     const box = document.getElementById('ai-chat-box');
     if (!box) return;
@@ -770,115 +841,6 @@ window.toggleChat = function() {
         loadChatHistory();
     }
 };
-
-window.sendMessage = async function() {
-    const input = document.getElementById('chat-input');
-    if (!input.value.trim()) return;
-
-    const text = input.value;
-
-    // שמירת הודעת משתמש
-    await saveMessage(text, "user");
-
-    input.value = "";
-
-    // כאן בעתיד נחבר ל-AI אמיתי
-    const aiResponse = await getAIResponse(text);
-
-    await saveMessage(aiResponse, "ai");
-};
-
-async function getAIResponse(message) {
-    const response = await fetch(
-        "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2",
-        {
-            method: "POST",
-            headers: {
-                "Authorization": "Bearer xxx",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                inputs: "אתה מורה לפיזיקה שעונה בעברית בצורה ברורה.\n\nשאלה: " + message
-            })
-        }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok || data.error) {
-        return "המודל עדיין נטען ⏳ נסה שוב בעוד כמה שניות.";
-    }
-
-    if (Array.isArray(data) && data.length > 0) {
-        return data[0].generated_text;
-    }
-
-    return "לא התקבלה תשובה.";
-}
-
-async function saveMessage(text, sender) {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    await addDoc(
-        collection(db, "users", user.uid, "chat"),
-        {
-            text: text,
-            sender: sender,
-            timestamp: serverTimestamp()
-        }
-    );
-}
-
-function loadChatHistory() {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const messagesDiv = document.getElementById('chat-messages');
-    if (!messagesDiv) return;
-
-    const messagesRef = collection(db, "users", user.uid, "chat");
-    const q = query(messagesRef, orderBy("timestamp"));
-
-    // 🔴 ביטול מאזין קודם אם קיים
-    if (chatUnsubscribe) {
-        chatUnsubscribe();
-    }
-
-    chatUnsubscribe = onSnapshot(q, (snapshot) => {
-        messagesDiv.innerHTML = "";
-
-        snapshot.forEach((docSnap) => {
-            const msg = docSnap.data();
-
-            const div = document.createElement("div");
-            div.textContent = msg.text;
-
-            // עיצוב בסיסי לבועה
-            div.style.padding = "8px 12px";
-            div.style.borderRadius = "15px";
-            div.style.marginBottom = "8px";
-            div.style.maxWidth = "80%";
-            div.style.wordBreak = "break-word";
-
-            if (msg.sender === "user") {
-                div.style.background = "#3b82f6";
-                div.style.color = "white";
-                div.style.marginLeft = "auto";
-                div.style.textAlign = "right";
-            } else {
-                div.style.background = "#e2e8f0";
-                div.style.color = "#111827";
-                div.style.marginRight = "auto";
-                div.style.textAlign = "right";
-            }
-
-            messagesDiv.appendChild(div);
-        });
-
-        messagesDiv.scrollTop = messagesDiv.scrollHeight;
-    });
-}
 
 /* =========================================
    12. אתחול ראשוני
