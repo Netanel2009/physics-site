@@ -157,6 +157,8 @@ function triggerLevelUpEffect() {
     }
 }
 
+
+
 /* =========================================
    5. פונקציות ניתוב (Router)
    ========================================= */
@@ -175,7 +177,9 @@ window.router = function(view, data = null) {
         case 'exercise_list': renderExerciseList(data); break;
         case 'folder_view': renderFolderContent(data); break;
         case 'active_exercise': renderActiveExercise(data); break;
-        case 'admin': loadAdminPage(); break;
+        case 'admin': 
+                checkAdminAccess();
+                break;
         default: renderHomePage();
     }
 };
@@ -699,7 +703,86 @@ async function deleteUser(uid) {
 window.deleteUser = deleteUser;
 
 /* =========================================
-   10. אתחול ראשוני
+   10. פונקציית דף משתמשים
+   ========================================= */
+    function showAdminLogin() {
+    const app = document.getElementById('app-container');
+
+    app.innerHTML = `
+        <div style="
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background: linear-gradient(135deg,#1e293b,#0f172a);
+        ">
+            <div style="
+                background:white;
+                padding:40px;
+                border-radius:20px;
+                width:350px;
+                text-align:center;
+                box-shadow:0 20px 50px rgba(0,0,0,0.3);
+            ">
+                <h2 style="margin-bottom:20px;">🔐 כניסת מנהל</h2>
+                <input type="password" id="admin-password"
+                    placeholder="הזן סיסמת מנהל"
+                    style="width:100%; padding:10px; margin-bottom:15px; border-radius:10px; border:1px solid #ddd;">
+                <button onclick="verifyAdminPassword()" 
+                    style="width:100%; padding:10px; border:none; border-radius:10px; background:#3b82f6; color:white; font-weight:bold; cursor:pointer;">
+                    כניסה
+                </button>
+                <p id="admin-error" style="color:red; margin-top:10px;"></p>
+            </div>
+        </div>
+    `;
+}
+
+function showAdminLogin() {
+    const app = document.getElementById('app-container');
+
+    app.innerHTML = `
+        <div style="
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background: linear-gradient(135deg,#1e293b,#0f172a);
+        ">
+            <div style="
+                background:white;
+                padding:40px;
+                border-radius:20px;
+                width:350px;
+                text-align:center;
+                box-shadow:0 20px 50px rgba(0,0,0,0.3);
+            ">
+                <h2 style="margin-bottom:20px;">🔐 כניסת מנהל</h2>
+                <input type="password" id="admin-password"
+                    placeholder="הזן סיסמת מנהל"
+                    style="width:100%; padding:10px; margin-bottom:15px; border-radius:10px; border:1px solid #ddd;">
+                <button onclick="verifyAdminPassword()" 
+                    style="width:100%; padding:10px; border:none; border-radius:10px; background:#3b82f6; color:white; font-weight:bold; cursor:pointer;">
+                    כניסה
+                </button>
+                <p id="admin-error" style="color:red; margin-top:10px;"></p>
+            </div>
+        </div>
+    `;
+}
+
+window.verifyAdminPassword = function() {
+    const password = document.getElementById('admin-password').value;
+
+    if (password === "admin123") {
+        loadAdminPage();
+    } else {
+        document.getElementById('admin-error').innerText = "סיסמה שגויה";
+    }
+};
+
+/* =========================================
+   11. אתחול ראשוני
    ========================================= */
 window.onload = function() {
     if (window.checkDeviceSupport()) {
