@@ -8,7 +8,11 @@ import {
     setDoc, 
     doc, 
     deleteDoc,
-    getDoc
+    getDoc,
+    addDoc,
+    query,
+    orderBy,
+    onSnapshot
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
@@ -33,6 +37,7 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const auth = getAuth(firebaseApp);
 const db = getFirestore(firebaseApp);
+
 
 /* =========================================
    2. משתנים גלובליים ומצב (State)
@@ -166,6 +171,7 @@ window.router = function(view, data = null) {
     window.scrollTo(0, 0);
     const appContainer = document.getElementById('app-container');
     appContainer.innerHTML = '';
+
 
     switch(view) {
         case 'home': renderHomePage(); break;
@@ -750,7 +756,92 @@ window.verifyAdminPassword = function() {
 };
 
 /* =========================================
-   11. אתחול ראשוני
+   11. בינה מלאכותית
+   ========================================= */
+let chatUnsubscribe = null;
+
+window.toggleChat = function() {
+    const box = document.getElementById('ai-chat-box');
+    if (!box) return;
+
+    box.classList.toggle('open');
+
+    if (box.classList.contains('open')) {
+        loadChatHistory();
+    }
+};
+
+window.sendMessage = async function() {
+    const input = document.getElementById('chat-input');
+    if (!input.value.trim()) return;
+
+    const text = input.value;
+
+    // שמירת הודעת משתמש
+    await saveMessage(text, "user");
+
+    input.value = "";
+
+    // כאן בעתיד נחבר ל-AI אמיתי
+    const aiResponse = "כרגע זו תשובת דוגמה 🤖";
+
+    await saveMessage(aiResponse, "ai");
+};
+
+async function saveMessage(text, sender) {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    await addDoc(
+        collection(db, "users", user.uid, "chat"),
+        {
+            text: text,
+            sender: sender,
+            timestamp: new Date()
+        }
+    );
+}
+
+function loadChatHistory() {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const messagesRef = collection(db, "users", user.uid, "chat");
+    const q = query(messagesRef, orderBy("timestamp"));
+
+    // 🔴 ביטול מאזין קודם
+    if (chatUnsubscribe) {
+        chatUnsubscribe();
+    }
+
+    chatUnsubscribe = onSnapshot(q, (snapshot) => {
+        const messagesDiv = document.getElementById('chat-messages');
+        if (!messagesDiv) return;
+
+        messagesDiv.innerHTML = "";
+
+        snapshot.forEach((doc) => {
+            const msg = doc.data();
+            const div = document.createElement('div');
+
+            div.textContent = (msg.sender === "user" ? "אתה: " : "AI: ") + msg.text;
+            div.style.marginBottom = "8px";
+
+            if (msg.sender === "ai") {
+                div.style.color = "#3b82f6";
+            } else {
+                div.style.fontWeight = "bold";
+            }
+
+            messagesDiv.appendChild(div);
+        });
+
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    });
+}
+
+/* =========================================
+   12. אתחול ראשוני
    ========================================= */
 window.onload = function() {
     if (window.checkDeviceSupport()) {
