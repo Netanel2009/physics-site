@@ -96,7 +96,8 @@ let playerStats = {
     level: 1,
     currentXP: 0,
     xpNeeded: 100,
-    totalXP: 0
+    totalXP: 0,
+    stars: 0   // ⭐ חדש
 };
 
 
@@ -109,39 +110,38 @@ async function addXP(amount) {
     updateXPUI();
 }
 
-function checkLevelUp() {
+async function checkLevelUp() {
     let leveledUp = false;
 
     while (playerStats.currentXP >= playerStats.xpNeeded) {
         playerStats.currentXP -= playerStats.xpNeeded;
         playerStats.level++;
-        
+
         // נוסחה חדשה: כל רמה = level * 100
         playerStats.xpNeeded = playerStats.level * 100;
 
         leveledUp = true;
     }
 
-    if (leveledUp) triggerLevelUpEffect();
+    if (leveledUp) {
+    triggerLevelUpEffect();
+    checkAchievements();
+    }
 }
 
 async function saveStatsToDB() {
     const user = auth.currentUser;
     if (!user) return;
 
-    try {
-        const userRef = doc(db, "users", user.uid);
+    const userRef = doc(db, "users", user.uid);
 
-        await setDoc(userRef, {
-            level: playerStats.level,
-            currentXP: playerStats.currentXP,
-            xpNeeded: playerStats.xpNeeded,
-            totalXP: playerStats.totalXP
-        }, { merge: true });
-
-    } catch (error) {
-        console.error("Error saving stats:", error);
-    }
+    await setDoc(userRef, {
+        level: playerStats.level,
+        currentXP: playerStats.currentXP,
+        totalXP: playerStats.totalXP,
+        stars: playerStats.stars,
+        unlockedAchievements: playerStats.unlockedAchievements || []
+    }, { merge: true });
 }
 
 function updateXPUI() {
@@ -255,6 +255,16 @@ function renderHomePage() {
 
         <section id="contact">
             <h2 class="section-title">📬 צור קשר</h2>
+            <p style="
+            text-align:center;
+            margin-top:-10px;
+            margin-bottom:20px;
+            font-size:0.95rem;
+            color:#10b981;
+            font-weight:600;
+        ">
+             דיווח על באגים או שיפור מערכת יזכה בכוכבים בהתאם לאיכות הדיווח! 🐞
+        </p>
             <div class="form-container">
                 <form onsubmit="handleContact(event)">
                     <input type="text" placeholder="שם מלא" required>
@@ -462,7 +472,7 @@ window.checkAnswers = function(exId) {
         
         if (isCorrect) {
             correctCount++;
-            addXP(50);
+            addXP(300);
             questionDiv.style.border = "2px solid #22c55e";
             questionDiv.style.background = "#f0fdf4";
         } else {
@@ -556,7 +566,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     level: 1,
                     currentXP: 0,
                     xpNeeded: 100,
-                    totalXP: 0
+                    totalXP: 0,
+                    stars: 0,  // ⭐ חשוב
+                    unlockedAchievements: [] // ⭐ חשוב
                 }, { merge: true });
                     
                     alert("נרשמת בהצלחה! ברוכים הבאים.");
@@ -580,11 +592,13 @@ async function loadStatsFromDB(uid) {
         const data = snapshot.data();
 
         playerStats = {
-            level: data.level || 1,
-            currentXP: data.currentXP || 0,
-            xpNeeded: data.xpNeeded || 100,
-            totalXP: data.totalXP || 0
-        };
+        level: data.level || 1,
+        currentXP: data.currentXP || 0,
+        totalXP: data.totalXP || 0,
+        stars: data.stars || 0,
+        unlockedAchievements: data.unlockedAchievements || []
+    };
+
         playerStats.xpNeeded = playerStats.level * 100;
         updateXPUI();
     }
@@ -606,16 +620,17 @@ onAuthStateChanged(auth, async (user) => {
         // 🔥 במקום logout — ניצור מסמך אם חסר
         if (!userSnapshot.exists()) {
             await setDoc(userDocRef, {
-                name: user.displayName || "",
-                email: user.email,
-                role: "student",
-                joinDate: new Date().toLocaleDateString('he-IL'),
-                uid: user.uid,
-                level: 1,
-                currentXP: 0,
-                xpNeeded: 100,
-                totalXP: 0
-            });
+            name: user.displayName || "",
+            email: user.email,
+            role: "student",
+            joinDate: new Date().toLocaleDateString('he-IL'),
+            uid: user.uid,
+            level: 1,
+            currentXP: 0,
+            totalXP: 0,
+            stars: 0,
+            unlockedAchievements: []
+        });
         }
 
         if(authModal) authModal.style.display = 'none';
@@ -627,7 +642,7 @@ onAuthStateChanged(auth, async (user) => {
             user.displayName || user.email;
 
         await loadStatsFromDB(user.uid);
-
+        listenToLeaderboard(); // 🔥 תוסיף כאן
         window.router('home');
     } else {
 
@@ -637,7 +652,6 @@ onAuthStateChanged(auth, async (user) => {
         if(xpWidget) xpWidget.style.display = 'none';
     }
 });
-
 /* =========================================
    9. דף אדמין (טעינת משתמשים) - מניעת מחיקה עצמית
    ========================================= */
@@ -687,12 +701,27 @@ async function loadAdminPage() {
                     deleteButton = `<span style="font-size:0.8rem; color:#999; font-weight:bold;">(אני)</span>`;
                 } else {
                     deleteButton = `
-                    <button class="action-btn" title="איפוס XP" 
+                    <button class="action-btn" title="איפוס XP"
                         onclick="resetUserXP('${user.uid}')">
                         <i class="fa-solid fa-rotate-left"></i>
                     </button>
 
-                    <button class="action-btn delete-btn" title="מחק" 
+                    <button class="action-btn" title="איפוס כוכבים"
+                        onclick="resetUserStars('${user.uid}')">
+                        ⭐
+                    </button>
+
+                    <button class="action-btn" title="הוסף כוכב"
+                        onclick="increaseUserStars('${user.uid}')">
+                        ➕
+                    </button>
+
+                    <button class="action-btn" title="הסר כוכב"
+                        onclick="decreaseUserStars('${user.uid}')">
+                        ➖
+                    </button>
+
+                    <button class="action-btn delete-btn" title="מחק"
                         onclick="deleteUser('${user.uid}')">
                         <i class="fa-solid fa-trash"></i>
                     </button>
@@ -725,7 +754,6 @@ async function loadAdminPage() {
         app.innerHTML = `<h3 style="text-align:center; color:red;">שגיאה בטעינת נתונים: ${error.message}</h3><button class="btn-back" onclick="router('home')">חזור</button>`;
     }
 }
-
 async function deleteUser(uid) {
     if(confirm('האם אתה בטוח שברצונך למחוק את המשתמש מהרשימה?')) {
         try {
@@ -738,7 +766,6 @@ async function deleteUser(uid) {
         }
     }
 }
-
 async function resetUserXP(uid) {
     if (!confirm("האם אתה בטוח שברצונך לאפס את ה-XP של המשתמש?")) return;
 
@@ -757,16 +784,67 @@ async function resetUserXP(uid) {
         alert("שגיאה באיפוס XP");
     }
 }
+async function resetUserStars(uid) {
+    if (!confirm("האם אתה בטוח שברצונך לאפס את הכוכבים?")) return;
 
+    try {
+        await setDoc(doc(db, "users", uid), {
+            stars: 0
+        }, { merge: true });
+
+        alert("הכוכבים אופסו בהצלחה!");
+        loadAdminPage();
+    } catch (error) {
+        console.error(error);
+        alert("שגיאה באיפוס כוכבים");
+    }
+}
+
+async function increaseUserStars(uid) {
+    try {
+        const userRef = doc(db, "users", uid);
+        const snap = await getDoc(userRef);
+
+        if (!snap.exists()) return;
+
+        const currentStars = snap.data().stars || 0;
+
+        await updateDoc(userRef, {
+            stars: currentStars + 1
+        });
+
+        loadAdminPage();
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+async function decreaseUserStars(uid) {
+    try {
+        const userRef = doc(db, "users", uid);
+        const snap = await getDoc(userRef);
+
+        if (!snap.exists()) return;
+
+        const currentStars = snap.data().stars || 0;
+
+        await updateDoc(userRef, {
+            stars: Math.max(0, currentStars - 1)
+        });
+
+        loadAdminPage();
+    } catch (error) {
+        console.error(error);
+    }
+}
+window.resetUserStars = resetUserStars;
+window.increaseUserStars = increaseUserStars;
+window.decreaseUserStars = decreaseUserStars;
 window.resetUserXP = resetUserXP;
-
-// חשיפת פונקציות לחלון הגלובלי (חשוב ל-Modules)
 window.deleteUser = deleteUser;
-
 /* =========================================
    10. פונקציית דף משתמשים
    ========================================= */
-
 function showAdminLogin() {
     const app = document.getElementById('app-container');
 
@@ -809,11 +887,9 @@ window.verifyAdminPassword = function() {
         document.getElementById('admin-error').innerText = "סיסמה שגויה";
     }
 };
-
 /* =========================================
    11. שאלות
    ========================================= */
-
 function loadChatHistory() {
     const messagesDiv = document.getElementById('chat-messages');
     if (!messagesDiv) return;
@@ -930,14 +1006,13 @@ function createParticles() {
         container.appendChild(particle);
     }
 }
-
 /* =========================================
    12. leaderboard
    ========================================= */
 function listenToLeaderboard() {
     const q = query(
     collection(db, "users"),
-    orderBy("totalXP", "desc"),
+    orderBy("stars", "desc"),
     orderBy("level", "desc")
 );
 
@@ -955,7 +1030,6 @@ function listenToLeaderboard() {
         renderLeaderboard(top5);
     });
 }
-
 function renderLeaderboard(users) {
     const list = document.getElementById("leaderboard-list");
     if (!list) return;
@@ -972,7 +1046,7 @@ function renderLeaderboard(users) {
 
         div.innerHTML = `
             <span>${index + 1}. ${user.name || "אנונימי"}</span>
-            <span>⭐ ${user.totalXP || 0}</span>
+            <span>⭐ ${user.stars || 0}</span>
         `;
 
         list.appendChild(div);
@@ -980,9 +1054,119 @@ function renderLeaderboard(users) {
 }
 
 /* =========================================
-   13. אתחול ראשוני
+   13. הישגים
    ========================================= */
 
+window.toggleAchievements = function() {
+    const modal = document.getElementById('achievements-modal');
+    if (!modal) return;
+
+    if (modal.style.display === 'flex') {
+        modal.style.display = 'none';
+    } else {
+        modal.style.display = 'flex';
+        renderAchievements(); // 🔥 חשוב מאוד
+    }
+};
+function renderAchievements() {
+    const list = document.getElementById('achievements-list');
+    if (!list) return;
+
+    const level = playerStats.level;
+
+    const achievements = [
+        { title: "הגעה לרמה 5", condition: level >= 5, stars: 5 },
+        { title: "הגעה לרמה 10", condition: level >= 10, stars: 10 },
+        { title: "הגעה לרמה 20", condition: level >= 20, stars: 20 },
+    ];
+
+    list.innerHTML = achievements.map(a => `
+        <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:14px;
+            border-bottom:1px solid #eee;
+            font-weight:600;
+        ">
+            <div style="display:flex; flex-direction:column; text-align:right;">
+                <span>${a.title}</span>
+
+                <!-- ⭐ כמה כוכבים זה נותן -->
+                <span style="font-size:0.9rem; color:#f59e0b; margin-top:4px;">
+                    ⭐ ${a.stars} כוכבים
+                </span>
+            </div>
+
+            ${
+                a.condition
+                ? `<span style="
+                        width:28px;
+                        height:28px;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        border-radius:50%;
+                        background:#22c55e;
+                        color:white;
+                        font-weight:bold;
+                        font-size:16px;
+                        box-shadow:0 4px 10px rgba(34,197,94,0.4);
+                    ">
+                        ✓
+                   </span>`
+                : `<span style="
+                        width:28px;
+                        height:28px;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        border-radius:50%;
+                        background:#ef4444;
+                        color:white;
+                        font-weight:bold;
+                        font-size:16px;
+                        opacity:0.6;
+                    ">
+                        ✕
+                   </span>`
+            }
+        </div>
+    `).join('');
+}
+
+async function checkAchievements() {
+
+    const level = playerStats.level;
+
+    const achievements = [
+        { id: "level5", condition: level >= 5, stars: 5 },
+        { id: "level10", condition: level >= 10, stars: 10 },
+        { id: "level20", condition: level >= 20, stars: 20 },
+    ];
+
+    for (let ach of achievements) {
+
+        // אם ההישג הושג והוא לא כבר נפתח
+        if (
+            ach.condition &&
+            !playerStats.unlockedAchievements?.includes(ach.id)
+        ) {
+
+            // מוסיף כוכבים
+            playerStats.stars += ach.stars;
+
+            // מסמן כהושג
+            playerStats.unlockedAchievements.push(ach.id);
+
+            // שומר ב-DB
+            await saveStatsToDB();
+        }
+    }
+}
+/* =========================================
+   14. אתחול ראשוני
+   ========================================= */
 window.onload = function() {
 
     if (!sessionStorage.getItem("loaderShown")) {
