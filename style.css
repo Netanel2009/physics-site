@@ -491,7 +491,7 @@ footer {
     background: var(--light-glass);
     backdrop-filter: blur(10px);
     border-radius: 30px;
-    padding: 40px;
+    padding: 30px;
     max-width: 1000px;
     margin: 40px auto;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
@@ -897,5 +897,50 @@ footer {
 .action-btn:hover i {
     color: #1e40af;
 }
+.delete-btn:hover {
+    color: #dc2626;
+    transform: scale(1.2);
+}
 
-.delete-btn:hover { color: #dc2626; transform: scale(1.2); }
+/* כפתור הישגים */
+#achievements-btn {
+    position: fixed;
+    top: 200px;        /* מתחת ל-navbar */
+    left: 20px;
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    border: none;
+    background: white;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    z-index: 1200;
+    transition: 0.3s;
+}
+
+#achievements-btn:hover {
+    transform: scale(1.1);
+}
+
+/* רקע מודאל */
+.achievements-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+/* כרטיס תוכן */
+.achievements-card {
+    background: white;
+    padding: 40px;
+    border-radius: 25px;
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
