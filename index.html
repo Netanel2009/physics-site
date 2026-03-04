@@ -22,50 +22,78 @@
 </div>
 
     <nav class="navbar">
-        <div class="logo" onclick="router('home')">
-            <i class="fa-solid fa-atom fa-spin"></i> PhysicsMaster
-        </div>
-        <div class="nav-links">
-            <span onclick="scrollToSection('learning')">מרכז למידה</span>
-            <span onclick="scrollToSection('about')">אודות</span>
-            <span onclick="scrollToSection('testimonials')">תגובות</span>
-            <span onclick="scrollToSection('contact')">צור קשר</span>
-            <span onclick="router('admin')" style="font-size: 0.9rem; opacity: 0.7;"><i class="fa-solid fa-user-shield"></i></span>
+
+    <!-- צד ימין: לוגו + גביע -->
+    <!-- צד ימין -->
+<div style="display:flex; align-items:center;">
+
+    <!-- לוגו -->
+    <div class="logo" onclick="router('home')" style="cursor:pointer;">
+        <i class="fa-solid fa-atom fa-spin"></i>
+        <span>PhysicsMaster</span>
+    </div>
+</div>
+
+
+    <!-- אמצע: ניווט -->
+    <div class="nav-links">
+        <span onclick="scrollToSection('learning')">מרכז למידה</span>
+        <span onclick="scrollToSection('about')">אודות</span>
+        <span onclick="scrollToSection('testimonials')">תגובות</span>
+        <span onclick="scrollToSection('contact')">צור קשר</span>
+        <span onclick="router('admin')" style="font-size:0.9rem; opacity:0.7;">
+            <i class="fa-solid fa-user-shield"></i>
+        </span>
+    </div>
+
+
+    <!-- צד שמאל: פרופיל + XP (לא נוגעים בזה) -->
+    <div id="auth-section">
+
+        <button id="login-trigger-btn"
+            class="btn-main"
+            onclick="document.getElementById('auth-modal').style.display='flex'">
+            התחברות
+        </button>
+
+        <div id="user-profile" class="user-profile" style="display:none;">
+            <img id="user-photo"
+                src="https://ui-avatars.com/api/?name=User&background=random"
+                alt="Profile">
+
+            <div class="profile-dropdown">
+                <p id="user-name-display">שם משתמש</p>
+                <hr>
+                <span onclick="handleLogout()">
+                    התנתק <i class="fa-solid fa-right-from-bracket"></i>
+                </span>
+            </div>
         </div>
 
-        <div id="auth-section">
-            <button id="login-trigger-btn" class="btn-main" onclick="document.getElementById('auth-modal').style.display='flex'">התחברות</button>
-            
-            <div id="level-widget" class="level-widget" style="display:none;">
+        <div id="level-widget" class="level-widget" style="display:none;">
             <div class="level-circle">
                 <span id="current-level">1</span>
             </div>
+
             <div class="xp-container">
                 <div class="xp-bar-bg">
                     <div class="xp-bar-fill" id="xp-bar"></div>
                 </div>
                 <span class="xp-text">
-                    <span id="current-xp">0</span> / 
+                    <span id="current-xp">0</span> /
                     <span id="xp-needed">100</span>
                 </span>
             </div>
         </div>
 
-            <div id="user-profile" class="user-profile" style="display: none;">
-                <img id="user-photo" src="https://ui-avatars.com/api/?name=User&background=random" alt="Profile">
-                <div class="profile-dropdown">
-                    <p id="user-name-display">שם משתמש</p>
-                    <hr>
-                    <span onclick="handleLogout()">התנתק <i class="fa-solid fa-right-from-bracket"></i></span>
-                </div>
-            </div>
-        </div>
-    </nav>
+    </div>
+
+</nav>
 
     <main id="app-container"></main>
 
     <footer>
-        <p>© 2024 PhysicsMaster - כל הזכויות שמורות.</p>
+        <p>© 2026 PhysicsMaster - כל הזכויות שמורות.</p>
     </footer>
 
     <div id="auth-modal" class="auth-overlay" style="display: none;">
@@ -119,6 +147,20 @@
         <h3>🏆 טופ 5</h3>
         <div id="leaderboard-list"></div>
     </div>
+    <!-- Achievements Button -->
+    <button id="achievements-btn" onclick="toggleAchievements()">
+        🏆
+    </button>
+    <!-- Achievements Modal -->
+    <div id="achievements-modal" class="achievements-overlay">
+        <div class="achievements-card">
+            <h2>🏆 הישגים</h2>
+            <div id="achievements-list"></div>
+            <button class="btn-back" onclick="toggleAchievements()">סגור</button>
+        </div>
+    </div>
     <script type="module" src="script.js"></script>
+
+    
 </body>
 </html>
