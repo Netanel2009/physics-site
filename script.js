@@ -111,12 +111,17 @@ async function addXP(amount) {
 
 function checkLevelUp() {
     let leveledUp = false;
+
     while (playerStats.currentXP >= playerStats.xpNeeded) {
         playerStats.currentXP -= playerStats.xpNeeded;
         playerStats.level++;
-        playerStats.xpNeeded = Math.floor(playerStats.xpNeeded * 1.2);
+        
+        // נוסחה חדשה: כל רמה = level * 100
+        playerStats.xpNeeded = playerStats.level * 100;
+
         leveledUp = true;
     }
+
     if (leveledUp) triggerLevelUpEffect();
 }
 
@@ -470,7 +475,6 @@ window.checkAnswers = function(exId) {
     });
 
     const finalScore = Math.round((correctCount / questions.length) * 100);
-    if(finalScore === 100) addXP(100);
 
     const resultDiv = document.getElementById('exercise-results') || document.createElement('div');
     resultDiv.id = 'exercise-results';
@@ -581,7 +585,7 @@ async function loadStatsFromDB(uid) {
             xpNeeded: data.xpNeeded || 100,
             totalXP: data.totalXP || 0
         };
-
+        playerStats.xpNeeded = playerStats.level * 100;
         updateXPUI();
     }
     
