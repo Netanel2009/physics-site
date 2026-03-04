@@ -502,19 +502,7 @@ window.checkAnswers = function(exId) {
     resultDiv.scrollIntoView({ behavior: 'smooth' });
 };
 
-window.checkDeviceSupport = function() {
-    if (window.innerWidth < 768) {
-        document.body.innerHTML = `
-            <div style="height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #f3f4f6; text-align: center; direction: rtl;">
-                <i class="fa-solid fa-desktop" style="font-size: 5rem; color: #ef4444; margin-bottom: 20px;"></i>
-                <h1 style="font-size: 2rem;">האתר מותאם למחשב בלבד</h1>
-                <p>לצפייה בסימולציות ופתרון תרגילים בנוחות,<br>אנא עברו למחשב נייד או נייח.</p>
-            </div>
-        `;
-        return false;
-    }
-    return true;
-};
+
 
 function getYoutubeThumb(url) {
     if (!url) return '';
@@ -1171,32 +1159,23 @@ window.onload = function() {
 
     if (!sessionStorage.getItem("loaderShown")) {
 
-        if (window.checkDeviceSupport()) {
+    createParticles();
+    startTypingAnimation();
 
-            createParticles();
-            startTypingAnimation();
-
+    setTimeout(() => {
+        const loader = document.getElementById('loading-screen');
+        if (loader) {
+            loader.classList.add('fade-out');
             setTimeout(() => {
-                const loader = document.getElementById('loading-screen');
-                if (loader) {
-                    loader.classList.add('fade-out');
-                    setTimeout(() => {
-                        loader.style.display = "none";
-                    }, 800);
-                }
-
-                window.router('home');
-            }, 3500);
-
-            sessionStorage.setItem("loaderShown", "true");
+                loader.style.display = "none";
+            }, 800);
         }
 
-    } else {
-        const loader = document.getElementById('loading-screen');
-        if (loader) loader.style.display = "none";
-
         window.router('home');
-    }
+    }, 3500);
+
+    sessionStorage.setItem("loaderShown", "true");
+}
 
     listenToLeaderboard();
 };
