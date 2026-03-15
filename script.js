@@ -108,8 +108,8 @@ window.questionsBank = {
 
 const testimonialsData = [
     { name: "יהונתן אדיב", text: "הסרטונים המפורטים לא הותירו לי שום בעיה בפתרון התרגילים. מומלץ בחום!", img: "https://i.pravatar.cc/150?u=1" },
-    { name: "סתיו שיריזלי", text: "הסימולציות עוזרות להבין את החומר באמת, ולא רק לשנן נוסחאות.", img: "https://i.pravatar.cc/150?u=2" },
-    { name: "ניתי ווליך", text: "האתר הכי טוב שמצאתי לבגרות. הכל מסודר, נקי וברור מאוד.", img: "https://cdn.discordapp.com/attachments/1258539660167221339/1482828439613341717/c3d1b4f7-cc6d-4e80-a552-1d1a0ab72ad4.png?ex=69b85f19&is=69b70d99&hm=19e0351663705d1b2320809f9052eaab0dcca222d8061effcbe7321e5e943f2c&" }
+    { name: "ילי קינג", text: "אני אוהב את הברכיים שלי חמות.", img: "https://cdn.discordapp.com/attachments/1258539660167221339/1482829252754669638/03fbad16-cb76-4955-8b0d-c3066edd2179.png?ex=69b85fdb&is=69b70e5b&hm=521fa6ae7d9fd494bfd548efd7b8a2c29949f7be40657aab8826ed028e0c6371&" },
+    { name: "ניתי ווליך", text: "שונא שונא שונא שונא כ כ כ כ כ.", img: "https://cdn.discordapp.com/attachments/1258539660167221339/1482828439613341717/c3d1b4f7-cc6d-4e80-a552-1d1a0ab72ad4.png?ex=69b85f19&is=69b70d99&hm=19e0351663705d1b2320809f9052eaab0dcca222d8061effcbe7321e5e943f2c&" }
 ];
 
 /* =========================================
