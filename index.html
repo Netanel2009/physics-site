@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PhysicsMaster | מערכת למידה מתקדמת</title>
-    
+    <link rel="icon" href="data:,">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
@@ -23,16 +23,17 @@
 
     <nav class="navbar">
 
-    <!-- צד ימין: לוגו + גביע -->
-    <!-- צד ימין -->
-<div style="display:flex; align-items:center;">
+        
+        <!-- צד ימין: לוגו + גביע -->
+        <!-- צד ימין -->
+    <div style="display:flex; align-items:center;">
 
-    <!-- לוגו -->
-    <div class="logo" onclick="router('home')" style="cursor:pointer;">
-        <i class="fa-solid fa-atom fa-spin"></i>
-        <span>PhysicsMaster</span>
+        <!-- לוגו -->
+        <div class="logo" onclick="router('home')" style="cursor:pointer;">
+            <i class="fa-solid fa-atom fa-spin"></i>
+            <span>PhysicsMaster</span>
+        </div>
     </div>
-</div>
 
 
     <!-- אמצע: ניווט -->
@@ -124,24 +125,21 @@
 
     <!-- AI Chat Widget -->
     <div id="ai-chat-box">
-        <div style="padding:10px; background:#3b82f6; color:white; text-align:center;">
-            צ'אט שאלות 🤖
-            <button onclick="toggleChat()" style="float:left; background:none; border:none; color:white; font-size:18px;">✖</button>
+
+        <!-- Header -->
+        <div class="chat-header">
+            <span>צ'אט שאלות 🤖</span>
+            <button class="chat-close-btn" onclick="toggleChat()">✖</button>
         </div>
 
-        <div id="chat-messages" style="flex:1; padding:10px; overflow-y:auto;"></div>
+        <!-- Messages -->
+        <div id="chat-messages"></div>
 
-        <div style="display:flex; border-top:1px solid #eee;">
-        </div>
+        <!-- (אם תרצה בהמשך אפשר להוסיף כאן שדה כתיבה) -->
+
     </div>
 
-    <button onclick="toggleChat()"
-        style="position:fixed; bottom:20px; right:20px;
-            width:60px; height:60px; border-radius:50%;
-            background:#3b82f6; color:white; border:none;
-            font-size:24px; box-shadow:0 10px 25px rgba(0,0,0,0.3);">
-        🤖
-    </button>
+    
     <!-- Leaderboard Sidebar -->
     <div id="leaderboard-sidebar">
         <h3>🏆 טופ 5</h3>
@@ -151,6 +149,9 @@
     <button id="achievements-btn" onclick="toggleAchievements()">
         🏆
     </button>
+    <button onclick="router('progress')" class="progress-icon">
+        <i class="fa-solid fa-chart-line"></i>
+    </button>
     <!-- Achievements Modal -->
     <div id="achievements-modal" class="achievements-overlay">
         <div class="achievements-card">
@@ -159,6 +160,10 @@
             <button class="btn-back" onclick="toggleAchievements()">סגור</button>
         </div>
     </div>
+    <!-- Bot Floating Button -->
+    <button class="chat-fab" onclick="toggleChat()" style="display:none;">
+        🤖
+    </button>
     <script type="module" src="script.js"></script>
 
     
