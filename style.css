@@ -5,6 +5,12 @@
     --accent: #f59e0b;
 }
 
+:root {
+  --z-navbar: 1000;
+  --z-modal: 2000;
+  --z-top: 5000;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -190,7 +196,9 @@ section {
     transition: 0.3s;
 }
 
-.btn-main:hover { transform: scale(1.1); box-shadow: 0 0 30px rgba(245, 158, 11, 0.8); }
+.btn-main:hover {
+    transform: translateY(-3px);
+}
 
 .btn-back {
     margin: 30px auto;
@@ -499,6 +507,16 @@ footer {
     overflow-x: auto; /* למקרה שהטבלה רחבה מדי במובייל */
 }
 
+@media (max-width: 768px) {
+    body {
+        background-attachment: scroll;
+    }
+}
+@media (max-width: 768px) {
+    #leaderboard-sidebar {
+        display: none;
+    }
+}
 .admin-header {
     display: flex;
     justify-content: space-between;
@@ -787,16 +805,7 @@ footer {
 }
 
 /* כפתור חזרה */
-.chat-back {
-    background: #64748b;
-    color: white;
-    border: none;
-    padding: 8px;
-    border-radius: 10px;
-    cursor: pointer;
-    margin-bottom: 10px;
-    font-weight: bold;
-}
+
 
 #particles {
     position: absolute;
@@ -877,14 +886,6 @@ footer {
     to { box-shadow: 0 0 25px gold; }
 }
 
-.action-btn {
-    border: none;
-    background: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    margin: 0 5px;
-    transition: 0.2s;
-}
 
 .action-btn:hover {
     transform: scale(1.2);
@@ -943,4 +944,266 @@ footer {
     max-width: 90%;
     text-align: center;
     box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+}
+
+/* כפתור פתיחה צף */
+.chat-fab {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    border: none;
+
+    background: linear-gradient(135deg, #3b82f6, #1e40af);
+    color: white;
+    font-size: 26px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    cursor: pointer;
+
+    transition: all 0.3s ease;
+    z-index: 9999;
+}
+
+.chat-fab:hover {
+    transform: scale(1.12);
+    box-shadow: 0 15px 40px rgba(59,130,246,0.6);
+}
+
+/* חלון הצ'אט */
+#ai-chat-box {
+    position: fixed;
+    bottom: 100px;
+    right: 25px;
+
+    width: 320px;
+    height: 400px;
+
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    pointer-events: none;
+    transition: all 0.25s ease;
+
+    z-index: 9998;
+}
+
+/* כשהצ'אט פתוח */
+#ai-chat-box.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+/* כותרת */
+.chat-header {
+    background: #3b82f6;
+    color: white;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+
+    position: relative;
+}
+
+/* כפתור סגירה */
+.chat-close-btn {
+    position: absolute;
+    left: 10px;
+    top: 8px;
+
+    width: 28px;
+    height: 28px;
+
+    border-radius: 50%;
+    border: none;
+
+    background: rgba(255,255,255,0.2);
+    color: white;
+
+    cursor: pointer;
+    font-weight: bold;
+
+    transition: 0.2s;
+}
+
+.chat-close-btn:hover {
+    transform: scale(1.15);
+    background: rgba(255,255,255,0.4);
+}
+
+
+
+.chat-back {
+    display: inline-block;
+
+    margin-right: 0;
+    margin-left: auto;   /* זה מה שמיישר לימין באמת */
+
+    background: #3b82f6;
+    color: white;
+
+    border: none;
+    border-radius: 12px;
+
+    padding: 6px 14px;
+
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transition: all 0.25s ease;
+}
+.hidden {
+    display: none !important;
+}
+
+.chat-back:hover {
+    background: #1e40af;
+    transform: scale(1.08);
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    margin: 0 2px;
+    background: #64748b;
+    border-radius: 50%;
+    animation: blink 1.4s infinite both;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes blink {
+    0%, 80%, 100% { opacity: 0.2; transform: translateY(0); }
+    40% { opacity: 1; transform: translateY(-4px); }
+}
+#chat-options {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#chat-options.hide {
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+}
+
+#chat-options.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#chat-messages {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* בועה בסיסית */
+.chat-bubble {
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    animation: bubbleIn 0.2s ease;
+    white-space: pre-line;
+}
+
+/* הודעת משתמש (ימין) */
+.chat-user {
+    background: #3b82f6;
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 6px;
+}
+
+/* הודעת בוט (שמאל) */
+.chat-bot {
+    background: #e2e8f0;
+    color: #0f172a;
+    align-self: flex-start;
+    border-bottom-left-radius: 6px;
+}
+
+/* אנימציית כניסה */
+@keyframes bubbleIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+.chat-bubble {
+    white-space: pre-line;  /* הכי חשוב */
+    word-break: break-word;
+}
+
+.progress-btn{
+    font-size:22px;
+    background:none;
+    border:none;
+    cursor:pointer;
+}
+
+.progress-icon{
+    position: fixed;
+
+    top: 270px;   /* מתחת לגביע */
+    left: 20px;
+
+    width: 55px;
+    height: 55px;
+
+    border-radius: 50%;
+    border: none;
+
+    font-size: 26px;
+
+    background: #ffffff;
+    color: #3b82f6;
+
+    cursor: pointer;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+
+    z-index: 1200;
+}
+
+.progress-icon:hover{
+    transform: scale(1.1);
+}
+#loading-screen ~ .chat-fab{
+    display:none;
+}
+#leaderboard-sidebar{
+    display:none;
 }
