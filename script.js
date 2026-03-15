@@ -12,6 +12,7 @@ import {
     addDoc,
     setDoc,
     query,
+    arrayUnion,
     orderBy,
     onSnapshot,
     serverTimestamp
@@ -69,6 +70,28 @@ window.contentData = {
         { id: 'ex_kinematics', title: 'תרגול קינמטיקה', desc: 'שאלות על תנועה שוות תאוצה', image: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' },
         { id: 'ex_momentum', title: 'תרגול תנע', desc: 'התנגשויות ומתקף', image: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }
     ],
+
+    simulations_content: [
+        { type: 'folder', id: 'bagrut_folder', title: 'בגרויות', image: 'linear-gradient(135deg, #6366f1, #4338ca)', desc: 'שאלוני בגרות מלאים' },
+        { type: 'folder', id: 'simulations_general', title: 'סימולציות', image: 'linear-gradient(135deg, #10b981, #059669)', desc: 'סימולציות אינטראקטיביות' }
+    ],
+
+    bagrut_folder: [
+        { type: 'folder', id: 'bagrut_mechanics', title: 'מכניקה', image: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
+        { type: 'folder', id: 'bagrut_electricity', title: 'חשמל', image: 'linear-gradient(135deg, #f59e0b, #d97706)' },
+        { type: 'folder', id: 'bagrut_radiation', title: 'קרינה וחומר', image: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }
+    ],
+        bagrut_mechanics: [
+        { type: 'video', title: 'שאלון מכניקה 2023', url: 'https://youtu.be/EXAMPLE1' }
+    ],
+
+    bagrut_electricity: [
+        { type: 'video', title: 'שאלון חשמל 2023', url: 'https://youtu.be/EXAMPLE2' }
+    ],
+
+    bagrut_radiation: [
+        { type: 'video', title: 'שאלון קרינה 2023', url: 'https://youtu.be/EXAMPLE3' }
+    ],
     kinematics_folder: [{ type: 'video', title: 'קינמטיקה (בסיס)', url: 'https://youtu.be/q8K73P4hft8', desc: 'תנועה בקו ישר ונפילה חופשית' }],
     energy_momentum_folder: [{ type: 'video', title: 'שימור תנע', url: 'https://youtu.be/6k8Hd3wPoU0', desc: 'התנגשויות ומתקף' }]
 };
@@ -92,40 +115,42 @@ const testimonialsData = [
 /* =========================================
    4. מערכת XP ורמות (Gamification)
    ========================================= */
-let playerStats = {
+window.playerStats = {
     level: 1,
     currentXP: 0,
     xpNeeded: 100,
     totalXP: 0,
-    stars: 0   // ⭐ חדש
+    stars: 0,
+    watchedVideos: [],
+    completedExercises: []
 };
 
 
 async function addXP(amount) {
-    playerStats.currentXP += amount;
-    playerStats.totalXP += amount;
+    window.playerStats.currentXP += amount;
+    window.playerStats.totalXP += amount;
 
-    checkLevelUp();
-    await saveStatsToDB(); // בלי פרמטר
+    await checkLevelUp();
+    await saveStatsToDB();
     updateXPUI();
 }
 
 async function checkLevelUp() {
     let leveledUp = false;
 
-    while (playerStats.currentXP >= playerStats.xpNeeded) {
-        playerStats.currentXP -= playerStats.xpNeeded;
-        playerStats.level++;
+    while (window.playerStats.currentXP >= window.playerStats.xpNeeded) {
+        window.playerStats.currentXP -= window.playerStats.xpNeeded;
+        window.playerStats.level++;
 
         // נוסחה חדשה: כל רמה = level * 100
-        playerStats.xpNeeded = playerStats.level * 100;
+        window.playerStats.xpNeeded = window.playerStats.level * 100;
 
         leveledUp = true;
     }
 
     if (leveledUp) {
-    triggerLevelUpEffect();
-    checkAchievements();
+        triggerLevelUpEffect();
+        await checkAchievements();
     }
 }
 
@@ -136,11 +161,12 @@ async function saveStatsToDB() {
     const userRef = doc(db, "users", user.uid);
 
     await setDoc(userRef, {
-        level: playerStats.level,
-        currentXP: playerStats.currentXP,
-        totalXP: playerStats.totalXP,
-        stars: playerStats.stars,
-        unlockedAchievements: playerStats.unlockedAchievements || []
+        level: window.playerStats.level,
+        currentXP: window.playerStats.currentXP,
+        totalXP: window.playerStats.totalXP,
+        stars: window.playerStats.stars,
+        unlockedAchievements: window.playerStats.unlockedAchievements || [],
+        watchedVideos: window.playerStats.watchedVideos || []
     }, { merge: true });
 }
 
@@ -150,12 +176,12 @@ function updateXPUI() {
     const neededEl = document.getElementById('xp-needed');
     const barEl = document.getElementById('xp-bar');
 
-    if (levelEl) levelEl.innerText = playerStats.level;
-    if (xpEl) xpEl.innerText = Math.floor(playerStats.currentXP);
-    if (neededEl) neededEl.innerText = playerStats.xpNeeded;
+    if (levelEl) levelEl.innerText = window.playerStats.level;
+    if (xpEl) xpEl.innerText = Math.floor(window.playerStats.currentXP);
+    if (neededEl) neededEl.innerText = window.playerStats.xpNeeded;
     
-    const percentage = playerStats.xpNeeded
-  ? (playerStats.currentXP / playerStats.xpNeeded) * 100
+    const percentage = window.playerStats.xpNeeded
+  ? (window.playerStats.currentXP / window.playerStats.xpNeeded) * 100
   : 0;
     if (barEl) barEl.style.width = percentage + '%';
 }
@@ -182,6 +208,15 @@ function triggerLevelUpEffect() {
    ========================================= */
    
 window.router = function(view, data = null) {
+
+    const leaderboard = document.getElementById("leaderboard-sidebar");
+
+        if(view === "home"){
+            leaderboard.style.display = "block";
+        }else{
+            leaderboard.style.display = "none";
+        }
+
     window.scrollTo(0, 0);
     const appContainer = document.getElementById('app-container');
     appContainer.innerHTML = '';
@@ -200,6 +235,12 @@ window.router = function(view, data = null) {
         case 'admin': 
                 showAdminLogin();
                 break;
+        case 'progress':
+            renderProgressSubjects();
+            break;
+        case 'progress_topic':
+            renderProgressTopics(data);
+            break;
         default: renderHomePage();
     }
 };
@@ -277,6 +318,21 @@ function renderHomePage() {
     `;
 }
 
+function getVideoId(url) {
+    if (!url) return null;
+
+    let vidId = "";
+
+    if (url.includes("youtu.be/")) {
+        vidId = url.split("youtu.be/")[1].split(/[?&]/)[0];
+    } else if (url.includes("youtube.com/watch")) {
+        const params = new URLSearchParams(url.split("?")[1]);
+        vidId = params.get("v");
+    }
+
+    return vidId;
+}
+
 function renderSubjects() {
     const app = document.getElementById('app-container');
     app.innerHTML = `
@@ -318,7 +374,7 @@ function renderContentList(subjectId) {
                     } else {
                         const thumb = getYoutubeThumb(item.url);
                         return `
-                            <div class="card" onclick="window.open('${item.url}')" style="background-image: url('${thumb}')">
+                            <div class="card" onclick="markVideoWatched('${item.url}');" style="background-image: url('${thumb}')">
                                 <div class="card-overlay">
                                     <div style="font-size:3rem; margin-bottom:10px; color:#ef4444;"><i class="fa-brands fa-youtube"></i></div>
                                     <h3>${item.title}</h3>
@@ -353,6 +409,77 @@ function renderExerciseList(subjectId) {
             <button class="btn-back" onclick="router('subject_select', 'exercises')">חזור לנושאים</button>
         </section>
     `;
+}
+
+
+window.markVideoWatched = async function(url) {
+    if (!url) return;
+
+    const user = auth.currentUser;
+    if (!user) {
+        alert("אנא התחבר/י כדי לשמור צפיות");
+        return;
+    }
+
+    const videoId = getVideoId(url);
+    if (!videoId) return;
+
+    // פתיחת הסרטון
+    window.open(url, "_blank");
+
+    // עדכון מקומי
+    if (!window.playerStats) {
+        window.playerStats = {
+            level: 1,
+            currentXP: 0,
+            xpNeeded: 100,
+            totalXP: 0,
+            stars: 0,
+            watchedVideos: []
+        };
+    }
+
+    if (!window.playerStats.watchedVideos) {
+        window.playerStats.watchedVideos = [];
+    }
+
+    // אם לא נצפה עדיין
+    if (!window.playerStats.watchedVideos.includes(videoId)) {
+
+        // עדכון מקומי
+        window.playerStats.watchedVideos.push(videoId);
+
+        // שמירה ב-Firestore בלי למחוק נתונים אחרים
+        const userRef = doc(db, "users", user.uid);
+
+        await setDoc(userRef, {
+            watchedVideos: arrayUnion(videoId)
+        }, { merge: true });
+
+        console.log("Video saved:", videoId);
+    }
+};
+
+async function markExerciseCompleted(exId) {
+
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const userRef = doc(db, "users", user.uid);
+
+    // ודא שהמערך קיים
+    if (!window.playerStats.completedExercises) {
+        window.playerStats.completedExercises = [];
+    }
+
+    // בדיקה אם כבר קיים
+    if (!window.playerStats.completedExercises.includes(exId)) {
+        window.playerStats.completedExercises.push(exId);
+
+        await setDoc(userRef, {
+            completedExercises: arrayUnion(exId)
+        }, { merge: true });
+    }
 }
 
 function renderFolderContent(folderId) {
@@ -403,7 +530,7 @@ function renderActiveExercise(exId) {
                         </div>
                     `).join('')}
                 </div>
-                <button class="btn-main" style="width:100%; margin-top:20px;" onclick="checkAnswers('${exId}')">
+                <button id="checkBtn" class="btn-main" style="width:100%; margin-top:20px;" onclick="checkAnswers('${exId}')">
                     <i class="fa-solid fa-check-double"></i> בדוק תשובות
                 </button>
             </div>
@@ -500,9 +627,17 @@ window.checkAnswers = function(exId) {
         document.getElementById('exercise-container').after(resultDiv);
     }
     resultDiv.scrollIntoView({ behavior: 'smooth' });
+
+    const btn = document.getElementById("checkBtn");
+
+    btn.disabled = true;
+    btn.innerText = "✔ נבדק";
+    btn.style.background = "gray";
+    btn.style.cursor = "not-allowed";
+
+    updateProgress(exId, correctCount, questions.length);
+
 };
-
-
 
 function getYoutubeThumb(url) {
     if (!url) return '';
@@ -555,8 +690,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     currentXP: 0,
                     xpNeeded: 100,
                     totalXP: 0,
-                    stars: 0,  // ⭐ חשוב
-                    unlockedAchievements: [] // ⭐ חשוב
+                    stars: 0,
+
+                    progress: {
+                        mechanics: 0,
+                        electricity: 0,
+                        radiation: 0
+                    }
+
                 }, { merge: true });
                     
                     alert("נרשמת בהצלחה! ברוכים הבאים.");
@@ -579,18 +720,26 @@ async function loadStatsFromDB(uid) {
     if (snapshot.exists()) {
         const data = snapshot.data();
 
-        playerStats = {
+        window.playerStats = {
         level: data.level || 1,
         currentXP: data.currentXP || 0,
         totalXP: data.totalXP || 0,
         stars: data.stars || 0,
-        unlockedAchievements: data.unlockedAchievements || []
+        unlockedAchievements: data.unlockedAchievements || [],
+        completedExercises: data.completedExercises || [],
+        watchedVideos: data.watchedVideos || [],
+        progress: data.progress || {
+            mechanics: 0,
+            electricity: 0,
+            radiation: 0
+        }
     };
 
-        playerStats.xpNeeded = playerStats.level * 100;
-        updateXPUI();
+    window.playerStats.xpNeeded = window.playerStats.level * 100;
+
+    updateXPUI();
+    await checkAchievements();
     }
-    
 }
 
 // --- בודק משתמש מחובר (ומנתק אם הוא נמחק) ---
@@ -617,7 +766,6 @@ onAuthStateChanged(auth, async (user) => {
             currentXP: 0,
             totalXP: 0,
             stars: 0,
-            unlockedAchievements: []
         });
         }
 
@@ -887,7 +1035,7 @@ function loadChatHistory() {
             🤖 מרכז העזרה
         </div>
 
-        <div class="chat-grid">
+        <div class="chat-grid" id="chat-options">
 
             <div class="chat-card" onclick="showChatQuestions('technical')">
                 🛠
@@ -907,6 +1055,82 @@ function loadChatHistory() {
         </div>
     `;
 }
+
+window.handleChatAnswer = function(question) {
+
+    const options = document.getElementById("chat-options");
+
+    if (options) {
+        options.classList.add("hidden"); // מסתיר
+    }
+
+    addChatMessage(question, false);
+
+    const typing = showTypingIndicator();
+
+    setTimeout(() => {
+
+        typing.remove();
+
+        let response = "";
+
+        if (question.includes("קינמטיקה")) {
+            response = "תשובה זו עדיין בתיקון";
+        }
+        else if (question.includes("תאוצה")) {
+            response = "תאוצה היא קצב שינוי המהירות בזמן.";
+        }
+        else if (question.includes("תנע")) {
+            response = "תנע הוא מכפלת המסה במהירות הגוף.";
+        }
+        else {
+            response = "תודה על השאלה! 😊";
+        }
+
+        typeBotMessage(response);
+
+        // רווח נקי בלי innerHTML
+        const spacer = document.createElement("div");
+        spacer.style.height = "15px";
+        document.getElementById("chat-messages").appendChild(spacer);
+
+        // מחזיר אופציות אחרי זמן קצר
+        setTimeout(() => {
+            if (options) {
+                options.classList.remove("hidden");
+            }
+        }, 1000);
+
+    }, 1200);
+};
+
+function typeBotMessage(text) {
+    const messagesDiv = document.getElementById("chat-messages");
+    if (!messagesDiv) return;
+
+    const msg = document.createElement("div");
+    msg.className = "chat-bubble chat-bot";
+    msg.style.whiteSpace = "pre-line";
+
+    messagesDiv.appendChild(msg);
+
+    let i = 0;
+    msg.textContent = "";
+
+    const typing = setInterval(() => {
+
+        msg.textContent += text[i];
+        i++;
+
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        if (i >= text.length) {
+            clearInterval(typing);
+        }
+
+    }, 25);
+}
+
 window.showChatQuestions = function(category) {
     const messagesDiv = document.getElementById('chat-messages');
     if (!messagesDiv) return;
@@ -943,12 +1167,13 @@ window.showChatQuestions = function(category) {
 
         <div class="chat-grid">
             ${questions.map(q => `
-                <div class="chat-question" onclick="alert('${q}')">
+                <div class="chat-question" onclick="handleChatAnswer('${q}')">
                     ${q}
                 </div>
             `).join('')}
         </div>
     `;
+    window.loadChatHistory = loadChatHistory;
 };
 window.toggleChat = function() {
     const box = document.getElementById('ai-chat-box');
@@ -960,6 +1185,50 @@ window.toggleChat = function() {
         loadChatHistory();
     }
 };
+
+function addChatMessage(text, isBot = false) {
+    const messagesDiv = document.getElementById("chat-messages");
+    if (!messagesDiv) return;
+
+    const msg = document.createElement("div");
+
+    msg.classList.add("chat-bubble");
+    msg.classList.add(isBot ? "chat-bot" : "chat-user");
+
+    msg.innerText = text;
+
+    messagesDiv.appendChild(msg);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+    return msg;
+}
+
+function showTypingIndicator() {
+    const messagesDiv = document.getElementById("chat-messages");
+    if (!messagesDiv) return;
+
+    const typing = document.createElement("div");
+    typing.id = "typing-indicator";
+
+    typing.style.alignSelf = "flex-start";
+    typing.style.background = "#e2e8f0";
+    typing.style.padding = "10px 14px";
+    typing.style.borderRadius = "12px";
+    typing.style.width = "50px";
+    typing.style.display = "flex";
+    typing.style.justifyContent = "center";
+
+    typing.innerHTML = `
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+    `;
+
+    messagesDiv.appendChild(typing);
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+    return typing;
+}
 
 function startTypingAnimation() {
     const text = "PhysicsMaster";
@@ -983,7 +1252,7 @@ function createParticles() {
     const container = document.getElementById("particles");
     if (!container) return;
 
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 20; i++) {
         const particle = document.createElement("div");
         particle.classList.add("particle");
 
@@ -994,9 +1263,197 @@ function createParticles() {
         container.appendChild(particle);
     }
 }
+
 /* =========================================
    12. leaderboard
    ========================================= */
+
+function renderProgressTopics(topic){
+
+    const app = document.getElementById("app-container");
+
+    let topics = [];
+
+    if(topic === "mechanics"){
+        topics = [
+            {name:"קינמטיקה",progress:60},
+            {name:"תנע ואנרגיה",progress:40},
+            {name:"תנועה הרמונית",progress:20}
+        ];
+    }
+
+    if(topic === "electricity"){
+        topics = [
+            {name:"אלקטרוסטטיקה",progress:10},
+            {name:"מעגלים חשמליים",progress:30}
+        ];
+    }
+
+    if(topic === "radiation"){
+        topics = [
+            {name:"אופטיקה",progress:0},
+            {name:"פיזיקה מודרנית",progress:0}
+        ];
+    }
+
+    app.innerHTML = `
+    <section style="min-height:100vh;padding-top:40px">
+
+        <h2 class="section-title">📊 התקדמות בתת נושאים</h2>
+
+        <div style="max-width:600px;margin:auto">
+
+        ${topics.map(t=>`
+
+            <div style="
+                display:flex;
+                justify-content:space-between;
+                padding:18px;
+                border-bottom:1px solid #eee;
+                font-weight:600;
+            ">
+                <span>${t.name}</span>
+                <span>${t.progress}%</span>
+            </div>
+
+        `).join("")}
+
+        </div>
+
+        <button class="btn-back" onclick="router('progress')">
+            חזור
+        </button>
+
+    </section>
+    `;
+}
+
+function renderProgressSubjects(){
+
+    const app = document.getElementById("app-container");
+    const progress = window.playerStats.progress || {};
+
+    app.innerHTML = `
+    <section style="min-height:100vh;padding-top:40px">
+
+        <h2 class="section-title">📊 התקדמות בלמידה</h2>
+
+        <div class="grid-full">
+
+            <div class="card" onclick="router('progress_topic','mechanics')">
+                <div class="card-overlay">
+                    <h3>מכניקה</h3>
+                    <p>${progress.mechanics || 0}%</p>
+                </div>
+            </div>
+
+            <div class="card" onclick="router('progress_topic','electricity')">
+                <div class="card-overlay">
+                    <h3>חשמל ומגנטיות</h3>
+                    <p>${progress.electricity || 0}%</p>
+                </div>
+            </div>
+
+            <div class="card" onclick="router('progress_topic','radiation')">
+                <div class="card-overlay">
+                    <h3>קרינה וחומר</h3>
+                    <p>${progress.radiation || 0}%</p>
+                </div>
+            </div>
+
+        </div>
+
+        <button class="btn-back" onclick="router('home')">
+            חזור
+        </button>
+
+    </section>
+    `;
+}
+
+async function updateProgress(exId, correct, total) {
+
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const percent = Math.round((correct / total) * 100);
+
+    let subject = "mechanics";
+
+    if (exId.includes("electricity")) subject = "electricity";
+    if (exId.includes("radiation")) subject = "radiation";
+
+    const current = window.playerStats.progress[subject] || 0;
+
+    const newValue = Math.round((current + percent) / 2);
+
+    window.playerStats.progress[subject] = newValue;
+
+    await setDoc(doc(db,"users",user.uid),{
+        progress:{
+            ...window.playerStats.progress
+        }
+    },{merge:true});
+}
+
+function renderProgressPage(){
+
+    const app = document.getElementById("app-container");
+
+    const progress = window.playerStats.progress || {};
+
+    app.innerHTML = `
+    <section style="min-height:100vh;padding-top:40px">
+
+        <h2 class="section-title">📊 התקדמות הלמידה שלך</h2>
+
+        <div style="max-width:600px;margin:auto">
+
+            ${renderProgressBar("מכניקה",progress.mechanics)}
+            ${renderProgressBar("חשמל",progress.electricity)}
+            ${renderProgressBar("קרינה",progress.radiation)}
+
+        </div>
+
+        <button class="btn-back" onclick="router('home')">
+            חזור
+        </button>
+
+    </section>
+    `;
+}
+
+function renderProgressBar(title,value=0){
+
+return `
+<div style="margin-bottom:25px">
+
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span>${title}</span>
+        <span>${value}%</span>
+    </div>
+
+    <div style="
+        width:100%;
+        height:18px;
+        background:#e2e8f0;
+        border-radius:10px;
+        overflow:hidden
+    ">
+
+        <div style="
+            width:${value}%;
+            height:100%;
+            background:linear-gradient(90deg,#3b82f6,#10b981);
+            transition:width 0.5s;
+        "></div>
+
+    </div>
+
+</div>
+`;
+}
+
 function listenToLeaderboard() {
     const q = query(
     collection(db, "users"),
@@ -1060,12 +1517,12 @@ function renderAchievements() {
     const list = document.getElementById('achievements-list');
     if (!list) return;
 
-    const level = playerStats.level;
+    const level = window.playerStats.level;
 
     const achievements = [
-        { title: "הגעה לרמה 5", condition: level >= 5, stars: 5 },
-        { title: "הגעה לרמה 10", condition: level >= 10, stars: 10 },
-        { title: "הגעה לרמה 20", condition: level >= 20, stars: 20 },
+        { id: "level5", title: "הגעה לרמה 5", condition: level >= 5, stars: 5 },
+        { id: "level10", title: "הגעה לרמה 10", condition: level >= 10, stars: 10 },
+        { id: "level20", title: "הגעה לרמה 20", condition: level >= 20, stars: 20 },
     ];
 
     list.innerHTML = achievements.map(a => `
@@ -1125,7 +1582,7 @@ function renderAchievements() {
 
 async function checkAchievements() {
 
-    const level = playerStats.level;
+    const level = window.playerStats.level;
 
     const achievements = [
         { id: "level5", condition: level >= 5, stars: 5 },
@@ -1134,48 +1591,55 @@ async function checkAchievements() {
     ];
 
     for (let ach of achievements) {
-
-        // אם ההישג הושג והוא לא כבר נפתח
         if (
             ach.condition &&
-            !playerStats.unlockedAchievements?.includes(ach.id)
+            !window.playerStats.unlockedAchievements.includes(ach.id)
         ) {
-
-            // מוסיף כוכבים
-            playerStats.stars += ach.stars;
-
-            // מסמן כהושג
-            playerStats.unlockedAchievements.push(ach.id);
-
-            // שומר ב-DB
+            window.playerStats.stars += ach.stars;
+            window.playerStats.unlockedAchievements.push(ach.id);
             await saveStatsToDB();
         }
     }
+
+    renderAchievements();
 }
+
+window.checkAchievements = checkAchievements;
 /* =========================================
    14. אתחול ראשוני
    ========================================= */
-window.onload = function() {
+
+window.addEventListener("load", () => {
 
     if (!sessionStorage.getItem("loaderShown")) {
 
-    createParticles();
-    startTypingAnimation();
+        createParticles();
+        startTypingAnimation();
 
-    setTimeout(() => {
+        setTimeout(() => {
+
+            const loader = document.getElementById('loading-screen');
+
+            if (loader) {
+                loader.classList.add('fade-out');
+                document.querySelector(".chat-fab").style.display = "flex";
+                setTimeout(() => {
+                    loader.remove(); // יותר בטוח מ-display none
+                }, 800);
+            }
+
+            window.router('home');
+
+        }, 2500);
+
+        sessionStorage.setItem("loaderShown", "true");
+
+    } else {
+
         const loader = document.getElementById('loading-screen');
-        if (loader) {
-            loader.classList.add('fade-out');
-            setTimeout(() => {
-                loader.style.display = "none";
-            }, 800);
-        }
+        if (loader) loader.remove();
 
         window.router('home');
-    }, 3500);
+    }
 
-    sessionStorage.setItem("loaderShown", "true");
-}
-
-    listenToLeaderboard();
-};
+});
