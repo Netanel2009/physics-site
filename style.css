@@ -1,14 +1,12 @@
 :root {
     --primary: #2563eb;
     --dark: #0f172a;
-    --light-glass: rgba(255, 255, 255, 0.85); /* צבע זכוכית בהיר */
+    --light-glass: rgba(255, 255, 255, 0.85);
     --accent: #f59e0b;
-}
 
-:root {
-  --z-navbar: 1000;
-  --z-modal: 2000;
-  --z-top: 5000;
+    --z-navbar: 1000;
+    --z-modal: 2000;
+    --z-top: 5000;
 }
 
 * {
@@ -512,11 +510,7 @@ footer {
         background-attachment: scroll;
     }
 }
-@media (max-width: 768px) {
-    #leaderboard-sidebar {
-        display: none;
-    }
-}
+
 .admin-header {
     display: flex;
     justify-content: space-between;
@@ -615,36 +609,6 @@ footer {
     text-align: center;
     margin-top: 3px;
     font-weight: 600;
-}
-
-
-
-/* חלון צ'אט */
-#ai-chat-box {
-    position: fixed;
-    bottom: 90px;
-    right: 20px;
-    width: 320px;
-    height: 400px;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    z-index: 9999;
-
-    /* אנימציה */
-    opacity: 0;
-    transform: translateY(20px) scale(0.95);
-    pointer-events: none;
-    transition: all 0.25s ease;
-}
-
-#ai-chat-box.open {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: auto;
 }
 
 #loading-screen {
@@ -833,19 +797,6 @@ footer {
         transform: translateY(-10vh);
         opacity: 1;
     }
-}
-
-#leaderboard-sidebar {
-    position: fixed;
-    top: 200px;
-    right: 0; /* אם תרצה בצד ימין → שנה ל-right:0 */
-    width: 260px;
-    background: rgba(255,255,255,0.95);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    border-radius: 20px 20px 20px 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    z-index: 1500;
 }
 
 #leaderboard-sidebar h3 {
@@ -1123,17 +1074,7 @@ footer {
     gap: 8px;
 }
 
-/* בועה בסיסית */
-.chat-bubble {
-    max-width: 80%;
-    padding: 10px 14px;
-    border-radius: 18px;
-    font-size: 14px;
-    line-height: 1.4;
-    word-wrap: break-word;
-    animation: bubbleIn 0.2s ease;
-    white-space: pre-line;
-}
+
 
 /* הודעת משתמש (ימין) */
 .chat-user {
@@ -1163,8 +1104,15 @@ footer {
     }
 }
 .chat-bubble {
-    white-space: pre-line;  /* הכי חשוב */
+    max-width: 80%;
+    padding: 10px 14px;
+    border-radius: 18px;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
     word-break: break-word;
+    white-space: pre-line;
+    animation: bubbleIn 0.2s ease;
 }
 
 .progress-btn{
@@ -1204,6 +1152,530 @@ footer {
 #loading-screen ~ .chat-fab{
     display:none;
 }
-#leaderboard-sidebar{
-    display:none;
+
+/* כותרת בהירה לדפי התקדמות ותכנים */
+.section-title.light {
+    color: #ffffff;
+    text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+/* שיפור כרטיסי ההתקדמות */
+.progress-card {
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.text-white-shadow {
+    color: white !important;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+}
+/* ✨ hover חדש — חלק, בלי סיבוב */
+#leaderboard-toggle:hover {
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 15px 35px rgba(59,130,246,0.5);
+}
+
+/* ✨ אפקט לחיצה */
+#leaderboard-toggle:active {
+    transform: scale(0.95);
+}
+
+/* ✨ אפקט זוהר עדין */
+#leaderboard-toggle::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s;
+    box-shadow: 0 0 20px rgba(196, 129, 28, 0.6);
+}
+
+#leaderboard-toggle:hover::after {
+    opacity: 1;
+}
+
+/* ✨ אנימציית pulse עדינה */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(185, 115, 10, 0.5); }
+    70% { box-shadow: 0 0 0 12px rgba(59,130,246,0); }
+    100% { box-shadow: 0 0 0 0 rgba(59,130,246,0); }
+}
+/* ה-sidebar - מצב סגור */
+#leaderboard-sidebar {
+    position: fixed;
+    top: 150px;
+    right: -280px; /* מוסתר מחוץ למסך */
+    width: 260px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 20px 0 0 20px;
+    box-shadow: -5px 0 30px rgba(0,0,0,0.2);
+    z-index: 1500;
+    transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block !important;
+}
+
+/* ה-sidebar - מצב פתוח */
+#leaderboard-sidebar.open {
+    right: 0;
+}
+
+/* הכפתור עצמו */
+#leaderboard-toggle {
+    position: fixed;
+    top: 200px;
+    right: 15px; /* צמוד לימין כשהוא סגור */
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #ffffff, #b16824);
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 2100; /* מעל ה-sidebar */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    transition: all 0.4s ease;
+    animation: pulse 2.5s infinite;
+}
+
+/* הזזת הכפתור שמאלה כשהתפריט נפתח כדי שלא יסתיר את הטבלה */
+#leaderboard-toggle.open {
+    right: 275px;
+    background: linear-gradient(135deg, #d37171, #dc2626);
+    animation: none; /* מפסיק את הדופק כשהוא פתוח */
+}
+
+/* =========================================
+   🚀 Floating Buttons Upgrade
+   ========================================= */
+
+.floating-btn {
+    position: fixed;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 24px;
+    color: white;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+
+    z-index: 1200;
+
+    animation: pulseGlow 2.5s infinite;
+}
+
+/* ✨ Hover */
+.floating-btn:hover {
+    transform: translateY(-5px) scale(1.1);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+}
+
+/* ✨ Glow */
+.floating-btn::before {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #3b82f6, #f59e0b, #10b981);
+    z-index: -1;
+    filter: blur(10px);
+    opacity: 0;
+    transition: 0.3s;
+}
+
+.floating-btn:hover::before {
+    opacity: 1;
+}
+
+/* ✨ Tooltip */
+.floating-btn::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 70px;
+    background: #0f172a;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    opacity: 0;
+    transform: translateX(10px);
+    transition: 0.3s;
+    white-space: nowrap;
+}
+
+.floating-btn:hover::after {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* 🎯 Leaderboard */
+#leaderboard-toggle {
+    top: 250px;
+    right: 15px;
+    background: linear-gradient(135deg, gold, #f59e0b);
+}
+
+/* 🏆 Achievements */
+#achievements-btn {
+    top: 200px;
+    left: 20px;
+    background: linear-gradient(135deg, #a855f7, #7c3aed);
+}
+
+/* 📊 Progress */
+.progress-icon {
+    top: 300px;
+    left: 20px;
+    background: linear-gradient(135deg, #299c46, #9dff00);
+}
+
+/* 🔔 Badge */
+.badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: red;
+    color: white;
+    font-size: 12px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ✨ Pulse animation */
+@keyframes pulseGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(59,130,246,0.6);
+    }
+    70% {
+        box-shadow: 0 0 0 15px rgba(59,130,246,0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(59,130,246,0);
+    }
+}
+/* --- ניצוצות עדינים ב-Hover (JS Generated) --- */
+
+.sparkle {
+    position: absolute;
+    width: 3px;  /* קטן מאוד */
+    height: 3px;
+    background-color: white; /* צבע לבן נקי */
+    border-radius: 50%; /* עגול */
+    pointer-events: none; /* שלא יפריע לקליקים */
+    opacity: 0;
+    z-index: 1000; /* מעל הכפתור */
+    
+    /* אנימציית סיבוב, עליה והיעלמות */
+    animation: sparkle-animation 1s ease-out forwards;
+}
+
+@keyframes sparkle-animation {
+    0% {
+        transform: translate(0, 0) scale(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1; /* נדלק מהר */
+        transform: translate(0, 0) scale(1);
+    }
+    100% {
+        /* זז למעלה ולצדדים בצורה אקראית (נשלט ע"י JS) */
+        transform: translate(var(--x), var(--y)) scale(0.5);
+        opacity: 0; /* נעלם לאט */
+    }
+}
+
+/* ביטול אפקטים קודמים שהצעתי אם קיימים */
+.chat-fab::before, .floating-btn::before, #achievements-btn::before, .progress-icon::before, #leaderboard-toggle::before {
+    display: none !important;
+}
+
+/* יישור כפתורי הרדיו והטקסט באותה שורה */
+.options-group label {
+    display: flex !important;
+    align-items: center; /* מיישר אנכית למרכז */
+    gap: 12px; /* רווח קבוע בין העיגול לטקסט */
+    margin: 12px 0;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 10px 15px;
+    border-radius: 12px;
+    transition: background 0.2s;
+    direction: rtl; /* מבטיח כיווניות נכונה לעברית */
+}
+
+/* ריווח קטן לכפתור הרדיו עצמו */
+.options-group input[type="radio"] {
+    margin: 0; /* ביטול שוליים קיימים שעלולים להרוס את האיזון */
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    flex-shrink: 0; /* מונע מהעיגול להתכווץ אם הטקסט ארוך */
+}
+
+/* =========================================
+   🌊 עיצוב גלים מבודד - רק לכרטיסי התקדמות
+   ========================================= */
+
+/* המיכל של הגלים - משנה רק את מי שיש לו card-liquid */
+.progress-page .card.card-liquid {
+    background: #020617 !important; /* רקע שחור עמוק במקום תמונה */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: relative;
+    overflow: hidden;
+    padding: 0; /* 🔥 חשוב – מוריד את הרווח הפנימי */
+    
+}
+
+/* הגל עצמו - מוגדר כבן של card-liquid בלבד */
+.progress-page .card.card-liquid .liquid-bg {
+    position: absolute;
+    bottom: -2px; 
+    left: -2px;
+    right: -2px;
+    width: calc(100% + 4px); 
+    background: linear-gradient(180deg, #1e40af 0%, #0f172a 100%);
+    z-index: 1;
+    transition: height 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    -webkit-mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,120V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,42.47V120Z" fill="black"/></svg>');
+    mask-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M0,120V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,42.47V120Z" fill="black"/></svg>');
+    
+    -webkit-mask-size: 200% 60px;
+    mask-size: 200% 60px;
+    -webkit-mask-position: 0 top;
+    mask-position: 0 top;
+    
+    animation: waveMoveScoped 12s linear infinite;
+}
+
+/* שכבת הטקסט - ממורכזת רק בתוך card-liquid */
+.progress-page .card.card-liquid .card-overlay {
+    position: relative !important;
+    inset: auto !important;
+    background: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 20px !important;
+    text-align: center !important;
+    width: 100% !important;
+    pointer-events: none;
+    z-index: 2;
+}
+
+/* הכותרת (מכניקה) בתוך הגלים */
+.progress-page .card.card-liquid h3 {
+    font-size: 2rem !important;
+    font-weight: 800;
+    color: white !important;
+    margin-bottom: 5px !important;
+    text-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
+}
+
+/* המספר הענק (35%) בתוך הגלים */
+.progress-page .card.card-liquid p {
+    font-size: 4.5rem !important;
+    font-weight: 900 !important;
+    color: white !important;
+    margin: 0 !important;
+    line-height: 1 !important;
+    text-shadow: 0 0 20px rgba(59, 130, 246, 0.5), 0 10px 30px rgba(0,0,0,0.5) !important;
+    animation: floatNumberWave 4s ease-in-out infinite !important;
+}
+
+.progress-page .card.card-liquid p::after {
+    content: "%";
+    font-size: 1.8rem;
+    vertical-align: super;
+}
+
+/* אנימציות עם שמות ייחודיים כדי למנוע התנגשויות */
+@keyframes waveMoveScoped {
+    from { -webkit-mask-position: 0 top; mask-position: 0 top; }
+    to { -webkit-mask-position: -200% top; mask-position: -200% top; }
+}
+
+@keyframes floatNumberWave {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+/* עיצוב משודרג לכרטיסים האנימטיביים בעמוד א' */
+.animated-bg-card {
+    position: relative;
+    overflow: hidden;
+    background: rgba(30, 41, 59, 0.7) !important; /* רקע כהה חצי שקוף */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease !important;
+    cursor: pointer;
+    min-height: 180px;
+}
+
+/* קנבס החלקיקים שנמצא ברקע הקוביה */
+.card-particle-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* מאפשר ללחוץ על הכרטיס דרך הקנבס */
+    z-index: 1;
+}
+
+/* שכבת התוכן והטקסט מעל האנימציה */
+.card-overlay-animated {
+    position: relative;
+    z-index: 2;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    text-align: center;
+    color: #ffffff;
+}
+
+.card-overlay-animated h3 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    letter-spacing: 1px;
+}
+
+/* אייקון פיזיקלי קטן מעל השם שמוסיף המון לאסתטיקה */
+.card-icon-animated {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+    opacity: 0.85;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+/* אפקט ריחוף (Hover) יוקרתי לקוביות */
+.animated-bg-card:hover {
+    transform: translateY(-8px) scale(1.02);
+}
+
+.animated-bg-card:nth-child(1):hover {
+    box-shadow: 0 0 25px rgba(59, 130, 246, 0.5);
+}
+.animated-bg-card:nth-child(2):hover {
+    box-shadow: 0 0 25px rgba(245, 158, 11, 0.5);
+}
+.animated-bg-card:nth-child(3):hover {
+    box-shadow: 0 0 25px rgba(139, 92, 246, 0.5);
+}
+
+.animated-bg-card:hover .card-icon-animated {
+    transform: rotate(15deg) scale(1.1);
+    filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* --- עיצוב כרטיסי הגלים לעמוד הסרטונים --- */
+.video-wave-card {
+    position: relative !important;
+    overflow: hidden !important;
+    background: linear-gradient(135deg, #131a2c 0%, #0f172a 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+    transition: transform 0.3s ease, border-color 0.3s ease !important;
+    cursor: pointer;
+    min-height: 190px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+/* קנבס הגלים שרץ ברקע */
+.video-wave-canvas {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+    z-index: 1 !important;
+}
+
+/* שכבת המלל והאייקון מעל הגלים */
+.video-card-overlay {
+    position: relative !important;
+    z-index: 2 !important;
+    height: 100% !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 20px !important;
+    text-align: center !important;
+    background: none !important;
+}
+
+.video-card-overlay h3 {
+    font-size: 2.2rem !important;
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    margin: 0 !important;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.7) !important;
+}
+    
+/* אייקון וידאו מעוצב */
+.video-card-icon {
+    font-size: 2.6rem !important;
+    margin-bottom: 12px !important;
+    transition: transform 0.3s ease !important;
+}
+
+/* אפקט ריחוף (Hover) שמאיר את המסגרת לפי צבע הנושא */
+.video-wave-card:hover {
+    transform: translateY(-6px) !important;
+}
+.video-wave-card:nth-child(1):hover {
+    border-color: #60a5fa !important;
+    box-shadow: 0 15px 35px rgba(96, 165, 250, 0.25) !important;
+}
+.video-wave-card:nth-child(2):hover {
+    border-color: #fbbf24 !important;
+    box-shadow: 0 15px 35px rgba(251, 191, 36, 0.25) !important;
+}
+.video-wave-card:nth-child(3):hover {
+    border-color: #a78bfa !important;
+    box-shadow: 0 15px 35px rgba(167, 139, 250, 0.25) !important;
+}
+
+.video-wave-card:hover .video-card-icon {
+    transform: scale(1.12) !important;
 }
