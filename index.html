@@ -139,16 +139,21 @@
 
     </div>
 
-    
     <!-- Leaderboard Sidebar -->
     <div id="leaderboard-sidebar">
         <h3>🏆 טופ 5</h3>
         <div id="leaderboard-list"></div>
     </div>
+    <button id="leaderboard-toggle" onclick="toggleLeaderboard()">
+        🥇
+    </button>
     <!-- Achievements Button -->
     <button id="achievements-btn" onclick="toggleAchievements()">
-        🏆
+        🎯
     </button>
+
+
+    
     <button onclick="router('progress')" class="progress-icon">
         <i class="fa-solid fa-chart-line"></i>
     </button>
@@ -161,11 +166,61 @@
         </div>
     </div>
     <!-- Bot Floating Button -->
-    <button class="chat-fab" onclick="toggleChat()" style="display:none;">
+    <button class="chat-fab" onclick="toggleChat()">
         🤖
     </button>
     <script type="module" src="script.js"></script>
 
-    
+    <script>
+        window.initPhysicsWaves = function(canvasId, waveColor, speed, amplitude) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext("2d");
+
+            const resize = () => {
+                const rect = canvas.parentElement.getBoundingClientRect();
+                canvas.width = rect.width || 300;
+                canvas.height = rect.height || 180;
+            };
+            resize();
+            window.addEventListener('resize', resize);
+
+            let count = 0;
+            let mouseX = canvas.width / 2;
+
+            canvas.parentElement.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                mouseX = e.clientX - rect.left;
+            });
+
+            function animate() {
+                if (!document.getElementById(canvasId)) return; // עוצר כשיוצאים מהעמוד
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                count += speed;
+
+                // ציור 3 גלים חופפים ליצירת עומק תלת מימדי
+                for (let j = 0; j < 3; j++) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = waveColor;
+                    ctx.globalAlpha = j === 0 ? 0.25 : j === 1 ? 0.15 : 0.07;
+                    const shift = j * 40;
+                    const currentAmp = amplitude + (mouseX / canvas.width) * 12;
+
+                    for (let x = 0; x < canvas.width; x += 5) {
+                        const y = canvas.height / 2 + 
+                                Math.sin(x * 0.015 + count + shift) * currentAmp +
+                                Math.cos(x * 0.025 - count + shift) * (currentAmp / 2);
+                        
+                        if (x === 0) ctx.moveTo(x, y);
+                        else ctx.lineTo(x, y);
+                    }
+                    ctx.stroke();
+                }
+                ctx.globalAlpha = 1.0;
+                requestAnimationFrame(animate);
+            }
+            animate();
+        };
+    </script>
 </body>
 </html>
