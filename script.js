@@ -438,34 +438,43 @@ function getVideoId(url) {
 
 function renderSubjects() {
     const app = document.getElementById('app-container');
-    // שליפת אחוזים מה-State, אם אין נתונים מתחילים ב-0
-    const progress = window.playerStats.progress || { mechanics: 0, electricity: 0, radiation: 0 };
-
+    
+    // עמוד א' - נקי לחלוטין מאחוזים ומציג את גלי הסינוס הדינמיים בכל מצב (תרגול או סרטונים)
     app.innerHTML = `
-        <section style="min-height:100vh; padding-top:40px;">
+        <section style="min-height:100vh; padding-top:40px; direction: rtl;">
             <h2 class="section-title text-white-shadow">${pageMode === 'exercises' ? 'תרגול שאלות' : 'סרטונים והסברים'}</h2>
             <div class="grid-full">
                 ${window.contentData.subjects.map(sub => {
-                    const percent = progress[sub.id] || 0;
                     return `
-                    <div class="card card-liquid" onclick="handleSubjectClick('${sub.id}')">
-                        <div class="liquid-bg" style="height: ${percent}%;"></div>
-                        
-                        <div class="card-overlay">
+                    <div class="card video-wave-card" onclick="handleSubjectClick('${sub.id}')">
+                        <canvas class="video-wave-canvas" id="wave-${sub.id}"></canvas>
+                        <div class="video-card-overlay">
+                            <i class="fa-solid ${sub.id === 'mechanics' ? 'fa-film' : sub.id === 'electricity' ? 'fa-bolt' : 'fa-circle-nodes'} video-card-icon"></i>
                             <h3>${sub.title}</h3>
-                            <p>${sub.desc}</p>
-                            <div style="font-weight: 800; margin-top: 10px; font-size: 1.4rem; color: #1e40af;">
-                                ${percent}% הושלמו
-                            </div>
+                            <p style="margin-top: 5px; opacity: 0.8; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-size: 1.1rem;">${sub.desc}</p>
                             <button class="card-btn" style="margin-top:15px; pointer-events:none;">בחר נושא</button>
                         </div>
                     </div>
                     `;
                 }).join('')}
             </div>
+            
+            <div style="text-align: center; color: rgba(255,255,255,0.3); font-size: 0.8rem; margin-top: 25px; margin-bottom: 15px;">
+                Interactive wave animation inspired by Mathematical Canvas Fluid (MIT License)
+            </div>
+
             <button class="btn-back" onclick="router('home')">חזור לדף הבית</button>
         </section>
     `;
+
+    // הפעלת האנימציה הגלית לכל הקנבסים בעמוד א'
+    setTimeout(() => {
+        if (window.initPhysicsWaves) {
+            window.initPhysicsWaves("wave-mechanics", "#60a5fa", 0.015, 20);
+            window.initPhysicsWaves("wave-electricity", "#fbbf24", 0.025, 15);
+            window.initPhysicsWaves("wave-radiation", "#a78bfa", 0.01, 25);
+        }
+    }, 100);
 }
 
 function renderContentList(subjectId) {
