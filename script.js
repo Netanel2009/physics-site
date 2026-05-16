@@ -44,9 +44,42 @@ const db = getFirestore(firebaseApp);
 /* =========================================
    2. משתנים גלובליים ומצב (State)
    ========================================= */
-let pageMode = 'explanations'; 
-let authMode = 'login';
 
+const dict = {
+    kinematics: "קינמטיקה",
+    dynamics: "דינמיקה",
+    gravity: "כבידה",
+    energy: "עבודה ואנרגיה",
+    momentum: "תנע",
+
+    electrostatics: "אלקטרוסטטיקה",
+    circuits: "מעגלים חשמליים",
+    magnetism: "מגנטיות",
+    induction: "השראה אלקטרומגנטית",
+
+    optics: "אופטיקה",
+    quantum: "פיזיקה קוונטית",
+    atomic: "מבנה האטום",
+    nuclear: "פיזיקה גרעינית"
+};
+
+const physicsStructure = {
+    mechanics: {
+        title: "מכניקה",
+        subtopics: ["kinematics", "dynamics", "gravity", "energy", "momentum"]
+    },
+    electricity: {
+        title: "חשמל ומגנטיות",
+        subtopics: ["electrostatics", "circuits", "magnetism", "induction"]
+    },
+    radiation: {
+        title: "קרינה וחומר",
+        subtopics: ["optics", "quantum", "atomic", "nuclear"]
+    }
+};
+
+let pageMode = 'explanations';
+let authMode = 'login';
 /* =========================================
    3. נתונים (Data)
    ========================================= */
@@ -69,6 +102,31 @@ window.contentData = {
     mechanics_exercises: [
         { id: 'ex_kinematics', title: 'תרגול קינמטיקה', desc: 'שאלות על תנועה שוות תאוצה', image: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' },
         { id: 'ex_momentum', title: 'תרגול תנע', desc: 'התנגשויות ומתקף', image: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }
+    
+    ],
+    electricity_exercises: [
+        { 
+            id: 'ex_electricity', 
+            title: 'תרגול חשמל', 
+            desc: 'מעגלים, חוק אוהם ושדות', 
+            image: 'linear-gradient(135deg, #f59e0b, #d97706)' 
+        }
+    ],
+
+    radiation_exercises: [
+        { 
+            id: 'ex_radiation', 
+            title: 'תרגול קרינה וחומר', 
+            desc: 'אופטיקה ופיזיקה מודרנית', 
+            image: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' 
+        }
+    ],
+    electricity_exercises: [
+        { id: 'ex_electricity', title: 'תרגול חשמל', desc: 'מעגלים וזרמים', image: 'linear-gradient(135deg, #f59e0b, #b45309)' }
+    ],
+
+    radiation_exercises: [
+        { id: 'ex_radiation', title: 'תרגול קרינה', desc: 'אופטיקה ופיזיקה מודרנית', image: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }
     ],
 
     simulations_content: [
@@ -97,20 +155,67 @@ window.contentData = {
 };
 
 window.questionsBank = {
-    'ex_kinematics': [
-        { q: "גוף מתחיל לנוע ממנוחה בתאוצה קבועה של 2m/s². מה יהיה המרחק שיעבור הגוף כעבור 5 שניות?", a: "25 מ'", options: ["10 מ'", "25 מ'", "50 מ'", "100 מ'"] },
-        { q: "כדור נזרק אנכית מעלה במהירות של 30m/s (בהנחה ש-g=10). תוך כמה זמן יגיע הכדור לשיא הגובה?", a: "3 שניות", options: ["1 שניה", "3 שניות", "5 שניות", "30 שניות"] }
+
+        'ex_kinematics': [
+        {
+            q: "מכונית מתחילה לנוע ממנוחה בתאוצה קבועה של 2m/s². לאחר שהגיעה למהירות של 20m/s, היא ממשיכה במהירות זו במשך 10 שניות נוספות. מהו המרחק הכולל שעברה המכונית?",
+            a: "300 מ'",
+            options: ["200 מ'", "250 מ'", "300 מ'", "400 מ'"],
+            topic: "mechanics",
+            subtopic: "kinematics"
+        },
+        {
+            q: "גוף נזרק אנכית מעלה וחוזר לנקודת הזריקה לאחר 6 שניות. מהו הגובה המקסימלי אליו הגיע הגוף? (הנח g=10m/s²)",
+            a: "45 מ'",
+            options: ["30 מ'", "45 מ'", "60 מ'", "90 מ'"],
+            topic: "mechanics",
+            subtopic: "kinematics"
+        },],
+
+
+    'ex_electricity': [
+        {
+            q: "מהו חוק אוהם?",
+            a: "V = IR",
+            options: ["V = IR", "F = ma", "E = mc²", "P = IV"],
+            topic: "electricity",
+            subtopic: "circuits"
+        }
     ],
-    'ex_momentum': [
-        { q: "מהי ההגדרה הפיזיקלית של תנע?", a: "מכפלת המסה במהירות", options: ["מכפלת המסה בתאוצה", "מכפלת המסה במהירות", "האנרגיה הקינטית של הגוף", "הכוח הפועל על הגוף"] }
+
+    'ex_radiation': [
+        {
+            q: "מהי קרן אור?",
+            a: "קו המתאר את כיוון התפשטות האור",
+            options: [
+                "קו המתאר את כיוון התפשטות האור",
+                "חלקיק טעון",
+                "גל קול",
+                "כוח משיכה"
+            ],
+            topic: "radiation",
+            subtopic: "optics"
+        }
+    ],
+    
+    'ex_electricity': [
+        {
+            q: "מהי ההגדרה הפיזיקלית של תנע?",
+            a: "מכפלת המסה במהירות",
+            options: ["מכפלת המסה בתאוצה", "מכפלת המסה במהירות", "האנרגיה הקינטית של הגוף", "הכוח הפועל על הגוף"],
+            topic: "electricity",
+            subtopic: "electricity"
+         }
     ]
 };
 
 const testimonialsData = [
     { name: "יהונתן אדיב", text: "הסרטונים המפורטים לא הותירו לי שום בעיה בפתרון התרגילים. מומלץ בחום!", img: "https://i.pravatar.cc/150?u=1" },
-    { name: "ילי קינג", text: "אני אוהב את הברכיים שלי חמות.", img: "https://cdn.discordapp.com/attachments/1258539660167221339/1482829252754669638/03fbad16-cb76-4955-8b0d-c3066edd2179.png?ex=69b85fdb&is=69b70e5b&hm=521fa6ae7d9fd494bfd548efd7b8a2c29949f7be40657aab8826ed028e0c6371&" },
-    { name: "ניתי ווליך", text: "שונא שונא שונא שונא כ כ כ כ כ.", img: "https://cdn.discordapp.com/attachments/1258539660167221339/1482828439613341717/c3d1b4f7-cc6d-4e80-a552-1d1a0ab72ad4.png?ex=69b85f19&is=69b70d99&hm=19e0351663705d1b2320809f9052eaab0dcca222d8061effcbe7321e5e943f2c&" }
+    { name: "סתיו שיריזלי", text: "הסימולציות עוזרות להבין את החומר באמת, ולא רק לשנן נוסחאות.", img: "https://i.pravatar.cc/150?u=2" },
+    { name: "ניתי ווליך", text: "האתר הכי טוב שמצאתי לבגרות. הכל מסודר, נקי וברור מאוד.", img: "https://cdn.discordapp.com/attachments/1258539660167221339/1482828439613341717/c3d1b4f7-cc6d-4e80-a552-1d1a0ab72ad4.png?ex=69b85f19&is=69b70d99&hm=19e0351663705d1b2320809f9052eaab0dcca222d8061effcbe7321e5e943f2c&" }
 ];
+
+
 
 /* =========================================
    4. מערכת XP ורמות (Gamification)
@@ -209,18 +314,16 @@ function triggerLevelUpEffect() {
    
 window.router = function(view, data = null) {
 
-    const leaderboard = document.getElementById("leaderboard-sidebar");
-
-        if(view === "home"){
-            leaderboard.style.display = "block";
-        }else{
-            leaderboard.style.display = "none";
-        }
-
     window.scrollTo(0, 0);
     const appContainer = document.getElementById('app-container');
+    if(!appContainer) return;
     appContainer.innerHTML = '';
 
+    // הגנה: אם מנסים להיכנס לדף התקדמות לפני שהסטטיסטיקה נטענה
+    if ((view === 'progress' || view === 'progress_topic') && !window.playerStats.progress) {
+        renderHomePage();
+        return;
+    }
 
     switch(view) {
         case 'home': renderHomePage(); break;
@@ -232,14 +335,14 @@ window.router = function(view, data = null) {
         case 'exercise_list': renderExerciseList(data); break;
         case 'folder_view': renderFolderContent(data); break;
         case 'active_exercise': renderActiveExercise(data); break;
-        case 'admin': 
-                showAdminLogin();
-                break;
-        case 'progress':
-            renderProgressSubjects();
-            break;
+        case 'admin': showAdminLogin(); break;
+        case 'progress': renderProgressSubjects(); break;
         case 'progress_topic':
-            renderProgressTopics(data);
+            if (data && physicsStructure[data]) {
+                renderProgressTopics(data);
+            } else {
+                renderHomePage();
+            }
             break;
         default: renderHomePage();
     }
@@ -335,19 +438,30 @@ function getVideoId(url) {
 
 function renderSubjects() {
     const app = document.getElementById('app-container');
+    // שליפת אחוזים מה-State, אם אין נתונים מתחילים ב-0
+    const progress = window.playerStats.progress || { mechanics: 0, electricity: 0, radiation: 0 };
+
     app.innerHTML = `
         <section style="min-height:100vh; padding-top:40px;">
-            <h2 class="section-title">${pageMode === 'exercises' ? 'תרגול שאלות' : 'סרטונים והסברים'}</h2>
+            <h2 class="section-title text-white-shadow">${pageMode === 'exercises' ? 'תרגול שאלות' : 'סרטונים והסברים'}</h2>
             <div class="grid-full">
-                ${window.contentData.subjects.map(sub => `
-                    <div class="card" onclick="handleSubjectClick('${sub.id}')" style="background: ${sub.image}">
+                ${window.contentData.subjects.map(sub => {
+                    const percent = progress[sub.id] || 0;
+                    return `
+                    <div class="card card-liquid" onclick="handleSubjectClick('${sub.id}')">
+                        <div class="liquid-bg" style="height: ${percent}%;"></div>
+                        
                         <div class="card-overlay">
                             <h3>${sub.title}</h3>
                             <p>${sub.desc}</p>
-                            <button class="card-btn">בחר נושא</button>
+                            <div style="font-weight: 800; margin-top: 10px; font-size: 1.4rem; color: #1e40af;">
+                                ${percent}% הושלמו
+                            </div>
+                            <button class="card-btn" style="margin-top:15px; pointer-events:none;">בחר נושא</button>
                         </div>
                     </div>
-                `).join('')}
+                    `;
+                }).join('')}
             </div>
             <button class="btn-back" onclick="router('home')">חזור לדף הבית</button>
         </section>
@@ -503,34 +617,43 @@ function renderFolderContent(folderId) {
     `;
 }
 
+// משתנה גלובלי זמני שיחזיק את השאלות שנבחרו בהגרלה
+let currentActiveQuestions = [];
+
 function renderActiveExercise(exId) {
-    const questions = window.questionsBank[exId];
+    const allQuestions = window.questionsBank[exId];
     const app = document.getElementById('app-container');
     
-    if (!questions) { 
+    if (!allQuestions) { 
         app.innerHTML = `<section><h2 class="section-title">אין שאלות עדיין</h2><button class="btn-back" onclick="router('home')">חזור</button></section>`; 
         return; 
     }
 
+    // הגרלת 10 שאלות ושמירתן במשתנה הגלובלי
+    currentActiveQuestions = [...allQuestions]
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 10);
+
     let html = `
         <section style="min-height:100vh; padding-top:40px;">
-            <h2 class="section-title">תרגול שאלות</h2>
+            <h2 class="section-title">תרגול שאלות (10 שאלות אקראיות)</h2>
             <div class="form-container" style="text-align:right; direction:rtl; max-width:800px;">
                 <div id="exercise-container">
-                    ${questions.map((q, i) => `
+                    ${currentActiveQuestions.map((q, i) => `
                         <div class="question-block" style="margin-bottom:30px; border: 2px solid #f1f5f9; padding:25px; border-radius:20px; background: #fff;">
                             <p style="font-size:1.3rem; font-weight:700; margin-bottom:15px; color: var(--dark);">${i+1}. ${q.q}</p>
                             <div class="options-group">
                                 ${q.options.map(opt => `
-                                    <label style="display:block; margin:12px 0; cursor:pointer; font-size:1.1rem; padding:8px;">
-                                        <input type="radio" name="q${i}" value="${opt}" style="margin-left:10px;"> ${opt}
+                                    <label style="display:flex; align-items:center; gap:12px; margin:12px 0; cursor:pointer;">
+                                        <input type="radio" name="q${i}" value="${opt}"> 
+                                        <span>${opt}</span>
                                     </label>
                                 `).join('')}
                             </div>
                         </div>
                     `).join('')}
                 </div>
-                <button id="checkBtn" class="btn-main" style="width:100%; margin-top:20px;" onclick="checkAnswers('${exId}')">
+                <button id="checkBtn" class="btn-main" style="width:100%; margin-top:20px;" onclick="checkCurrentAnswers()">
                     <i class="fa-solid fa-check-double"></i> בדוק תשובות
                 </button>
             </div>
@@ -540,18 +663,131 @@ function renderActiveExercise(exId) {
     app.innerHTML = html;
 }
 
+window.checkCurrentAnswers = function() {
+    if (!currentActiveQuestions || currentActiveQuestions.length === 0) return;
+    
+    let correctCount = 0;
+    const questionBlocks = document.querySelectorAll('.question-block');
+
+    currentActiveQuestions.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const block = questionBlocks[i];
+
+        if (selected && selected.value === q.a) {
+            correctCount++;
+            block.style.border = "2px solid #22c55e";
+            block.style.background = "#f0fdf4";
+            addXP(100); // הוספת XP על תשובה נכונה
+        } else {
+            block.style.border = "2px solid #ef4444";
+            block.style.background = "#fef2f2";
+            // הצגת התשובה הנכונה במידה וטעה
+            const correctHint = document.createElement('p');
+            correctHint.style.color = "#dc2626";
+            correctHint.style.fontSize = "0.9rem";
+            correctHint.style.marginTop = "10px";
+            correctHint.innerHTML = `תשובה נכונה: <b>${q.a}</b>`;
+            block.appendChild(correctHint);
+        }
+    });
+
+    // השבתת הכפתור לאחר בדיקה
+    const btn = document.getElementById('checkBtn');
+    btn.disabled = true;
+    btn.innerHTML = `סיימת! ${correctCount}/10 תשובות נכונות`;
+    btn.style.background = "#64748b";
+
+    // גלילה לתוצאה הראשונה
+    questionBlocks[0].scrollIntoView({ behavior: 'smooth' });
+};
+
+async function updateProgress(exId, correct, total) {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const questions = window.questionsBank[exId];
+    if (!questions || !questions[0]) return;
+
+    const topic = questions[0].topic;
+    const subtopic = questions[0].subtopic;
+    const score = Math.round((correct / total) * 100);
+
+    // וידוא קיום אובייקטים ב-State
+    if (!window.playerStats.subProgress) window.playerStats.subProgress = {};
+    if (!window.playerStats.progress) window.playerStats.progress = {};
+
+    const oldSubScore = window.playerStats.subProgress[subtopic] || 0;
+    const newSubScore = Math.round((oldSubScore + score) / 2);
+    window.playerStats.subProgress[subtopic] = newSubScore;
+
+    // חישוב ממוצע נושא ראשי על סמך כל תתי הנושאים שלו
+    const subtopicsInTopic = physicsStructure[topic].subtopics;
+    let totalTopicScore = 0;
+    subtopicsInTopic.forEach(sub => {
+        totalTopicScore += (window.playerStats.subProgress[sub] || 0);
+    });
+    const newTopicScore = Math.round(totalTopicScore / subtopicsInTopic.length);
+    window.playerStats.progress[topic] = newTopicScore;
+
+    // שמירה ל-Firebase
+    const userRef = doc(db, "users", user.uid);
+    await setDoc(userRef, {
+        subProgress: window.playerStats.subProgress,
+        progress: window.playerStats.progress
+    }, { merge: true });
+}
+
+function renderProgressTopics(topicId) {
+    const app = document.getElementById("app-container");
+    const subProgress = window.playerStats.subProgress || {};
+    const topicData = physicsStructure[topicId];
+
+    app.innerHTML = `
+    <section style="min-height:100vh; padding-top:40px;">
+        <h2 class="section-title text-white-shadow">📊 פירוט התקדמות: ${topicData.title}</h2>
+
+        <div style="max-width:800px; margin:auto; width: 100%;">
+            ${topicData.subtopics.map(sub => {
+                const val = subProgress[sub] || 0;
+                return `
+                <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="display:flex; justify-content:space-between; color: white; margin-bottom: 10px; font-weight: bold;">
+                        <span>${translateSubtopic(sub)}</span>
+                        <span>${val}%</span>
+                    </div>
+                    <div style="width:100%; height:12px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow:hidden;">
+                        <div style="width:${val}%; height:100%; background: linear-gradient(90deg, #3b82f6, #10b981); transition: width 0.5s ease-in-out;"></div>
+                    </div>
+                </div>
+                `;
+            }).join("")}
+        </div>
+
+        <button class="btn-back" onclick="router('progress')">חזור לנושאים ראשיים</button>
+    </section>
+    `;
+}
+
+// פונקציית עזר לתרגום שמות תתי הנושאים לתצוגה
+function translateSubtopic(sub) {
+    const dict = {
+        kinematics: "קינמטיקה",
+        dynamics: "דינמיקה",
+        gravity: "כבידה",
+        energy: "עבודה ואנרגיה",
+        momentum: "תנע",
+        electrostatics: "אלקטרוסטטיקה",
+        circuits: "מעגלים חשמליים"
+        // המשך להוסיף כאן...
+    };
+    return dict[sub] || sub;
+}
+
 /* =========================================
    7. פונקציות לוגיקה כלליות
    ========================================= */
 
-window.handleCategoryClick = function(catId) {
-    if (catId === 'explanations' || catId === 'exercises') {
-        window.router('subject_select', catId);
-    } else {
-        alert('קטגוריה זו בבנייה כרגע...');
-    }
-};
-
+   
 window.handleSubjectClick = function(subId) {
     if (subId !== 'mechanics') {
         alert('נושא זה יעלה בקרוב!');
@@ -561,6 +797,23 @@ window.handleSubjectClick = function(subId) {
         window.router('exercise_list', 'mechanics');
     } else {
         window.router('content_list', 'mechanics');
+    }
+};
+    
+window.handleCategoryClick = function(catId) {
+    if (catId === 'explanations' || catId === 'exercises') {
+        window.router('subject_select', catId);
+    } else {
+        alert('קטגוריה זו בבנייה כרגע...');
+    }
+};
+
+window.handleSubjectClick = function(subId) {
+    
+    if (pageMode === 'exercises') {
+        window.router('exercise_list', subId);
+    } else {
+        window.router('content_list', subId);
     }
 };
 
@@ -719,27 +972,76 @@ async function loadStatsFromDB(uid) {
 
     if (snapshot.exists()) {
         const data = snapshot.data();
-
         window.playerStats = {
-        level: data.level || 1,
-        currentXP: data.currentXP || 0,
-        totalXP: data.totalXP || 0,
-        stars: data.stars || 0,
-        unlockedAchievements: data.unlockedAchievements || [],
-        completedExercises: data.completedExercises || [],
-        watchedVideos: data.watchedVideos || [],
-        progress: data.progress || {
-            mechanics: 0,
-            electricity: 0,
-            radiation: 0
-        }
-    };
+            level: data.level || 1,
+            currentXP: data.currentXP || 0,
+            totalXP: data.totalXP || 0,
+            stars: data.stars || 0,
+            unlockedAchievements: data.unlockedAchievements || [],
+            completedExercises: data.completedExercises || [],
+            watchedVideos: data.watchedVideos || [],
+            subProgress: data.subProgress || {}, // שים לב שהוספנו את זה
+            progress: data.progress || { mechanics: 0, electricity: 0, radiation: 0 }
+        };
 
     window.playerStats.xpNeeded = window.playerStats.level * 100;
 
     updateXPUI();
     await checkAchievements();
     }
+}
+
+function renderVideosPage() {
+    const app = document.getElementById("app-container");
+    
+    app.innerHTML = `
+        <section class="videos-page" style="min-height:100vh; padding-top:40px; direction: rtl;">
+            <h2 class="section-title text-white-shadow" style="text-align:center; margin-bottom: 40px;">🎥 סרטונים והסברים לפי נושאים</h2>
+            
+            <div class="grid-full" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; padding: 20px; max-width: 1200px; margin: 0 auto;">
+                <div class="card video-wave-card" onclick="router('videos_topic', 'mechanics')">
+                    <canvas class="video-wave-canvas" id="wave-mechanics"></canvas>
+                    <div class="video-card-overlay">
+                        <i class="fa-solid fa-film video-card-icon" style="color: #60a5fa;"></i>
+                        <h3>מכניקה</h3>
+                    </div>
+                </div>
+
+                <div class="card video-wave-card" onclick="router('videos_topic', 'electricity')">
+                    <canvas class="video-wave-canvas" id="wave-electricity"></canvas>
+                    <div class="video-card-overlay">
+                        <i class="fa-solid fa-bolt video-card-icon" style="color: #fbbf24;"></i>
+                        <h3>חשמל ומגנטיות</h3>
+                    </div>
+                </div>
+
+                <div class="card video-wave-card" onclick="router('videos_topic', 'radiation')">
+                    <canvas class="video-wave-canvas" id="wave-radiation"></canvas>
+                    <div class="video-card-overlay">
+                        <i class="fa-solid fa-circle-nodes video-card-icon" style="color: #a78bfa;"></i>
+                        <h3>קרינה וחומר</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; color: rgba(255,255,255,0.3); font-size: 0.8rem; margin-top: 40px;">
+                Interactive wave animation inspired by Mathematical Canvas Fluid (MIT License)
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-back" onclick="router('home')">חזור לדף הבית</button>
+            </div>
+        </section>
+    `;
+
+    // הפעלת מנוע הגלים
+    setTimeout(() => {
+        if (window.initPhysicsWaves) {
+            window.initPhysicsWaves("wave-mechanics", "#60a5fa", 0.015, 20);
+            window.initPhysicsWaves("wave-electricity", "#fbbf24", 0.025, 15);
+            window.initPhysicsWaves("wave-radiation", "#a78bfa", 0.01, 25);
+        }
+    }, 100);
 }
 
 // --- בודק משתמש מחובר (ומנתק אם הוא נמחק) ---
@@ -1014,6 +1316,7 @@ function showAdminLogin() {
     `;
 }
 
+
 window.verifyAdminPassword = function() {
     const password = document.getElementById('admin-password').value;
 
@@ -1267,134 +1570,158 @@ function createParticles() {
 /* =========================================
    12. leaderboard
    ========================================= */
+window.toggleLeaderboard = function() {
+    const sidebar = document.getElementById("leaderboard-sidebar");
+    const btn = document.getElementById("leaderboard-toggle");
+    
+    if (!sidebar) return;
 
-function renderProgressTopics(topic){
-
-    const app = document.getElementById("app-container");
-
-    let topics = [];
-
-    if(topic === "mechanics"){
-        topics = [
-            {name:"קינמטיקה",progress:60},
-            {name:"תנע ואנרגיה",progress:40},
-            {name:"תנועה הרמונית",progress:20}
-        ];
-    }
-
-    if(topic === "electricity"){
-        topics = [
-            {name:"אלקטרוסטטיקה",progress:10},
-            {name:"מעגלים חשמליים",progress:30}
-        ];
-    }
-
-    if(topic === "radiation"){
-        topics = [
-            {name:"אופטיקה",progress:0},
-            {name:"פיזיקה מודרנית",progress:0}
-        ];
-    }
-
-    app.innerHTML = `
-    <section style="min-height:100vh;padding-top:40px">
-
-        <h2 class="section-title">📊 התקדמות בתת נושאים</h2>
-
-        <div style="max-width:600px;margin:auto">
-
-        ${topics.map(t=>`
-
-            <div style="
-                display:flex;
-                justify-content:space-between;
-                padding:18px;
-                border-bottom:1px solid #eee;
-                font-weight:600;
-            ">
-                <span>${t.name}</span>
-                <span>${t.progress}%</span>
-            </div>
-
-        `).join("")}
-
-        </div>
-
-        <button class="btn-back" onclick="router('progress')">
-            חזור
-        </button>
-
-    </section>
-    `;
-}
-
-function renderProgressSubjects(){
-
-    const app = document.getElementById("app-container");
-    const progress = window.playerStats.progress || {};
-
-    app.innerHTML = `
-    <section style="min-height:100vh;padding-top:40px">
-
-        <h2 class="section-title">📊 התקדמות בלמידה</h2>
-
-        <div class="grid-full">
-
-            <div class="card" onclick="router('progress_topic','mechanics')">
-                <div class="card-overlay">
-                    <h3>מכניקה</h3>
-                    <p>${progress.mechanics || 0}%</p>
-                </div>
-            </div>
-
-            <div class="card" onclick="router('progress_topic','electricity')">
-                <div class="card-overlay">
-                    <h3>חשמל ומגנטיות</h3>
-                    <p>${progress.electricity || 0}%</p>
-                </div>
-            </div>
-
-            <div class="card" onclick="router('progress_topic','radiation')">
-                <div class="card-overlay">
-                    <h3>קרינה וחומר</h3>
-                    <p>${progress.radiation || 0}%</p>
-                </div>
-            </div>
-
-        </div>
-
-        <button class="btn-back" onclick="router('home')">
-            חזור
-        </button>
-
-    </section>
-    `;
-}
-
-async function updateProgress(exId, correct, total) {
-
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const percent = Math.round((correct / total) * 100);
-
-    let subject = "mechanics";
-
-    if (exId.includes("electricity")) subject = "electricity";
-    if (exId.includes("radiation")) subject = "radiation";
-
-    const current = window.playerStats.progress[subject] || 0;
-
-    const newValue = Math.round((current + percent) / 2);
-
-    window.playerStats.progress[subject] = newValue;
-
-    await setDoc(doc(db,"users",user.uid),{
-        progress:{
-            ...window.playerStats.progress
+    // הוספה/הסרה של ה-class 'open' (בדיוק כמו ב-CSS שלך)
+    sidebar.classList.toggle("open");
+    
+    if (btn) {
+        // הוספת ה-class 'open' גם לכפתור כדי שיזוז שמאלה
+        btn.classList.toggle("open");
+        
+        // החלפת האייקון ל-X כשהתפריט פתוח
+        if (sidebar.classList.contains("open")) {
+            btn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+        } else {
+            btn.innerHTML = '🏆';
         }
-    },{merge:true});
+    }
+};
+
+
+function renderProgressSubjects() {
+    const app = document.getElementById("app-container");
+    
+    app.innerHTML = `
+        <section class="progress-page" style="min-height:100vh; padding-top:40px;">
+            <h2 class="section-title text-white-shadow">📊 התקדמות הלמידה לפי נושאים</h2>
+            
+            <div class="grid-full">
+                <div class="card animated-bg-card" onclick="router('progress_topic', 'mechanics')">
+                    <canvas class="card-particle-canvas" id="canvas-mechanics"></canvas>
+                    <div class="card-overlay-animated">
+                        <i class="fa-solid fa-gears card-icon-animated"></i>
+                        <h3>מכניקה</h3>
+                    </div>
+                </div>
+
+                <div class="card animated-bg-card" onclick="router('progress_topic', 'electricity')">
+                    <canvas class="card-particle-canvas" id="canvas-electricity"></canvas>
+                    <div class="card-overlay-animated">
+                        <i class="fa-solid fa-bolt-lightning card-icon-animated"></i>
+                        <h3>חשמל ומגנטיות</h3>
+                    </div>
+                </div>
+
+                <div class="card animated-bg-card" onclick="router('progress_topic', 'radiation')">
+                    <canvas class="card-particle-canvas" id="canvas-radiation"></canvas>
+                    <div class="card-overlay-animated">
+                        <i class="fa-solid fa-atom card-icon-animated"></i>
+                        <h3>קרינה וחומר</h3>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 20px;">
+                Animated particle effect inspired by Particles.js (MIT License)
+            </div>
+
+            <button class="btn-back" onclick="router('home')">
+                חזור לדף הבית
+            </button>
+        </section>
+    `;
+
+    // הפעלת מנוע האנימציה לכל כרטיס בנפרד עם צבעים ייחודיים
+    setTimeout(() => {
+        initCardParticles("canvas-mechanics", "#3b82f6");     // כחול פיזיקלי קלאסי
+        initCardParticles("canvas-electricity", "#f59e0b");   // צהוב/כתום חשמלי
+        initCardParticles("canvas-radiation", "#8b5cf6");     // סגול קוונטי/קרינתי
+    }, 50);
 }
+
+// מנוע חלקיקים עצמאי ומהיר לכרטיסים (Inspired by Particles.js)
+function initCardParticles(canvasId, particleColor) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    
+    // התאמת גודל הקנבס לכרטיס האב שלו
+    const resize = () => {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+    };
+    resize();
+    window.addEventListener('resize', resize);
+
+    const particles = [];
+    const particleCount = 25; // כמות מאוזנת שלא תעמיס על המעבד
+
+    // יצירת חלקיקים ראשונית
+    for (let i = 0; i < particleCount; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            vx: (Math.random() - 0.5) * 0.6, // מהירות תנועה עדינה
+            vy: (Math.random() - 0.5) * 0.6,
+            radius: Math.random() * 2.5 + 1
+        });
+    }
+
+    function animate() {
+        // בדיקה שהאלמנט עדיין קיים במסך (כדי לא לבזבז זיכרון במעבר עמודים)
+        if (!document.getElementById(canvasId)) return;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // עדכון וציור חלקיקים
+        particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+
+            // החזרה מהקירות
+            if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+            if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+            ctx.fillStyle = particleColor;
+            ctx.globalAlpha = 0.5;
+            ctx.fill();
+        });
+
+        // חיבור חלקיקים קרובים בקווי רשת עדינים
+        ctx.globalAlpha = 0.15;
+        ctx.strokeStyle = particleColor;
+        ctx.lineWidth = 0.8;
+
+        for (let i = 0; i < particles.length; i++) {
+            for (let j = i + 1; j < particles.length; j++) {
+                const dx = particles[i].x - particles[j].x;
+                const dy = particles[i].y - particles[j].y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < 65) { // מרחק חיבור מקסימלי
+                    ctx.beginPath();
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+        ctx.globalAlpha = 1.0; // איפוס אלפא
+
+        requestAnimationFrame(animate);
+    }
+    
+    animate();
+}
+
 
 function renderProgressPage(){
 
@@ -1642,4 +1969,81 @@ window.addEventListener("load", () => {
         window.router('home');
     }
 
+});
+
+/* =========================================
+   --- אפקט ניצוצות עדין ב-Hover ---
+   ========================================= */
+
+// פונקציה ליצירת ניצוץ בודד
+function createSparkle(button) {
+    const sparkle = document.createElement("div");
+    sparkle.className = "sparkle";
+    
+    // מיקום התחלתי אקראי מסביב לכפתור
+    const rect = button.getBoundingClientRect();
+    const size = rect.width;
+    
+    // מיקום הניצוץ יחסית למרכז הכפתור
+    const x = Math.random() * size - size / 2;
+    const y = Math.random() * size - size / 2;
+    
+    sparkle.style.left = `${rect.left + rect.width / 2 + x}px`;
+    sparkle.style.top = `${rect.top + rect.height / 2 + y}px`;
+    
+    // הגדרת כיוון תנועה אקראי (עבור ה-CSS Variables)
+    // הניצוץ יעלה למעלה (y שלילי) ויזוז קצת לצדדים
+    const moveX = (Math.random() - 0.5) * 40 + "px"; // +/- 20px
+    const moveY = -(Math.random() * 50 + 30) + "px"; // 30-80px למעלה
+    
+    sparkle.style.setProperty("--x", moveX);
+    sparkle.style.setProperty("--y", moveY);
+    
+    // הוספה ל-DOM
+    document.body.appendChild(sparkle);
+    
+    // הסרה אוטומטית אחרי שהאנימציה מסתיימת (1 שנייה)
+    setTimeout(() => {
+        sparkle.remove();
+    }, 1000);
+}
+
+// פונקציה שמחברת את האפקט לכפתורים
+function initSparkleEffect() {
+    const buttonSelectors = [
+        '.chat-fab', 
+        '#achievements-btn', 
+        '.progress-icon', 
+        '#leaderboard-toggle'
+    ];
+    
+    buttonSelectors.forEach(selector => {
+        const btn = document.querySelector(selector);
+        if (btn) {
+            let sparkleInterval;
+            
+            btn.addEventListener('mouseenter', () => {
+                // יוצרים 5 ניצוצות מיד בכניסה לאפקט "וואו" ראשוני
+                for(let i = 0; i < 5; i++) {
+                    setTimeout(() => createSparkle(btn), i * 50);
+                }
+                
+                // מייצרים ניצוץ חדש כל 150 מילישניות (פי 2 יותר מהר מקודם)
+                sparkleInterval = setInterval(() => {
+                    createSparkle(btn);
+                }, 150); 
+            });
+            
+            btn.addEventListener('mouseleave', () => {
+                clearInterval(sparkleInterval);
+            });
+        }
+    });
+}
+
+// הפעלה כשהדף נטען
+window.addEventListener("load", () => {
+    // ... הקוד הקיים שלך של ה-loading screen ...
+    
+    initSparkleEffect(); // הפעלת הניצוצות
 });
