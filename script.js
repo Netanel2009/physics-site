@@ -480,6 +480,8 @@ function renderSubjects() {
 function renderContentList(subjectId) {
     const items = window.contentData[subjectId + '_content'];
     const app = document.getElementById('app-container');
+    if (!items) return;
+    
     app.innerHTML = `
         <section style="min-height:100vh; padding-top:40px;">
             <h2 class="section-title">תכנים</h2>
@@ -487,7 +489,7 @@ function renderContentList(subjectId) {
                 ${items.map(item => {
                     if (item.type === 'folder') {
                         return `
-                            <div class="card" onclick="router('folder_view', '${item.id}')" style="background: ${item.image}">
+                            <div class="card" onclick="router('folder_view', '${item.id}')" style="background: ${item.image || 'linear-gradient(to right, #3b82f6, #60a5fa)'};">
                                 <div class="card-overlay">
                                     <div style="font-size:3rem; margin-bottom:10px;"><i class="fa-solid fa-folder-open"></i></div>
                                     <h3>${item.title}</h3>
@@ -638,6 +640,8 @@ function renderActiveExercise(exId) {
         return; 
     }
 
+    currentActiveExId = exId; // שמירת ה-ID לשימוש בזמן הבדיקה והתקדמות
+
     // הגרלת 10 שאלות ושמירתן במשתנה הגלובלי
     currentActiveQuestions = [...allQuestions]
         .sort(() => 0.5 - Math.random())
@@ -690,24 +694,36 @@ window.checkCurrentAnswers = function() {
         } else {
             block.style.border = "2px solid #ef4444";
             block.style.background = "#fef2f2";
-            // הצגת התשובה הנכונה במידה וטעה
-            const correctHint = document.createElement('p');
-            correctHint.style.color = "#dc2626";
-            correctHint.style.fontSize = "0.9rem";
-            correctHint.style.marginTop = "10px";
-            correctHint.innerHTML = `תשובה נכונה: <b>${q.a}</b>`;
-            block.appendChild(correctHint);
+            
+            // מניעת שכפול הצגת הרמז אם המשתמש לוחץ שוב ושוב
+            if (!block.querySelector('.correct-hint')) {
+                const correctHint = document.createElement('p');
+                correctHint.className = "correct-hint";
+                correctHint.style.color = "#dc2626";
+                correctHint.style.fontSize = "0.9rem";
+                correctHint.style.marginTop = "10px";
+                correctHint.innerHTML = `תשובה נכונה: <b>${q.a}</b>`;
+                block.appendChild(correctHint);
+            }
         }
     });
 
     // השבתת הכפתור לאחר בדיקה
     const btn = document.getElementById('checkBtn');
-    btn.disabled = true;
-    btn.innerHTML = `סיימת! ${correctCount}/10 תשובות נכונות`;
-    btn.style.background = "#64748b";
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `סיימת! ${correctCount}/${currentActiveQuestions.length} תשובות נכונות`;
+        btn.style.background = "#64748b";
+        btn.style.cursor = "not-allowed";
+    }
 
-    // גלילה לתוצאה הראשונה
-    questionBlocks[0].scrollIntoView({ behavior: 'smooth' });
+    // עדכון סרגל ההתקדמות ושמירה ב-Firebase
+    updateProgress(currentActiveExId, correctCount, currentActiveQuestions.length);
+
+    // גלילה חלקה חזרה לראש התשובות
+    if (questionBlocks.length > 0) {
+        questionBlocks[0].scrollIntoView({ behavior: 'smooth' });
+    }
 };
 
 async function updateProgress(exId, correct, total) {
