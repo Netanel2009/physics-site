@@ -1,39 +1,39 @@
 /* =========================================
-   1. הגדרות Firebase
-   ========================================= */
-import { 
-    getFirestore, 
-    collection, 
-    getDocs, 
-    updateDoc,
-    doc, 
-    deleteDoc,
-    getDoc,
-    addDoc,
-    setDoc,
-    query,
-    arrayUnion,
-    orderBy,
-    onSnapshot,
-    serverTimestamp
+   1. הגדרות Firebase
+   ========================================= */
+import { 
+    getFirestore, 
+    collection, 
+    getDocs, 
+    updateDoc,
+    doc, 
+    deleteDoc,
+    getDoc,
+    addDoc,
+    setDoc,
+    query,
+    arrayUnion,
+    orderBy,
+    onSnapshot,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-    getAuth, 
-    createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword, 
-    onAuthStateChanged, 
-    signOut, 
-    updateProfile 
+import { 
+    getAuth, 
+    createUserWithEmailAndPassword, 
+    signInWithEmailAndPassword, 
+    onAuthStateChanged, 
+    signOut, 
+    updateProfile 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBzZVWudrgjb-Qi-ln5Qm0u4L0PUlwbjUc",
-    authDomain: "physicsmaster-app.firebaseapp.com",
-    projectId: "physicsmaster-app",
-    storageBucket: "physicsmaster-app.firebasestorage.app",
-    messagingSenderId: "389250837755",
-    appId: "1:389250837755:web:c088a4021e28ce0132945e"
+    apiKey: "AIzaSyBzZVWudrgjb-Qi-ln5Qm0u4L0PUlwbjUc",
+    authDomain: "physicsmaster-app.firebaseapp.com",
+    projectId: "physicsmaster-app",
+    storageBucket: "physicsmaster-app.firebasestorage.app",
+    messagingSenderId: "389250837755",
+    appId: "1:389250837755:web:c088a4021e28ce0132945e"
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -42,1397 +42,1298 @@ const db = getFirestore(firebaseApp);
 
 
 /* =========================================
-   2. משתנים גלובליים ומצב (State)
-   ========================================= */
+   2. משתנים גלובליים ומצב (State)
+   ========================================= */
 
 const dict = {
-    kinematics: "קינמטיקה",
-    dynamics: "דינמיקה",
-    gravity: "כבידה",
-    energy: "עבודה ואנרגיה",
-    momentum: "תנע",
+    kinematics: "קינמטיקה",
+    dynamics: "דינמיקה",
+    gravity: "כבידה",
+    energy: "עבודה ואנרגיה",
+    momentum: "תנע",
 
-    electrostatics: "אלקטרוסטטיקה",
-    circuits: "מעגלים חשמליים",
-    magnetism: "מגנטיות",
-    induction: "השראה אלקטרומגנטית",
+    electrostatics: "אלקטרוסטטיקה",
+    circuits: "מעגלים חשמליים",
+    magnetism: "מגנטיות",
+    induction: "השראה אלקטרומגנטית",
 
-    optics: "אופטיקה",
-    quantum: "פיזיקה קוונטית",
-    atomic: "מבנה האטום",
-    nuclear: "פיזיקה גרעינית"
+    optics: "אופטיקה",
+    quantum: "פיזיקה קוונטית",
+    atomic: "מבנה האטום",
+    nuclear: "פיזיקה גרעינית"
 };
 
 const physicsStructure = {
-    mechanics: {
-        title: "מכניקה",
-        subtopics: ["kinematics", "dynamics", "gravity", "energy", "momentum"]
-    },
-    electricity: {
-        title: "חשמל ומגנטיות",
-        subtopics: ["electrostatics", "circuits", "magnetism", "induction"]
-    },
-    radiation: {
-        title: "קרינה וחומר",
-        subtopics: ["optics", "quantum", "atomic", "nuclear"]
-    }
+    mechanics: {
+        title: "מכניקה",
+        subtopics: ["kinematics", "dynamics", "gravity", "energy", "momentum"]
+    },
+    electricity: {
+        title: "חשמל ומגנטיות",
+        subtopics: ["electrostatics", "circuits", "magnetism", "induction"]
+    },
+    radiation: {
+        title: "קרינה וחומר",
+        subtopics: ["optics", "quantum", "atomic", "nuclear"]
+    }
 };
 
 let pageMode = 'explanations';
 let authMode = 'login';
 /* =========================================
-   3. נתונים (Data)
-   ========================================= */
+   3. נתונים (Data)
+   ========================================= */
 window.contentData = {
-    categories: [
-        { id: 'explanations', title: 'סרטונים 📚', image: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)" },
-        { id: 'exercises', title: 'תרגול שאלות 📝', image: "linear-gradient(135deg, #f59e0b 0%, #b45309 100%)" },
-        { id: 'simulations', title: 'סימולציות 🧪', image: "linear-gradient(135deg, #10b981 0%, #047857 100%)" }
-    ],
-    subjects: [
-        { id: 'mechanics', title: 'מכניקה', desc: 'קינמטיקה, דינמיקה, אנרגיה ותנע', image: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' },
-        { id: 'electricity', title: 'חשמל ומגנטיות', desc: 'אלקטרוסטטיקה ומעגלים', image: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' },
-        { id: 'radiation', title: 'קרינה וחומר', desc: 'אופטיקה ופיזיקה מודרנית', image: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }
-    ],
-    mechanics_content: [
-        { type: 'folder', id: 'kinematics_folder', title: 'קינמטיקה', image: 'linear-gradient(to right, #3b82f6, #60a5fa)', desc: 'תנועה בקו ישר, נפילה חופשית וזריקות' },
-        { type: 'folder', id: 'energy_momentum_folder', title: 'תנע ואנרגיה', image: 'linear-gradient(to right, #10b981, #34d399)', desc: 'שימור תנע, עבודה ואנרגיה מכנית' },
-        { type: 'video', title: 'תנועה הרמונית', url: 'https://youtu.be/FFj3V4CiElI', desc: 'קפיצים ומטוטלות' }
-    ],
-    mechanics_exercises: [
-        { id: 'ex_kinematics', title: 'תרגול קינמטיקה', desc: 'שאלות על תנועה שוות תאוצה', image: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' },
-        { id: 'ex_momentum', title: 'תרגול תנע', desc: 'התנגשויות ומתקף', image: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }
-    ],
-    electricity_exercises: [
-        { id: 'ex_electricity', title: 'תרגול חשמל', desc: 'מעגלים וזרמים', image: 'linear-gradient(135deg, #f59e0b, #b45309)' }
-    ],
-    radiation_exercises: [
-        { id: 'ex_radiation', title: 'תרגול קרינה', desc: 'אופטיקה ופיזיקה מודרנית', image: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }
-    ],
-    simulations_content: [
-        { type: 'folder', id: 'bagrut_folder', title: 'בגרויות', image: 'linear-gradient(135deg, #6366f1, #4338ca)', desc: 'שאלוני בגרות מלאים' },
-        { type: 'folder', id: 'simulations_general', title: 'סימולציות', image: 'linear-gradient(135deg, #10b981, #059669)', desc: 'סימולציות אינטראקטיביות' }
-    ],
-    bagrut_folder: [
-        { type: 'folder', id: 'bagrut_mechanics', title: 'מכניקה', image: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
-        { type: 'folder', id: 'bagrut_electricity', title: 'חשמל', image: 'linear-gradient(135deg, #f59e0b, #d97706)' },
-        { type: 'folder', id: 'bagrut_radiation', title: 'קרינה וחומר', image: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }
-    ],
-    bagrut_mechanics: [
-        { type: 'video', title: 'שאלון מכניקה 2023', url: 'https://youtu.be/EXAMPLE1' }
-    ],
-    bagrut_electricity: [
-        { type: 'video', title: 'שאלון חשמל 2023', url: 'https://youtu.be/EXAMPLE2' }
-    ],
-    bagrut_radiation: [
-        { type: 'video', title: 'שאלון קרינה 2023', url: 'https://youtu.be/EXAMPLE3' }
-    ],
-    kinematics_folder: [{ type: 'video', title: 'קינמטיקה (בסיס)', url: 'https://youtu.be/q8K73P4hft8', desc: 'תנועה בקו ישר ונפילה חופשית' }],
-    energy_momentum_folder: [{ type: 'video', title: 'שימור תנע', url: 'https://youtu.be/6k8Hd3wPoU0', desc: 'התנגשויות ומתקף' }]
+    categories: [
+        { id: 'explanations', title: 'סרטונים 📚', image: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)" },
+        { id: 'exercises', title: 'תרגול שאלות 📝', image: "linear-gradient(135deg, #f59e0b 0%, #b45309 100%)" },
+        { id: 'simulations', title: 'סימולציות 🧪', image: "linear-gradient(135deg, #10b981 0%, #047857 100%)" }
+    ],
+    subjects: [
+        { id: 'mechanics', title: 'מכניקה', desc: 'קינמטיקה, דינמיקה, אנרגיה ותנע', image: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' },
+        { id: 'electricity', title: 'חשמל ומגנטיות', desc: 'אלקטרוסטטיקה ומעגלים', image: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' },
+        { id: 'radiation', title: 'קרינה וחומר', desc: 'אופטיקה ופיזיקה מודרנית', image: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }
+    ],
+    mechanics_content: [
+        { type: 'folder', id: 'kinematics_folder', title: 'קינמטיקה', image: 'linear-gradient(to right, #3b82f6, #60a5fa)', desc: 'תנועה בקו ישר, נפילה חופשית וזריקות' },
+        { type: 'folder', id: 'energy_momentum_folder', title: 'תנע ואנרגיה', image: 'linear-gradient(to right, #10b981, #34d399)', desc: 'שימור תנע, עבודה ואנרגיה מכנית' },
+        { type: 'video', title: 'תנועה הרמונית', url: 'https://youtu.be/FFj3V4CiElI', desc: 'קפיצים ומטוטלות' }
+    ],
+    mechanics_exercises: [
+        { id: 'ex_kinematics', title: 'תרגול קינמטיקה', desc: 'שאלות על תנועה שוות תאוצה', image: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' },
+        { id: 'ex_momentum', title: 'תרגול תנע', desc: 'התנגשויות ומתקף', image: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }
+    
+    ],
+    electricity_exercises: [
+        { 
+            id: 'ex_electricity', 
+            title: 'תרגול חשמל', 
+            desc: 'מעגלים, חוק אוהם ושדות', 
+            image: 'linear-gradient(135deg, #f59e0b, #d97706)' 
+        }
+    ],
+
+    radiation_exercises: [
+        { 
+            id: 'ex_radiation', 
+            title: 'תרגול קרינה וחומר', 
+            desc: 'אופטיקה ופיזיקה מודרנית', 
+            image: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' 
+        }
+    ],
+    electricity_exercises: [
+        { id: 'ex_electricity', title: 'תרגול חשמל', desc: 'מעגלים וזרמים', image: 'linear-gradient(135deg, #f59e0b, #b45309)' }
+    ],
+
+    radiation_exercises: [
+        { id: 'ex_radiation', title: 'תרגול קרינה', desc: 'אופטיקה ופיזיקה מודרנית', image: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }
+    ],
+
+    simulations_content: [
+        { type: 'folder', id: 'bagrut_folder', title: 'בגרויות', image: 'linear-gradient(135deg, #6366f1, #4338ca)', desc: 'שאלוני בגרות מלאים' },
+        { type: 'folder', id: 'simulations_general', title: 'סימולציות', image: 'linear-gradient(135deg, #10b981, #059669)', desc: 'סימולציות אינטראקטיביות' }
+    ],
+
+    bagrut_folder: [
+        { type: 'folder', id: 'bagrut_mechanics', title: 'מכניקה', image: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
+        { type: 'folder', id: 'bagrut_electricity', title: 'חשמל', image: 'linear-gradient(135deg, #f59e0b, #d97706)' },
+        { type: 'folder', id: 'bagrut_radiation', title: 'קרינה וחומר', image: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }
+    ],
+        bagrut_mechanics: [
+        { type: 'video', title: 'שאלון מכניקה 2023', url: 'https://youtu.be/EXAMPLE1' }
+    ],
+
+    bagrut_electricity: [
+        { type: 'video', title: 'שאלון חשמל 2023', url: 'https://youtu.be/EXAMPLE2' }
+    ],
+
+    bagrut_radiation: [
+        { type: 'video', title: 'שאלון קרינה 2023', url: 'https://youtu.be/EXAMPLE3' }
+    ],
+    kinematics_folder: [{ type: 'video', title: 'קינמטיקה (בסיס)', url: 'https://youtu.be/q8K73P4hft8', desc: 'תנועה בקו ישר ונפילה חופשית' }],
+    energy_momentum_folder: [{ type: 'video', title: 'שימור תנע', url: 'https://youtu.be/6k8Hd3wPoU0', desc: 'התנגשויות ומתקף' }]
 };
 
 window.questionsBank = {
-    'ex_kinematics': [
-        {
-            id: 'kin_q1',
-            q: "מכונית מתחילה לנוע ממנוחה בתאוצה קבועה של 2m/s². לאחר שהגיעה למהירות של 20m/s, היא ממשיכה במהירות זו במשך 10 שניות נוספות. מהו המרחק הכולל שעברה המכונית?",
-            a: "300 מ'",
-            options: ["200 מ'", "250 מ'", "300 מ'", "400 מ'"],
-            topic: "mechanics",
-            subtopic: "kinematics"
-        },
-        {
-            id: 'kin_q2',
-            q: "גוף נזרק אנכית מעלה וחוזר לנקודת הזריקה לאחר 6 שניות. מהו הגובה המקסימלי אליו הגיע הגוף? (הנח g=10m/s²)",
-            a: "45 מ'",
-            options: ["30 מ'", "45 מ'", "60 מ'", "90 מ'"],
-            topic: "mechanics",
-            subtopic: "kinematics"
-        },
-        {
-            id: 'kin_q3',
-            q: "גוף נזרק אנכית מעלה וחוזר לנקודת הזריקה לאחר 6 שניות. מהו הגובה המקסימלי אליו הגיע הגוף? (הנח g=20m/s²)",
-            a: "100 מ'",
-            options: ["300000000מ'", "500 מ'", "700 מ'", "100 מ'"],
-            topic: "mechanics",
-            subtopic: "kinematics"
-        },
-    ],
-    'ex_electricity': [
-        {
-            id: 'elec_q1', // <-- הוספת מזהה ייחודי
-            q: "מהו חוק אוהם?",
-            a: "V = IR",
-            options: ["V = IR", "F = ma", "E = mc²", "P = IV"],
-            topic: "electricity",
-            subtopic: "circuits"
-        }
-    ],
-    'ex_radiation': [
-        {
-            id: 'rad_q1', // <-- הוספת מזהה ייחודי
-            q: "מהי קרן אור?",
-            a: "קו המתאר את כיוון התפשטות האור",
-            options: [
-                "קו המתאר את כיוון התפשטות האור",
-                "חלקיק טעון",
-                "גל קול",
-                "כוח משיכה"
-            ],
-            topic: "radiation",
-            subtopic: "optics"
-        }
-    ]
+
+        'ex_kinematics': [
+        {
+            q: "מכונית מתחילה לנוע ממנוחה בתאוצה קבועה של 2m/s². לאחר שהגיעה למהירות של 20m/s, היא ממשיכה במהירות זו במשך 10 שניות נוספות. מהו המרחק הכולל שעברה המכונית?",
+            a: "300 מ'",
+            options: ["200 מ'", "250 מ'", "300 מ'", "400 מ'"],
+            topic: "mechanics",
+            subtopic: "kinematics"
+        },
+        {
+            q: "גוף נזרק אנכית מעלה וחוזר לנקודת הזריקה לאחר 6 שניות. מהו הגובה המקסימלי אליו הגיע הגוף? (הנח g=10m/s²)",
+            a: "45 מ'",
+            options: ["30 מ'", "45 מ'", "60 מ'", "90 מ'"],
+            topic: "mechanics",
+            subtopic: "kinematics"
+        },],
+
+
+    'ex_electricity': [
+        {
+            q: "מהו חוק אוהם?",
+            a: "V = IR",
+            options: ["V = IR", "F = ma", "E = mc²", "P = IV"],
+            topic: "electricity",
+            subtopic: "circuits"
+        }
+    ],
+
+    'ex_radiation': [
+        {
+            q: "מהי קרן אור?",
+            a: "קו המתאר את כיוון התפשטות האור",
+            options: [
+                "קו המתאר את כיוון התפשטות האור",
+                "חלקיק טעון",
+                "גל קול",
+                "כוח משיכה"
+            ],
+            topic: "radiation",
+            subtopic: "optics"
+        }
+    ],
+    
+    'ex_electricity': [
+        {
+            q: "מהי ההגדרה הפיזיקלית של תנע?",
+            a: "מכפלת המסה במהירות",
+            options: ["מכפלת המסה בתאוצה", "מכפלת המסה במהירות", "האנרגיה הקינטית של הגוף", "הכוח הפועל על הגוף"],
+            topic: "electricity",
+            subtopic: "electricity"
+         }
+    ]
 };
 
 const testimonialsData = [
-    { name: "יהונתן אדיב", text: "הסרטונים המפורטים לא הותירו לי שום בעיה בפתרון התרגילים. מומלץ בחום!", img: "https://cdn.discordapp.com/attachments/997483064341041263/1506275882245951628/image.png?ex=6a0dac3b&is=6a0c5abb&hm=7e92d359d740399d4908f507a8dcc190c0cdb3e737d167558b1ebeff75ef196a&" },
-    { name: "סתיו שיריזלי", text: "הסימולציות עוזרות להבין את החומר באמת, ולא רק לשנן נוסחאות.", img: "https://cdn.discordapp.com/attachments/997483064341041263/1506275882245951628/image.png?ex=6a0dac3b&is=6a0c5abb&hm=7e92d359d740399d4908f507a8dcc190c0cdb3e737d167558b1ebeff75ef196a&" },
-    { name: "ניתי ווליך", text: "האתר הכי טוב שמצאתי לבגרות. הכל מסודר, נקי וברור מאוד.", img: "https://cdn.discordapp.com/attachments/997483064341041263/1506275882245951628/image.png?ex=6a0dac3b&is=6a0c5abb&hm=7e92d359d740399d4908f507a8dcc190c0cdb3e737d167558b1ebeff75ef196a&" }
+    { name: "יהונתן אדיב", text: "הסרטונים המפורטים לא הותירו לי שום בעיה בפתרון התרגילים. מומלץ בחום!", img: "https://i.pravatar.cc/150?u=1" },
+    { name: "סתיו שיריזלי", text: "הסימולציות עוזרות להבין את החומר באמת, ולא רק לשנן נוסחאות.", img: "https://i.pravatar.cc/150?u=2" },
+    { name: "ניתי ווליך", text: "האתר הכי טוב שמצאתי לבגרות. הכל מסודר, נקי וברור מאוד.", img: "https://cdn.discordapp.com/attachments/1258539660167221339/1482828439613341717/c3d1b4f7-cc6d-4e80-a552-1d1a0ab72ad4.png?ex=69b85f19&is=69b70d99&hm=19e0351663705d1b2320809f9052eaab0dcca222d8061effcbe7321e5e943f2c&" }
 ];
 
 
+
 /* =========================================
-   4. מערכת XP ורמות (Gamification)
-   ========================================= */
+   4. מערכת XP ורמות (Gamification)
+   ========================================= */
 window.playerStats = {
-    level: 1,
-    currentXP: 0,
-    xpNeeded: 100,
-    totalXP: 0,
-    stars: 0,
-    watchedVideos: [],
-    completedExercises: [],
-    correctQuestionsTrack: [] // מזהים של שאלות שנפתרו נכון אי פעם
+    level: 1,
+    currentXP: 0,
+    xpNeeded: 100,
+    totalXP: 0,
+    stars: 0,
+    watchedVideos: [],
+    completedExercises: []
 };
 
 
 async function addXP(amount) {
-    window.playerStats.currentXP += amount;
-    window.playerStats.totalXP += amount;
+    window.playerStats.currentXP += amount;
+    window.playerStats.totalXP += amount;
 
-    await checkLevelUp();
-    await saveStatsToDB();
-    updateXPUI();
+    await checkLevelUp();
+    await saveStatsToDB();
+    updateXPUI();
 }
 
 async function checkLevelUp() {
-    let leveledUp = false;
+    let leveledUp = false;
 
-    while (window.playerStats.currentXP >= window.playerStats.xpNeeded) {
-        window.playerStats.currentXP -= window.playerStats.xpNeeded;
-        window.playerStats.level++;
-        window.playerStats.xpNeeded = window.playerStats.level * 100;
-        leveledUp = true;
-    }
+    while (window.playerStats.currentXP >= window.playerStats.xpNeeded) {
+        window.playerStats.currentXP -= window.playerStats.xpNeeded;
+        window.playerStats.level++;
 
-    if (leveledUp) {
-        triggerLevelUpEffect();
-        await checkAchievements();
-    }
+        // נוסחה חדשה: כל רמה = level * 100
+        window.playerStats.xpNeeded = window.playerStats.level * 100;
+
+        leveledUp = true;
+    }
+
+    if (leveledUp) {
+        triggerLevelUpEffect();
+        await checkAchievements();
+    }
 }
 
 async function saveStatsToDB() {
-    const user = auth.currentUser;
-    if (!user) return;
+    const user = auth.currentUser;
+    if (!user) return;
 
-    const userRef = doc(db, "users", user.uid);
+    const userRef = doc(db, "users", user.uid);
 
-    await setDoc(userRef, {
-        level: window.playerStats.level,
-        currentXP: window.playerStats.currentXP,
-        totalXP: window.playerStats.totalXP,
-        stars: window.playerStats.stars,
-        unlockedAchievements: window.playerStats.unlockedAchievements || [],
-        watchedVideos: window.playerStats.watchedVideos || []
-    }, { merge: true });
+    await setDoc(userRef, {
+        level: window.playerStats.level,
+        currentXP: window.playerStats.currentXP,
+        totalXP: window.playerStats.totalXP,
+        stars: window.playerStats.stars,
+        unlockedAchievements: window.playerStats.unlockedAchievements || [],
+        watchedVideos: window.playerStats.watchedVideos || []
+    }, { merge: true });
 }
 
 function updateXPUI() {
-    const levelEl = document.getElementById('current-level');
-    const xpEl = document.getElementById('current-xp');
-    const neededEl = document.getElementById('xp-needed');
-    const barEl = document.getElementById('xp-bar');
+    const levelEl = document.getElementById('current-level');
+    const xpEl = document.getElementById('current-xp');
+    const neededEl = document.getElementById('xp-needed');
+    const barEl = document.getElementById('xp-bar');
 
-    if (levelEl) levelEl.innerText = window.playerStats.level;
-    if (xpEl) xpEl.innerText = Math.floor(window.playerStats.currentXP);
-    if (neededEl) neededEl.innerText = window.playerStats.xpNeeded;
-    
-    const percentage = window.playerStats.xpNeeded
-  ? (window.playerStats.currentXP / window.playerStats.xpNeeded) * 100
-  : 0;
-    if (barEl) barEl.style.width = percentage + '%';
+    if (levelEl) levelEl.innerText = window.playerStats.level;
+    if (xpEl) xpEl.innerText = Math.floor(window.playerStats.currentXP);
+    if (neededEl) neededEl.innerText = window.playerStats.xpNeeded;
+    
+    const percentage = window.playerStats.xpNeeded
+  ? (window.playerStats.currentXP / window.playerStats.xpNeeded) * 100
+  : 0;
+    if (barEl) barEl.style.width = percentage + '%';
 }
 
 function triggerLevelUpEffect() {
-    const widget = document.querySelector('.level-circle');
-    if(widget) {
-        widget.classList.add('level-up-anim');
-        const msg = document.createElement('div');
-        msg.innerText = "Level Up! 🎉";
-        msg.style.cssText = "position:fixed; bottom:100px; right:30px; background:#f59e0b; color:white; padding:10px 20px; border-radius:20px; font-weight:bold; z-index:3000; animation:slideIn 0.5s ease-out;";
-        document.body.appendChild(msg);
-        
-        setTimeout(() => {
-            widget.classList.remove('level-up-anim');
-            msg.remove();
-        }, 2000);
-    }
+    const widget = document.querySelector('.level-circle');
+    if(widget) {
+        widget.classList.add('level-up-anim');
+        const msg = document.createElement('div');
+        msg.innerText = "Level Up! 🎉";
+        msg.style.cssText = "position:fixed; bottom:100px; right:30px; background:#f59e0b; color:white; padding:10px 20px; border-radius:20px; font-weight:bold; z-index:3000; animation:slideIn 0.5s ease-out;";
+        document.body.appendChild(msg);
+        
+        setTimeout(() => {
+            widget.classList.remove('level-up-anim');
+            msg.remove();
+        }, 2000);
+    }
 }
 
 
 /* =========================================
-   5. פונקציות ניתוב (Router)
-   ========================================= */
-   
+   5. פונקציות ניתוב (Router)
+   ========================================= */
+   
 window.router = function(view, data = null) {
 
-    window.scrollTo(0, 0);
-    const appContainer = document.getElementById('app-container');
-    if(!appContainer) return;
-    appContainer.innerHTML = '';
+    window.scrollTo(0, 0);
+    const appContainer = document.getElementById('app-container');
+    if(!appContainer) return;
+    appContainer.innerHTML = '';
 
-    if ((view === 'progress' || view === 'progress_topic') && !window.playerStats.progress) {
-        renderHomePage();
-        return;
-    }
+    // הגנה: אם מנסים להיכנס לדף התקדמות לפני שהסטטיסטיקה נטענה
+    if ((view === 'progress' || view === 'progress_topic') && !window.playerStats.progress) {
+        renderHomePage();
+        return;
+    }
 
-    switch(view) {
-        case 'home': renderHomePage(); break;
-        case 'subject_select': 
-            pageMode = data; 
-            renderSubjects(); 
-            break;
-        case 'content_list': renderContentList(data); break; 
-        case 'exercise_list': renderExerciseList(data); break;
-        case 'folder_view': renderFolderContent(data); break;
-        case 'active_exercise': renderActiveExercise(data); break;
-        case 'admin': showAdminLogin(); break;
-        case 'progress': renderProgressSubjects(); break;
-        case 'progress_topic':
-            if (data && physicsStructure[data]) {
-                renderProgressTopics(data);
-            } else {
-                renderHomePage();
-            }
-            break;
-        default: renderHomePage();
-    }
+    switch(view) {
+        case 'home': renderHomePage(); break;
+        case 'subject_select': 
+            pageMode = data; 
+            renderSubjects(); 
+            break;
+        case 'content_list': renderContentList(data); break; 
+        case 'exercise_list': renderExerciseList(data); break;
+        case 'folder_view': renderFolderContent(data); break;
+        case 'active_exercise': renderActiveExercise(data); break;
+        case 'admin': showAdminLogin(); break;
+        case 'progress': renderProgressSubjects(); break;
+        case 'progress_topic':
+            if (data && physicsStructure[data]) {
+                renderProgressTopics(data);
+            } else {
+                renderHomePage();
+            }
+            break;
+        default: renderHomePage();
+    }
 };
 
 /* =========================================
-   6. פונקציות הרינדור (Render Functions)
-   ========================================= */
+   6. פונקציות הרינדור (Render Functions)
+   ========================================= */
 
 function renderHomePage() {
-    const app = document.getElementById('app-container');
-    app.innerHTML = `
-        <div class="hero">
-            <h1>PhysicsMaster 🚀</h1>
-            <p>המקום שלך להצטיין בפיזיקה לבגרות</p>
-            <button class="btn-main" onclick="scrollToSection('learning')">התחל ללמוד</button>
-        </div>
+    const app = document.getElementById('app-container');
+    app.innerHTML = `
+        <div class="hero">
+            <h1>PhysicsMaster 🚀</h1>
+            <p>המקום שלך להצטיין בפיזיקה לבגרות</p>
+            <button class="btn-main" onclick="scrollToSection('learning')">התחל ללמוד</button>
+        </div>
 
-        <section id="learning">
-            <h2 class="section-title">📚 מרכז הלמידה</h2>
-            <div class="grid-full">
-                ${window.contentData.categories.map(cat => `
-                    <div class="card" onclick="handleCategoryClick('${cat.id}')" style="background: ${cat.image}; background-size: cover;">
-                        <div class="card-overlay">
-                            <h3>${cat.title}</h3>
-                            <button class="card-btn">כנס לקטגוריה</button>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-        </section>
+        <section id="learning">
+            <h2 class="section-title">📚 מרכז הלמידה</h2>
+            <div class="grid-full">
+                ${window.contentData.categories.map(cat => `
+                    <div class="card" onclick="handleCategoryClick('${cat.id}')" style="background: ${cat.image}; background-size: cover;">
+                        <div class="card-overlay">
+                            <h3>${cat.title}</h3>
+                            <button class="card-btn">כנס לקטגוריה</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </section>
 
-        <section id="about" style="background:white; padding: 80px 10%; border-radius: 50px;">
-             <h2 class="section-title">🔍 אודות PhysicsMaster</h2>
-             <p style="font-size:1.2rem; text-align:center;">הופכים את הפיזיקה מחובה – לחוויה.</p>
-        </section>
+        <section id="about" style="background:white; padding: 80px 10%; border-radius: 50px;">
+             <h2 class="section-title">🔍 אודות PhysicsMaster</h2>
+             <p style="font-size:1.2rem; text-align:center;">הופכים את הפיזיקה מחובה – לחוויה.</p>
+        </section>
 
-        <section id="testimonials">
-            <h2 class="section-title">💬 תגובות</h2>
-            <div class="carousel-wrapper">
-                <button class="scroll-btn prev-btn" onclick="scrollTestimonials(-1)"><i class="fa-solid fa-chevron-right"></i></button>
-                <div class="testimonials-scroll-container" id="testimonials-container">
-                    ${testimonialsData.map(t => `
-                        <div class="testimonial-card">
-                            <img src="${t.img}" class="profile-img">
-                            <h4>${t.name}</h4>
-                            <p>"${t.text}"</p>
-                        </div>
-                    `).join('')}
-                </div>
-                <button class="scroll-btn next-btn" onclick="scrollTestimonials(1)"><i class="fa-solid fa-chevron-left"></i></button>
-            </div>
-        </section>
+        <section id="testimonials">
+            <h2 class="section-title">💬 תגובות</h2>
+            <div class="carousel-wrapper">
+                <button class="scroll-btn prev-btn" onclick="scrollTestimonials(-1)"><i class="fa-solid fa-chevron-right"></i></button>
+                <div class="testimonials-scroll-container" id="testimonials-container">
+                    ${testimonialsData.map(t => `
+                        <div class="testimonial-card">
+                            <img src="${t.img}" class="profile-img">
+                            <h4>${t.name}</h4>
+                            <p>"${t.text}"</p>
+                        </div>
+                    `).join('')}
+                </div>
+                <button class="scroll-btn next-btn" onclick="scrollTestimonials(1)"><i class="fa-solid fa-chevron-left"></i></button>
+            </div>
+        </section>
 
-        <section id="contact">
-            <h2 class="section-title">📬 צור קשר</h2>
-            <p style="text-align:center; margin-top:-10px; margin-bottom:20px; font-size:0.95rem; color:#10b981; font-weight:600;">
-                 דיווח על באגים או שיפור מערכת יזכה בכוכבים בהתאם לאיכות הדיווח! 🐞
-            </p>
-            <div class="form-container">
-                <form onsubmit="handleContact(event)">
-                    <input type="text" placeholder="שם מלא" required>
-                    <input type="email" placeholder="אימייל" required>
-                    <textarea rows="5" placeholder="הודעה..." required></textarea>
-                    <button type="submit" class="btn-main" style="width:100%">שלח הודעה</button>
-                </form>
-            </div>
-        </section>
-    `;
+        <section id="contact">
+            <h2 class="section-title">📬 צור קשר</h2>
+            <p style="
+            text-align:center;
+            margin-top:-10px;
+            margin-bottom:20px;
+            font-size:0.95rem;
+            color:#10b981;
+            font-weight:600;
+        ">
+             דיווח על באגים או שיפור מערכת יזכה בכוכבים בהתאם לאיכות הדיווח! 🐞
+        </p>
+            <div class="form-container">
+                <form onsubmit="handleContact(event)">
+                    <input type="text" placeholder="שם מלא" required>
+                    <input type="email" placeholder="אימייל" required>
+                    <textarea rows="5" placeholder="הודעה..." required></textarea>
+                    <button type="submit" class="btn-main" style="width:100%">שלח הודעה</button>
+                </form>
+            </div>
+        </section>
+    `;
 }
 
 function getVideoId(url) {
-    if (!url) return null;
-    let vidId = "";
-    if (url.includes("youtu.be/")) {
-        vidId = url.split("youtu.be/")[1].split(/[?&]/)[0];
-    } else if (url.includes("youtube.com/watch")) {
-        const params = new URLSearchParams(url.split("?")[1]);
-        vidId = params.get("v");
-    }
-    return vidId;
+    if (!url) return null;
+
+    let vidId = "";
+
+    if (url.includes("youtu.be/")) {
+        vidId = url.split("youtu.be/")[1].split(/[?&]/)[0];
+    } else if (url.includes("youtube.com/watch")) {
+        const params = new URLSearchParams(url.split("?")[1]);
+        vidId = params.get("v");
+    }
+
+    return vidId;
 }
 
 function renderSubjects() {
-    const app = document.getElementById('app-container');
-    app.innerHTML = `
-        <section style="min-height:100vh; padding-top:40px; direction: rtl;">
-            <h2 class="section-title text-white-shadow">${pageMode === 'exercises' ? 'תרגול שאלות' : 'סרטונים והסברים'}</h2>
-            <div class="grid-full">
-                ${window.contentData.subjects.map(sub => {
-                    return `
-                    <div class="card video-wave-card" onclick="handleSubjectClick('${sub.id}')">
-                        <canvas class="video-wave-canvas" id="wave-${sub.id}"></canvas>
-                        <div class="video-card-overlay">
-                            <i class="fa-solid ${sub.id === 'mechanics' ? 'fa-film' : sub.id === 'electricity' ? 'fa-bolt' : 'fa-circle-nodes'} video-card-icon"></i>
-                            <h3>${sub.title}</h3>
-                            <p style="margin-top: 5px; color: #ffffff; font-weight: 500; text-shadow: 0 2px 6px rgba(0,0,0,0.8); font-size: 1.1rem;">${sub.desc}</p>
-                        </div>
-                    </div>
-                    `;
-                }).join('')}
-            </div>
-            
-            <div style="text-align: center; color: rgba(255,255,255,0.3); font-size: 0.8rem; margin-top: 25px; margin-bottom: 15px;">
-                Interactive wave animation inspired by Mathematical Canvas Fluid (MIT License)
-            </div>
-            <button class="btn-back" onclick="router('home')">חזור לדף הבית</button>
-        </section>
-    `;
+    const app = document.getElementById('app-container');
+    
+    // עמוד א' - נקי לחלוטין מאחוזים ומציג את גלי הסינוס הדינמיים בכל מצב (תרגול או סרטונים)
+    app.innerHTML = `
+        <section style="min-height:100vh; padding-top:40px; direction: rtl;">
+            <h2 class="section-title text-white-shadow">${pageMode === 'exercises' ? 'תרגול שאלות' : 'סרטונים והסברים'}</h2>
+            <div class="grid-full">
+                ${window.contentData.subjects.map(sub => {
+                    return `
+                    <div class="card video-wave-card" onclick="handleSubjectClick('${sub.id}')">
+                        <canvas class="video-wave-canvas" id="wave-${sub.id}"></canvas>
+                        <div class="video-card-overlay">
+                            <i class="fa-solid ${sub.id === 'mechanics' ? 'fa-film' : sub.id === 'electricity' ? 'fa-bolt' : 'fa-circle-nodes'} video-card-icon"></i>
+                            <h3>${sub.title}</h3>
+                            <p style="margin-top: 5px; opacity: 0.8; text-shadow: 0 2px 4px rgba(0,0,0,0.5); font-size: 1.1rem;">${sub.desc}</p>
+                            <button class="card-btn" style="margin-top:15px; pointer-events:none;">בחר נושא</button>
+                        </div>
+                    </div>
+                    `;
+                }).join('')}
+            </div>
+            
+            <div style="text-align: center; color: rgba(255,255,255,0.3); font-size: 0.8rem; margin-top: 25px; margin-bottom: 15px;">
+                Interactive wave animation inspired by Mathematical Canvas Fluid (MIT License)
+            </div>
 
-    setTimeout(() => {
-        if (window.initPhysicsWaves) {
-            window.initPhysicsWaves("wave-mechanics", "#60a5fa", 0.015, 20);
-            window.initPhysicsWaves("wave-electricity", "#fbbf24", 0.025, 15);
-            window.initPhysicsWaves("wave-radiation", "#a78bfa", 0.01, 25);
-        }
-    }, 100);
+            <button class="btn-back" onclick="router('home')">חזור לדף הבית</button>
+        </section>
+    `;
+
+    // הפעלת האנימציה הגלית לכל הקנבסים בעמוד א'
+    setTimeout(() => {
+        if (window.initPhysicsWaves) {
+            window.initPhysicsWaves("wave-mechanics", "#60a5fa", 0.015, 20);
+            window.initPhysicsWaves("wave-electricity", "#fbbf24", 0.025, 15);
+            window.initPhysicsWaves("wave-radiation", "#a78bfa", 0.01, 25);
+        }
+    }, 100);
 }
 
 function renderContentList(subjectId) {
-    const items = window.contentData[subjectId + '_content'];
-    const app = document.getElementById('app-container');
-    app.innerHTML = `
-        <section style="min-height:100vh; padding-top:40px;">
-            <h2 class="section-title">תכנים</h2>
-            <div class="grid-full">
-                ${items.map(item => {
-                    if (item.type === 'folder') {
-                        return `
-                            <div class="card" onclick="markVideoWatched('${item.url}');" style="background-image: url('${thumb}');">
-                                <div class="card-overlay">
-                                    <div style="font-size:3rem; margin-bottom:10px;"><i class="fa-solid fa-folder-open"></i></div>
-                                    <h3>${item.title}</h3>
-                                    <button class="card-btn">פתח תיקייה</button>
-                                </div>
-                            </div>`;
-                    } else {
-                        const thumb = getYoutubeThumb(item.url);
-                        return `
-                            <div class="card" onclick="markVideoWatched('${item.url}');" style="background-image: url('${thumb}')">
-                                <div class="card-overlay">
-                                    <div style="font-size:3rem; margin-bottom:10px; color:#ef4444;"><i class="fa-brands fa-youtube"></i></div>
-                                    <h3>${item.title}</h3>
-                                    <button class="card-btn">צפה בסרטון</button>
-                                </div>
-                            </div>`;
-                    }
-                }).join('')}
-            </div>
-            <button class="btn-back" onclick="router('subject_select', 'explanations')">חזור לנושאים</button>
-        </section>
-    `;
+    const items = window.contentData[subjectId + '_content'];
+    const app = document.getElementById('app-container');
+    app.innerHTML = `
+        <section style="min-height:100vh; padding-top:40px;">
+            <h2 class="section-title">תכנים</h2>
+            <div class="grid-full">
+                ${items.map(item => {
+                    if (item.type === 'folder') {
+                        return `
+                            <div class="card" onclick="router('folder_view', '${item.id}')" style="background: ${item.image}">
+                                <div class="card-overlay">
+                                    <div style="font-size:3rem; margin-bottom:10px;"><i class="fa-solid fa-folder-open"></i></div>
+                                    <h3>${item.title}</h3>
+                                    <button class="card-btn">פתח תיקייה</button>
+                                </div>
+                            </div>`;
+                    } else {
+                        const thumb = getYoutubeThumb(item.url);
+                        return `
+                            <div class="card" onclick="markVideoWatched('${item.url}');" style="background-image: url('${thumb}')">
+                                <div class="card-overlay">
+                                    <div style="font-size:3rem; margin-bottom:10px; color:#ef4444;"><i class="fa-brands fa-youtube"></i></div>
+                                    <h3>${item.title}</h3>
+                                    <button class="card-btn">צפה בסרטון</button>
+                                </div>
+                            </div>`;
+                    }
+                }).join('')}
+            </div>
+            <button class="btn-back" onclick="router('subject_select', 'explanations')">חזור לנושאים</button>
+        </section>
+    `;
 }
 
 function renderExerciseList(subjectId) {
-    const items = window.contentData[subjectId + '_exercises'];
-    const app = document.getElementById('app-container');
-    app.innerHTML = `
-        <section style="min-height:100vh; padding-top:40px;">
-            <h2 class="section-title">רשימת תרגול</h2>
-            <div class="grid-full">
-                ${items.map(item => `
-                    <div class="card" onclick="router('active_exercise', '${item.id}')" style="background: ${item.image}">
-                        <div class="card-overlay">
-                            <div style="font-size:3rem; margin-bottom:10px;"><i class="fa-solid fa-pen-to-square"></i></div>
-                            <h3>${item.title}</h3>
-                            <button class="card-btn">התחל תרגול</button>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-            <button class="btn-back" onclick="router('subject_select', 'exercises')">חזור לנושאים</button>
-        </section>
-    `;
+    const items = window.contentData[subjectId + '_exercises'];
+    const app = document.getElementById('app-container');
+    app.innerHTML = `
+        <section style="min-height:100vh; padding-top:40px;">
+            <h2 class="section-title">רשימת תרגול</h2>
+            <div class="grid-full">
+                ${items.map(item => `
+                    <div class="card" onclick="router('active_exercise', '${item.id}')" style="background: ${item.image}">
+                        <div class="card-overlay">
+                            <div style="font-size:3rem; margin-bottom:10px;"><i class="fa-solid fa-pen-to-square"></i></div>
+                            <h3>${item.title}</h3>
+                            <button class="card-btn">התחל תרגול</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="btn-back" onclick="router('subject_select', 'exercises')">חזור לנושאים</button>
+        </section>
+    `;
 }
 
 
 window.markVideoWatched = async function(url) {
-    if (!url) return;
-    const user = auth.currentUser;
-    if (!user) {
-        alert("אנא התחבר/י כדי לשמור צפיות");
-        return;
-    }
-    const videoId = getVideoId(url);
-    if (!videoId) return;
+    if (!url) return;
 
-    window.open(url, "_blank");
+    const user = auth.currentUser;
+    if (!user) {
+        alert("אנא התחבר/י כדי לשמור צפיות");
+        return;
+    }
 
-    if (!window.playerStats) {
-        window.playerStats = { level: 1, currentXP: 0, xpNeeded: 100, totalXP: 0, stars: 0, watchedVideos: [] };
-    }
-    if (!window.playerStats.watchedVideos) {
-        window.playerStats.watchedVideos = [];
-    }
+    const videoId = getVideoId(url);
+    if (!videoId) return;
 
-    if (!window.playerStats.watchedVideos.includes(videoId)) {
-        window.playerStats.watchedVideos.push(videoId);
-        const userRef = doc(db, "users", user.uid);
-        await setDoc(userRef, { watchedVideos: arrayUnion(videoId) }, { merge: true });
-        console.log("Video saved:", videoId);
-    }
+    // פתיחת הסרטון
+    window.open(url, "_blank");
+
+    // עדכון מקומי
+    if (!window.playerStats) {
+        window.playerStats = {
+            level: 1,
+            currentXP: 0,
+            xpNeeded: 100,
+            totalXP: 0,
+            stars: 0,
+            watchedVideos: []
+        };
+    }
+
+    if (!window.playerStats.watchedVideos) {
+        window.playerStats.watchedVideos = [];
+    }
+
+    // אם לא נצפה עדיין
+    if (!window.playerStats.watchedVideos.includes(videoId)) {
+
+        // עדכון מקומי
+        window.playerStats.watchedVideos.push(videoId);
+
+        // שמירה ב-Firestore בלי למחוק נתונים אחרים
+        const userRef = doc(db, "users", user.uid);
+
+        await setDoc(userRef, {
+            watchedVideos: arrayUnion(videoId)
+        }, { merge: true });
+
+        console.log("Video saved:", videoId);
+    }
 };
 
 async function markExerciseCompleted(exId) {
-    const user = auth.currentUser;
-    if (!user) return;
-    const userRef = doc(db, "users", user.uid);
 
-    if (!window.playerStats.completedExercises) {
-        window.playerStats.completedExercises = [];
-    }
+    const user = auth.currentUser;
+    if (!user) return;
 
-    if (!window.playerStats.completedExercises.includes(exId)) {
-        window.playerStats.completedExercises.push(exId);
-        await setDoc(userRef, { completedExercises: arrayUnion(exId) }, { merge: true });
-    }
+    const userRef = doc(db, "users", user.uid);
+
+    // ודא שהמערך קיים
+    if (!window.playerStats.completedExercises) {
+        window.playerStats.completedExercises = [];
+    }
+
+    // בדיקה אם כבר קיים
+    if (!window.playerStats.completedExercises.includes(exId)) {
+        window.playerStats.completedExercises.push(exId);
+
+        await setDoc(userRef, {
+            completedExercises: arrayUnion(exId)
+        }, { merge: true });
+    }
 }
 
 function renderFolderContent(folderId) {
-    const items = window.contentData[folderId];
-    const app = document.getElementById('app-container');
-    app.innerHTML = `
-        <section style="min-height:100vh; padding-top:40px;">
-            <h2 class="section-title">תוכן התיקייה</h2>
-            <div class="grid-full">
-                ${items.map(item => `
-                    <div class="card" onclick="window.open('${item.url}')" style="background-image: url('${getYoutubeThumb(item.url)}');">
-                        <div class="card-overlay">
-                            <h3>${item.title}</h3>
-                            <button class="card-btn">צפה בסרטון</button>
-                        </div>
-                    </div>
-                `).join('')}
-            </div>
-            <button class="btn-back" onclick="router('content_list', 'mechanics')">חזור</button>
-        </section>
-    `;
+    const items = window.contentData[folderId];
+    const app = document.getElementById('app-container');
+    app.innerHTML = `
+        <section style="min-height:100vh; padding-top:40px;">
+            <h2 class="section-title">תוכן התיקייה</h2>
+            <div class="grid-full">
+                ${items.map(item => `
+                    <div class="card" onclick="window.open('${item.url}')" style="background-image: url('${getYoutubeThumb(item.url)}')">
+                        <div class="card-overlay">
+                            <h3>${item.title}</h3>
+                            <button class="card-btn">צפה בסרטון</button>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+            <button class="btn-back" onclick="router('content_list', 'mechanics')">חזור</button>
+        </section>
+    `;
 }
 
 // משתנה גלובלי זמני שיחזיק את השאלות שנבחרו בהגרלה
 let currentActiveQuestions = [];
 
 function renderActiveExercise(exId) {
-    const allQuestions = window.questionsBank[exId];
-    const app = document.getElementById('app-container');
-    
-    if (!allQuestions) { 
-        app.innerHTML = `<section><h2 class="section-title">אין שאלות עדיין</h2><button class="btn-back" onclick="router('home')">חזור</button></section>`; 
-        return; 
-    }
+    const allQuestions = window.questionsBank[exId];
+    const app = document.getElementById('app-container');
+    
+    if (!allQuestions) { 
+        app.innerHTML = `<section><h2 class="section-title">אין שאלות עדיין</h2><button class="btn-back" onclick="router('home')">חזור</button></section>`; 
+        return; 
+    }
 
-    currentActiveQuestions = [...allQuestions]
-        .sort(() => 0.5 - Math.random())
-        .slice(0, 10);
+    // הגרלת 10 שאלות ושמירתן במשתנה הגלובלי
+    currentActiveQuestions = [...allQuestions]
+        .sort(() => 0.5 - Math.random())
+        .slice(0, 10);
 
-    let html = `
-        <section style="min-height:100vh; padding-top:40px;">
-            <h2 class="section-title">תרגול שאלות (10 שאלות אקראיות)</h2>
-            <div class="form-container" style="text-align:right; direction:rtl; max-width:800px;">
-                <div id="exercise-container">
-                    ${currentActiveQuestions.map((q, i) => `
-                        <div class="question-block" style="margin-bottom:30px; border: 2px solid #f1f5f9; padding:25px; border-radius:20px; background: #fff;">
-                            <p style="font-size:1.3rem; font-weight:700; margin-bottom:15px; color: var(--dark);">${i+1}. ${q.q}</p>
-                            <div class="options-group">
-                                ${q.options.map(opt => `
-                                    <label class="option-label">
+    let html = `
+        <section style="min-height:100vh; padding-top:40px;">
+            <h2 class="section-title">תרגול שאלות (10 שאלות אקראיות)</h2>
+            <div class="form-container" style="text-align:right; direction:rtl; max-width:800px;">
+                <div id="exercise-container">
+                    ${currentActiveQuestions.map((q, i) => `
+                        <div class="question-block" style="margin-bottom:30px; border: 2px solid #f1f5f9; padding:25px; border-radius:20px; background: #fff;">
+                            <p style="font-size:1.3rem; font-weight:700; margin-bottom:15px; color: var(--dark);">${i+1}. ${q.q}</p>
+                            <div class="options-group">
+                                ${q.options.map(opt => `
+                                    <label style="display:flex; align-items:center; gap:12px; margin:12px 0; cursor:pointer;">
                                         <input type="radio" name="q${i}" value="${opt}"> 
-                                        <span class="option-text">${opt}</span>
+                                        <span>${opt}</span>
                                     </label>
                                 `).join('')}
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-                <button id="checkBtn" class="btn-main" style="width:100%; margin-top:20px;" onclick="checkCurrentAnswers('${exId}')">
-                    <i class="fa-solid fa-check-double"></i> בדוק תשובות
-                </button>
-            </div>
-            <button class="btn-back" onclick="router('exercise_list', 'mechanics')">חזור לרשימה</button>
-        </section>
-    `;
-    app.innerHTML = html;
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                <button id="checkBtn" class="btn-main" style="width:100%; margin-top:20px;" onclick="checkCurrentAnswers()">
+                    <i class="fa-solid fa-check-double"></i> בדוק תשובות
+                </button>
+            </div>
+            <button class="btn-back" onclick="router('exercise_list', 'mechanics')">חזור לרשימה</button>
+        </section>
+    `;
+    app.innerHTML = html;
 }
 
-// --- פונקציית בדיקת תשובות משופרת למקצים אקראיים ---
-window.checkCurrentAnswers = function(exId) {
-    if (!currentActiveQuestions || currentActiveQuestions.length === 0) return;
-    
-    let correctCount = 0;
-    const questionBlocks = document.querySelectorAll('.question-block');
-    const correctQuestionIds = [];
+window.checkCurrentAnswers = function() {
+    if (!currentActiveQuestions || currentActiveQuestions.length === 0) return;
+    
+    let correctCount = 0;
+    const questionBlocks = document.querySelectorAll('.question-block');
 
-    currentActiveQuestions.forEach((q, i) => {
-        const selected = document.querySelector(`input[name="q${i}"]:checked`);
-        const block = questionBlocks[i];
+    currentActiveQuestions.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const block = questionBlocks[i];
 
-        if (selected && selected.value === q.a) {
-            correctCount++;
-            block.style.border = "2px solid #22c55e";
-            block.style.background = "#f0fdf4";
-            addXP(100); 
-            
-            if (q.id) {
-                correctQuestionIds.push(q.id);
-            }
-        } else {
-            block.style.border = "2px solid #ef4444";
-            block.style.background = "#fef2f2";
-            
-            const correctHint = document.createElement('p');
-            correctHint.style.color = "#dc2626";
-            correctHint.style.fontSize = "0.9rem";
-            correctHint.style.marginTop = "10px";
-            correctHint.innerHTML = `תשובה נכונה: <b>${q.a}</b>`;
-            block.appendChild(correctHint);
-        }
-    });
+        if (selected && selected.value === q.a) {
+            correctCount++;
+            block.style.border = "2px solid #22c55e";
+            block.style.background = "#f0fdf4";
+            addXP(100); // הוספת XP על תשובה נכונה
+        } else {
+            block.style.border = "2px solid #ef4444";
+            block.style.background = "#fef2f2";
+            // הצגת התשובה הנכונה במידה וטעה
+            const correctHint = document.createElement('p');
+            correctHint.style.color = "#dc2626";
+            correctHint.style.fontSize = "0.9rem";
+            correctHint.style.marginTop = "10px";
+            correctHint.innerHTML = `תשובה נכונה: <b>${q.a}</b>`;
+            block.appendChild(correctHint);
+        }
+    });
 
-    const btn = document.getElementById('checkBtn');
-    if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = `סיימת! ${correctCount}/${currentActiveQuestions.length} תשובות נכונות`;
-        btn.style.background = "#64748b";
-    }
+    // השבתת הכפתור לאחר בדיקה
+    const btn = document.getElementById('checkBtn');
+    btn.disabled = true;
+    btn.innerHTML = `סיימת! ${correctCount}/10 תשובות נכונות`;
+    btn.style.background = "#64748b";
 
-    if (questionBlocks[0]) {
-        questionBlocks[0].scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // הפעלה דינמית ומדויקת לפי ה-exId שנשלח
-    if (exId) {
-        updateProgressWithCorrectIds(exId, correctQuestionIds);
-    }
+    // גלילה לתוצאה הראשונה
+    questionBlocks[0].scrollIntoView({ behavior: 'smooth' });
 };
 
-// --- פונקציית בדיקה משופרת לדפי תרגילים מלאים ---
-window.checkAnswers = function(exId) {
-    const questions = window.questionsBank[exId];
-    if (!questions || questions.length === 0) return;
-    if (document.getElementById('exercise-results')) return;
+async function updateProgress(exId, correct, total) {
+    const user = auth.currentUser;
+    if (!user) return;
 
-    let correctCount = 0;
-    let summaryHTML = '';
-    const correctQuestionIds = [];
-    const questionBlocks = document.querySelectorAll('.question-block');
-    
-    questions.forEach((q, i) => {
-        const selected = document.querySelector(`input[name="q${i}"]:checked`);
-        const questionDiv = questionBlocks[i] || document.querySelector(`input[name="q${i}"]`)?.closest('.question-block');
-        let isCorrect = selected && selected.value === q.a;
-        
-        if (isCorrect) {
-            correctCount++;
-            addXP(300);
-            if (questionDiv) {
-                questionDiv.style.border = "2px solid #22c55e";
-                questionDiv.style.background = "#f0fdf4";
-            }
-            if (q.id) {
-                correctQuestionIds.push(q.id);
-            }
-        } else {
-            if (questionDiv) {
-                questionDiv.style.border = "2px solid #ef4444";
-                questionDiv.style.background = "#fef2f2";
-            }
-        }
-        summaryHTML += `<div style="text-align:right; margin-bottom:10px; color: ${isCorrect ? '#15803d' : '#b91c1c'}">
-            <strong>שאלה ${i+1}:</strong> ${isCorrect ? '✅ צדקת! (+50 XP)' : `❌ טעית (התשובה הנכונה: ${q.a})`}
-        </div>`;
-    });
+    const questions = window.questionsBank[exId];
+    if (!questions || !questions[0]) return;
 
-    const finalScore = Math.round((correctCount / questions.length) * 100);
+    const topic = questions[0].topic;
+    const subtopic = questions[0].subtopic;
+    const score = Math.round((correct / total) * 100);
 
-    const resultDiv = document.getElementById('exercise-results') || document.createElement('div');
-    resultDiv.id = 'exercise-results';
-    resultDiv.className = 'summary-card';
-    resultDiv.innerHTML = `
-        <h3 style="font-size: 2rem; margin-bottom: 15px;">סיכום התוצאות 🏁</h3>
-        <div style="font-size: 1.5rem; font-weight: 900; margin-bottom: 20px;">ציון סופי: ${finalScore}</div>
-        <div style="margin-bottom: 25px;">${summaryHTML}</div>
-        <button class="btn-main" onclick="router('exercise_list', 'mechanics')">חזור לרשימת התרגילים</button>
-    `;
+    // וידוא קיום אובייקטים ב-State
+    if (!window.playerStats.subProgress) window.playerStats.subProgress = {};
+    if (!window.playerStats.progress) window.playerStats.progress = {};
 
-    const container = document.getElementById('exercise-container');
-    if (container) {
-        container.after(resultDiv);
-    }
-    resultDiv.scrollIntoView({ behavior: 'smooth' });
+    const oldSubScore = window.playerStats.subProgress[subtopic] || 0;
+    const newSubScore = Math.round((oldSubScore + score) / 2);
+    window.playerStats.subProgress[subtopic] = newSubScore;
 
-    const btn = document.getElementById("checkBtn");
-    if (btn) {
-        btn.disabled = true;
-        btn.innerText = "✔ נבדק";
-        btn.style.background = "gray";
-        btn.style.cursor = "not-allowed";
-    }
+    // חישוב ממוצע נושא ראשי על סמך כל תתי הנושאים שלו
+    const subtopicsInTopic = physicsStructure[topic].subtopics;
+    let totalTopicScore = 0;
+    subtopicsInTopic.forEach(sub => {
+        totalTopicScore += (window.playerStats.subProgress[sub] || 0);
+    });
+    const newTopicScore = Math.round(totalTopicScore / subtopicsInTopic.length);
+    window.playerStats.progress[topic] = newTopicScore;
 
-    // עדכון ההתקדמות מבוסס ה-IDs
-    updateProgressWithCorrectIds(exId, correctQuestionIds);
-};
-
-// --- מנגנון חישוב התקדמות משוקלל ואמיתי המבוסס על סך השאלות בבנק ---
-async function updateProgressWithCorrectIds(exId, correctIdsInThisRun) {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    const allQuestionsInExercise = window.questionsBank[exId];
-    if (!allQuestionsInExercise || allQuestionsInExercise.length === 0) return;
-
-    const topic = allQuestionsInExercise[0].topic;
-    const subtopic = allQuestionsInExercise[0].subtopic;
-
-    if (!window.playerStats.correctQuestionsTrack) window.playerStats.correctQuestionsTrack = [];
-    if (!window.playerStats.subProgress) window.playerStats.subProgress = {};
-    if (!window.playerStats.progress) window.playerStats.progress = {};
-
-    // הוספת השאלות החדשות שנפתרו נכון (מניעת כפילויות)
-    correctIdsInThisRun.forEach(id => {
-        if (!window.playerStats.correctQuestionsTrack.includes(id)) {
-            window.playerStats.correctQuestionsTrack.push(id);
-        }
-    });
-
-    // מציאת כל השאלות ששייכות לתת-הנושא הספציפי הזה בכל רחבי ה-questionsBank
-    let allExpectedIdsForSubtopic = [];
-    Object.keys(window.questionsBank).forEach(key => {
-        window.questionsBank[key].forEach(q => {
-            if (q.subtopic === subtopic && q.id) {
-                allExpectedIdsForSubtopic.push(q.id);
-            }
-        });
-    });
-
-    // סינון כפילויות של שאלות באותו תת נושא (ליתר ביטחון)
-    allExpectedIdsForSubtopic = [...new Set(allExpectedIdsForSubtopic)];
-
-    const userCorrectIdsForSubtopic = window.playerStats.correctQuestionsTrack.filter(id => 
-        allExpectedIdsForSubtopic.includes(id)
-    );
-
-    // חישוב אחוזי התקדמות מדויקים
-    const totalQuestionsCount = allExpectedIdsForSubtopic.length || 1;
-    const subtopicScore = Math.round((userCorrectIdsForSubtopic.length / totalQuestionsCount) * 100);
-    window.playerStats.subProgress[subtopic] = subtopicScore;
-
-    // חישוב ממוצע הנושא הראשי
-    const subtopicsInTopic = physicsStructure[topic].subtopics;
-    let totalTopicScore = 0;
-    subtopicsInTopic.forEach(sub => {
-        totalTopicScore += (window.playerStats.subProgress[sub] || 0);
-    });
-    const newTopicScore = Math.round(totalTopicScore / subtopicsInTopic.length);
-    window.playerStats.progress[topic] = newTopicScore;
-
-    // שמירה מעודכנת ל-Firestore
-    try {
-        const userRef = doc(db, "users", user.uid);
-        await setDoc(userRef, {
-            correctQuestionsTrack: window.playerStats.correctQuestionsTrack,
-            subProgress: window.playerStats.subProgress,
-            progress: window.playerStats.progress
-        }, { merge: true });
-        console.log(`Progress updated for ${subtopic}: ${subtopicScore}%`);
-    } catch (error) {
-        console.error("Error updating score to DB:", error);
-    }
+    // שמירה ל-Firebase
+    const userRef = doc(db, "users", user.uid);
+    await setDoc(userRef, {
+        subProgress: window.playerStats.subProgress,
+        progress: window.playerStats.progress
+    }, { merge: true });
 }
-
 
 function renderProgressTopics(topicId) {
-    const app = document.getElementById("app-container");
-    const subProgress = window.playerStats.subProgress || {};
-    const topicData = physicsStructure[topicId];
+    const app = document.getElementById("app-container");
+    const subProgress = window.playerStats.subProgress || {};
+    const topicData = physicsStructure[topicId];
 
-    app.innerHTML = `
-    <section style="min-height:100vh; padding-top:40px;">
-        <h2 class="section-title text-white-shadow">📊 פירוט התקדמות: ${topicData.title}</h2>
+    app.innerHTML = `
+    <section style="min-height:100vh; padding-top:40px;">
+        <h2 class="section-title text-white-shadow">📊 פירוט התקדמות: ${topicData.title}</h2>
 
-        <div style="max-width:800px; margin:auto; width: 100%;">
-            ${topicData.subtopics.map(sub => {
-                const val = subProgress[sub] || 0;
-                return `
-                <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.2);">
-                    <div style="display:flex; justify-content:space-between; color: white; margin-bottom: 10px; font-weight: bold;">
-                        <span>${translateSubtopic(sub)}</span>
-                        <span>${val}%</span>
-                    </div>
-                    <div style="width:100%; height:12px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow:hidden;">
-                        <div style="width:${val}%; height:100%; background: linear-gradient(90deg, #3b82f6, #10b981); transition: width 0.5s ease-in-out;"></div>
-                    </div>
-                </div>
-                `;
-            }).join("")}
-        </div>
+        <div style="max-width:800px; margin:auto; width: 100%;">
+            ${topicData.subtopics.map(sub => {
+                const val = subProgress[sub] || 0;
+                return `
+                <div style="background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 20px; border-radius: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.2);">
+                    <div style="display:flex; justify-content:space-between; color: white; margin-bottom: 10px; font-weight: bold;">
+                        <span>${translateSubtopic(sub)}</span>
+                        <span>${val}%</span>
+                    </div>
+                    <div style="width:100%; height:12px; background: rgba(255,255,255,0.2); border-radius: 10px; overflow:hidden;">
+                        <div style="width:${val}%; height:100%; background: linear-gradient(90deg, #3b82f6, #10b981); transition: width 0.5s ease-in-out;"></div>
+                    </div>
+                </div>
+                `;
+            }).join("")}
+        </div>
 
-        <button class="btn-back" onclick="router('progress')">חזור לנושאים ראשיים</button>
-    </section>
-    `;
+        <button class="btn-back" onclick="router('progress')">חזור לנושאים ראשיים</button>
+    </section>
+    `;
 }
 
+// פונקציית עזר לתרגום שמות תתי הנושאים לתצוגה
 function translateSubtopic(sub) {
-    const dict = {
-        kinematics: "קינמטיקה",
-        dynamics: "דינמיקה",
-        gravity: "כבידה",
-        energy: "עבודה ואנרגיה",
-        momentum: "תנע",
-        electrostatics: "אלקטרוסטטיקה",
-        circuits: "מעגלים חשמליים",
-        magnetism: "מגנטיות",
-        induction: "השראה אלקטרומגנטית",
-        optics: "אופטיקה",
-        quantum: "פיזיקה קוונטית",
-        atomic: "מבנה האטום",
-        nuclear: "פיזיקה גרעינית"
-    };
-    return dict[sub] || sub;
+    const dict = {
+        kinematics: "קינמטיקה",
+        dynamics: "דינמיקה",
+        gravity: "כבידה",
+        energy: "עבודה ואנרגיה",
+        momentum: "תנע",
+        electrostatics: "אלקטרוסטטיקה",
+        circuits: "מעגלים חשמליים"
+        // המשך להוסיף כאן...
+    };
+    return dict[sub] || sub;
 }
 
 /* =========================================
-   7. פונקציות לוגיקה כלליות
-   ========================================= */
+   7. פונקציות לוגיקה כלליות
+   ========================================= */
+
+   
+window.handleSubjectClick = function(subId) {
+    if (subId !== 'mechanics') {
+        alert('נושא זה יעלה בקרוב!');
+        return;
+    }
+    if (pageMode === 'exercises') {
+        window.router('exercise_list', 'mechanics');
+    } else {
+        window.router('content_list', 'mechanics');
+    }
+};
+    
+window.handleCategoryClick = function(catId) {
+    if (catId === 'explanations' || catId === 'exercises') {
+        window.router('subject_select', catId);
+    } else {
+        alert('קטגוריה זו בבנייה כרגע...');
+    }
+};
 
 window.handleSubjectClick = function(subId) {
-    if (pageMode === 'exercises') {
-        window.router('exercise_list', subId);
-    } else {
-        window.router('content_list', subId);
-    }
-};
-    
-window.handleCategoryClick = function(catId) {
-    if (catId === 'explanations' || catId === 'exercises') {
-        window.router('subject_select', catId);
-    } else {
-        alert('קטגוריה זו בבנייה כרגע...');
-    }
+    
+    if (pageMode === 'exercises') {
+        window.router('exercise_list', subId);
+    } else {
+        window.router('content_list', subId);
+    }
 };
 
 window.scrollToSection = function(id) {
-    if (!document.getElementById(id)) {
-        window.router('home');
-        setTimeout(() => {
-            const el = document.getElementById(id);
-            if(el) el.scrollIntoView({behavior: 'smooth'});
-        }, 100);
-    } else {
-        document.getElementById(id).scrollIntoView({behavior: 'smooth'});
-    }
+    if (!document.getElementById(id)) {
+        window.router('home');
+        setTimeout(() => {
+            const el = document.getElementById(id);
+            if(el) el.scrollIntoView({behavior: 'smooth'});
+        }, 100);
+    } else {
+        document.getElementById(id).scrollIntoView({behavior: 'smooth'});
+    }
 };
 
 window.scrollTestimonials = function(direction) {
-    const container = document.getElementById('testimonials-container');
-    if(container) container.scrollBy({ left: direction * 350 * -1, behavior: 'smooth' });
+    const container = document.getElementById('testimonials-container');
+    if(container) container.scrollBy({ left: direction * 350 * -1, behavior: 'smooth' });
 };
 
 window.handleContact = function(e) {
-    e.preventDefault();
-    alert('ההודעה נשלחה בהצלחה!');
+    e.preventDefault();
+    alert('ההודעה נשלחה בהצלחה!');
+};
+
+window.checkAnswers = function(exId) {
+    const questions = window.questionsBank[exId];
+    if (document.getElementById('exercise-results')) return;
+    let correctCount = 0;
+    let summaryHTML = '';
+    
+    questions.forEach((q, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const questionDiv = document.querySelector(`input[name="q${i}"]`)?.closest('.question-block');
+        let isCorrect = selected && selected.value === q.a;
+        
+        if (isCorrect) {
+            correctCount++;
+            addXP(300);
+            questionDiv.style.border = "2px solid #22c55e";
+            questionDiv.style.background = "#f0fdf4";
+        } else {
+            questionDiv.style.border = "2px solid #ef4444";
+            questionDiv.style.background = "#fef2f2";
+        }
+        summaryHTML += `<div style="text-align:right; margin-bottom:10px; color: ${isCorrect ? '#15803d' : '#b91c1c'}">
+            <strong>שאלה ${i+1}:</strong> ${isCorrect ? '✅ צדקת! (+50 XP)' : `❌ טעית (התשובה הנכונה: ${q.a})`}
+        </div>`;
+    });
+
+    const finalScore = Math.round((correctCount / questions.length) * 100);
+
+    const resultDiv = document.getElementById('exercise-results') || document.createElement('div');
+    resultDiv.id = 'exercise-results';
+    resultDiv.className = 'summary-card';
+    resultDiv.innerHTML = `
+        <h3 style="font-size: 2rem; margin-bottom: 15px;">סיכום התוצאות 🏁</h3>
+        <div style="font-size: 1.5rem; font-weight: 900; margin-bottom: 20px;">ציון סופי: ${finalScore}</div>
+        <div style="margin-bottom: 25px;">${summaryHTML}</div>
+        <button class="btn-main" onclick="router('exercise_list', 'mechanics')">חזור לרשימת התרגילים</button>
+    `;
+
+    if (!document.getElementById('exercise-results')) {
+        document.getElementById('exercise-container').after(resultDiv);
+    }
+    resultDiv.scrollIntoView({ behavior: 'smooth' });
+
+    const btn = document.getElementById("checkBtn");
+
+    btn.disabled = true;
+    btn.innerText = "✔ נבדק";
+    btn.style.background = "gray";
+    btn.style.cursor = "not-allowed";
+
+    updateProgress(exId, correctCount, questions.length);
+
 };
 
 function getYoutubeThumb(url) {
-    if (!url) return '';
-    let vidId = '';
-    if (url.includes('youtu.be')) vidId = url.split('/').pop().split('?')[0];
-    else if (url.includes('v=')) vidId = url.split('v=')[1].split('&')[0];
-    return `https://img.youtube.com/vi/${vidId}/hqdefault.jpg`;
+    if (!url) return '';
+    let vidId = '';
+    if (url.includes('youtu.be')) vidId = url.split('/').pop().split('?')[0];
+    else if (url.includes('v=')) vidId = url.split('v=')[1].split('&')[0];
+    return `https://img.youtube.com/vi/${vidId}/hqdefault.jpg`;
 }
 
 /* =========================================
-   8. מערכת Auth (Firebase)
-   ========================================= */
+   8. מערכת Auth (Firebase)
+   ========================================= */
 window.switchTab = (mode) => {
-    authMode = mode;
-    document.getElementById('tab-login').classList.toggle('active', mode === 'login');
-    document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
-    document.getElementById('name-field').style.display = mode === 'signup' ? 'block' : 'none';
-    document.getElementById('auth-title').innerText = mode === 'signup' ? 'יצירת חשבון' : 'ברוכים הבאים';
-    document.getElementById('auth-error').innerText = '';
+    authMode = mode;
+    document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+    document.getElementById('tab-signup').classList.toggle('active', mode === 'signup');
+    document.getElementById('name-field').style.display = mode === 'signup' ? 'block' : 'none';
+    document.getElementById('auth-title').innerText = mode === 'signup' ? 'יצירת חשבון' : 'ברוכים הבאים';
+    document.getElementById('auth-error').innerText = '';
 };
 
 window.handleLogout = () => {
-    signOut(auth);
+    signOut(auth);
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    const authForm = document.getElementById('auth-form');
-    if(authForm) {
-        authForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
-            const name = document.getElementById('auth-name') ? document.getElementById('auth-name').value : "";
-            const errorEl = document.getElementById('auth-error');
+    const authForm = document.getElementById('auth-form');
+    if(authForm) {
+        authForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('auth-email').value;
+            const pass = document.getElementById('auth-pass').value;
+            const name = document.getElementById('auth-name') ? document.getElementById('auth-name').value : "";
+            const errorEl = document.getElementById('auth-error');
 
-            try {
-                if (authMode === 'signup') {
-                    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
-                    await updateProfile(userCredential.user, { displayName: name });
-                    
-                    await setDoc(doc(db, "users", userCredential.user.uid), {
-                        name: name,
-                        email: email,
-                        role: 'student',
-                        joinDate: new Date().toLocaleDateString('he-IL'),
-                        uid: userCredential.user.uid,
-                        level: 1,
-                        currentXP: 0,
-                        xpNeeded: 100,
-                        totalXP: 0,
-                        stars: 0,
-                        correctQuestionsTrack: [],
-                        progress: { mechanics: 0, electricity: 0, radiation: 0 }
-                    }, { merge: true });
-                    
-                    alert("נרשמת בהצלחה! ברוכים הבאים.");
-                } else {
-                    await signInWithEmailAndPassword(auth, email, pass);
-                }
-                document.getElementById('auth-modal').style.display = 'none';
-            } catch (error) {
-                console.error("Auth Error:", error);
-                errorEl.innerText = "שגיאה: אימייל, סיסמה או בעיה בשרת.";
-            }
-        });
-    }
+            try {
+                if (authMode === 'signup') {
+                    // יצירת משתמש ב-Auth
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                    await updateProfile(userCredential.user, { displayName: name });
+                    
+                    // שמירת המשתמש ב-Firestore
+                    await setDoc(doc(db, "users", userCredential.user.uid), {
+                    name: name,
+                    email: email,
+                    role: 'student',
+                    joinDate: new Date().toLocaleDateString('he-IL'),
+                    uid: userCredential.user.uid,
+                    level: 1,
+                    currentXP: 0,
+                    xpNeeded: 100,
+                    totalXP: 0,
+                    stars: 0,
+
+                    progress: {
+                        mechanics: 0,
+                        electricity: 0,
+                        radiation: 0
+                    }
+
+                }, { merge: true });
+                    
+                    alert("נרשמת בהצלחה! ברוכים הבאים.");
+                } else {
+                    await signInWithEmailAndPassword(auth, email, pass);
+                }
+                document.getElementById('auth-modal').style.display = 'none';
+            } catch (error) {
+                console.error("Auth Error:", error);
+                errorEl.innerText = "שגיאה: אימייל, סיסמה או בעיה בשרת.";
+            }
+        });
+    }
 });
 
 async function loadStatsFromDB(uid) {
-    const userRef = doc(db, "users", uid);
-    const snapshot = await getDoc(userRef);
+    const userRef = doc(db, "users", uid);
+    const snapshot = await getDoc(userRef);
 
-    if (snapshot.exists()) {
-        const data = snapshot.data();
-        window.playerStats = {
-            level: data.level || 1,
-            currentXP: data.currentXP || 0,
-            totalXP: data.totalXP || 0,
-            stars: data.stars || 0,
-            unlockedAchievements: data.unlockedAchievements || [],
-            completedExercises: data.completedExercises || [],
-            watchedVideos: data.watchedVideos || [],
-            subProgress: data.subProgress || {},
-            progress: data.progress || { mechanics: 0, electricity: 0, radiation: 0 },
-            correctQuestionsTrack: data.correctQuestionsTrack || [] 
-        };
+    if (snapshot.exists()) {
+        const data = snapshot.data();
+        window.playerStats = {
+            level: data.level || 1,
+            currentXP: data.currentXP || 0,
+            totalXP: data.totalXP || 0,
+            stars: data.stars || 0,
+            unlockedAchievements: data.unlockedAchievements || [],
+            completedExercises: data.completedExercises || [],
+            watchedVideos: data.watchedVideos || [],
+            subProgress: data.subProgress || {}, // שים לב שהוספנו את זה
+            progress: data.progress || { mechanics: 0, electricity: 0, radiation: 0 }
+        };
 
-        window.playerStats.xpNeeded = window.playerStats.level * 100;
+    window.playerStats.xpNeeded = window.playerStats.level * 100;
 
-        updateXPUI();
-        await checkAchievements();
-    }
+    updateXPUI();
+    await checkAchievements();
+    }
 }
 
 function renderVideosPage() {
-    const app = document.getElementById("app-container");
-    
-    app.innerHTML = `
-        <section class="videos-page" style="min-height:100vh; padding-top:40px; direction: rtl;">
-            <h2 class="section-title text-white-shadow" style="text-align:center; margin-bottom: 40px;">🎥 סרטונים והסברים לפי נושאים</h2>
-            
-            <div class="grid-full" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; padding: 20px; max-width: 1200px; margin: 0 auto;">
-                <div class="card video-wave-card" onclick="router('videos_topic', 'mechanics')">
-                    <canvas class="video-wave-canvas" id="wave-mechanics"></canvas>
-                    <div class="video-card-overlay">
-                        <i class="fa-solid fa-film video-card-icon" style="color: #60a5fa;"></i>
-                        <h3>מכניקה</h3>
-                    </div>
-                </div>
+    const app = document.getElementById("app-container");
+    
+    app.innerHTML = `
+        <section class="videos-page" style="min-height:100vh; padding-top:40px; direction: rtl;">
+            <h2 class="section-title text-white-shadow" style="text-align:center; margin-bottom: 40px;">🎥 סרטונים והסברים לפי נושאים</h2>
+            
+            <div class="grid-full" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; padding: 20px; max-width: 1200px; margin: 0 auto;">
+                <div class="card video-wave-card" onclick="router('videos_topic', 'mechanics')">
+                    <canvas class="video-wave-canvas" id="wave-mechanics"></canvas>
+                    <div class="video-card-overlay">
+                        <i class="fa-solid fa-film video-card-icon" style="color: #60a5fa;"></i>
+                        <h3>מכניקה</h3>
+                    </div>
+                </div>
 
-                <div class="card video-wave-card" onclick="router('videos_topic', 'electricity')">
-                    <canvas class="video-wave-canvas" id="wave-electricity"></canvas>
-                    <div class="video-card-overlay">
-                        <i class="fa-solid fa-bolt video-card-icon" style="color: #fbbf24;"></i>
-                        <h3>חשמל ומגנטיות</h3>
-                    </div>
-                </div>
+                <div class="card video-wave-card" onclick="router('videos_topic', 'electricity')">
+                    <canvas class="video-wave-canvas" id="wave-electricity"></canvas>
+                    <div class="video-card-overlay">
+                        <i class="fa-solid fa-bolt video-card-icon" style="color: #fbbf24;"></i>
+                        <h3>חשמל ומגנטיות</h3>
+                    </div>
+                </div>
 
-                <div class="card video-wave-card" onclick="router('videos_topic', 'radiation')">
-                    <canvas class="video-wave-canvas" id="wave-radiation"></canvas>
-                    <div class="video-card-overlay">
-                        <i class="fa-solid fa-circle-nodes video-card-icon" style="color: #a78bfa;"></i>
-                        <h3>קרינה וחומר</h3>
-                    </div>
-                </div>
-            </div>
+                <div class="card video-wave-card" onclick="router('videos_topic', 'radiation')">
+                    <canvas class="video-wave-canvas" id="wave-radiation"></canvas>
+                    <div class="video-card-overlay">
+                        <i class="fa-solid fa-circle-nodes video-card-icon" style="color: #a78bfa;"></i>
+                        <h3>קרינה וחומר</h3>
+                    </div>
+                </div>
+            </div>
 
-            <div style="text-align: center; color: rgba(255,255,255,0.3); font-size: 0.8rem; margin-top: 40px;">
-                Interactive wave animation inspired by Mathematical Canvas Fluid (MIT License)
-            </div>
+            <div style="text-align: center; color: rgba(255,255,255,0.3); font-size: 0.8rem; margin-top: 40px;">
+                Interactive wave animation inspired by Mathematical Canvas Fluid (MIT License)
+            </div>
 
-            <div style="text-align: center; margin-top: 20px;">
-                <button class="btn-back" onclick="router('home')">חזור לדף הבית</button>
-            </div>
-        </section>
-    `;
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-back" onclick="router('home')">חזור לדף הבית</button>
+            </div>
+        </section>
+    `;
 
-    setTimeout(() => {
-        if (window.initPhysicsWaves) {
-            window.initPhysicsWaves("wave-mechanics", "#60a5fa", 0.015, 20);
-            window.initPhysicsWaves("wave-electricity", "#fbbf24", 0.025, 15);
-            window.initPhysicsWaves("wave-radiation", "#a78bfa", 0.01, 25);
-        }
-    }, 100);
+    // הפעלת מנוע הגלים
+    setTimeout(() => {
+        if (window.initPhysicsWaves) {
+            window.initPhysicsWaves("wave-mechanics", "#60a5fa", 0.015, 20);
+            window.initPhysicsWaves("wave-electricity", "#fbbf24", 0.025, 15);
+            window.initPhysicsWaves("wave-radiation", "#a78bfa", 0.01, 25);
+        }
+    }, 100);
 }
 
+// --- בודק משתמש מחובר (ומנתק אם הוא נמחק) ---
 onAuthStateChanged(auth, async (user) => {
-    const authModal = document.getElementById('auth-modal');
-    const userProfile = document.getElementById('user-profile');
-    const loginBtn = document.getElementById('login-trigger-btn');
-    const xpWidget = document.getElementById('level-widget');
+    const authModal = document.getElementById('auth-modal');
+    const userProfile = document.getElementById('user-profile');
+    const loginBtn = document.getElementById('login-trigger-btn');
+    const xpWidget = document.getElementById('level-widget');
 
-    if (user) {
-        const userDocRef = doc(db, "users", user.uid);
-        const userSnapshot = await getDoc(userDocRef);
+    if (user) {
 
-        if (!userSnapshot.exists()) {
-            await setDoc(userDocRef, {
-                name: user.displayName || "",
-                email: user.email,
-                role: "student",
-                joinDate: new Date().toLocaleDateString('he-IL'),
-                uid: user.uid,
-                level: 1,
-                currentXP: 0,
-                totalXP: 0,
-                stars: 0,
-                correctQuestionsTrack: []
-            });
-        }
+        const userDocRef = doc(db, "users", user.uid);
+        const userSnapshot = await getDoc(userDocRef);
 
-        if(authModal) authModal.style.display = 'none';
-        if(userProfile) userProfile.style.display = 'flex';
-        if(loginBtn) loginBtn.style.display = 'none';
-        if(xpWidget) xpWidget.style.display = 'flex';
+        // 🔥 במקום logout — ניצור מסמך אם חסר
+        if (!userSnapshot.exists()) {
+            await setDoc(userDocRef, {
+            name: user.displayName || "",
+            email: user.email,
+            role: "student",
+            joinDate: new Date().toLocaleDateString('he-IL'),
+            uid: user.uid,
+            level: 1,
+            currentXP: 0,
+            totalXP: 0,
+            stars: 0,
+        });
+        }
 
-        document.getElementById('user-name-display').innerText = user.displayName || user.email;
+        if(authModal) authModal.style.display = 'none';
+        if(userProfile) userProfile.style.display = 'flex';
+        if(loginBtn) loginBtn.style.display = 'none';
+        if(xpWidget) xpWidget.style.display = 'flex';
 
-        await loadStatsFromDB(user.uid);
-        listenToLeaderboard();
-        window.router('home');
-    } else {
-        if(authModal) authModal.style.display = 'flex';
-        if(userProfile) userProfile.style.display = 'none';
-        if(loginBtn) loginBtn.style.display = 'block';
-        if(xpWidget) xpWidget.style.display = 'none';
-    }
+        document.getElementById('user-name-display').innerText =
+            user.displayName || user.email;
+
+        await loadStatsFromDB(user.uid);
+        listenToLeaderboard(); // 🔥 תוסיף כאן
+        window.router('home');
+    } else {
+
+        if(authModal) authModal.style.display = 'flex';
+        if(userProfile) userProfile.style.display = 'none';
+        if(loginBtn) loginBtn.style.display = 'block';
+        if(xpWidget) xpWidget.style.display = 'none';
+    }
 });
-
 /* =========================================
-   9. דף אדמין (טעינת משתמשים) - מניעת מחיקה עצמית
-   ========================================= */
-
-   // --- פתיחת חלון ניהול התקדמות למשתמש ספציפי ---
-window.openProgressManagementModal = function(uid, name) {
-    // יצירת אלמנט המודאל במידה ואינו קיים ב-DOM
-    let modal = document.getElementById('progress-manage-modal');
-    if (!modal) {
-        modal = document.createElement('div');
-        modal.id = 'progress-manage-modal';
-        modal.style.cssText = "position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); display:flex; align-items:center; justify-content:center; z-index:4000; direction:rtl;";
-        document.body.appendChild(modal);
-    }
-
-    // תוכן החלון הקטן עם האפשרויות
-    modal.innerHTML = `
-        <div style="background:white; padding:30px; border-radius:20px; width:400px; box-shadow:0 10px 30px rgba(0,0,0,0.3); text-align:right;">
-            <h3 style="margin-top:0; border-bottom:2px solid #f1f5f9; padding-bottom:10px; color:#1e293b;">
-                ⚙️ ניהול התקדמות: ${name}
-            </h3>
-            
-            <p style="font-weight:bold; margin-bottom:5px; color:#64748b; font-size:0.9rem;">בחר נושא / תת-נושא לפעולה:</p>
-            <select id="progress-topic-select" style="width:100%; padding:10px; border-radius:10px; border:1px solid #cbd5e1; margin-bottom:20px; font-weight:600;">
-                <option value="all">--- כל האתר (איפוס גלובלי) ---</option>
-                <optgroup label="נושאים ראשיים">
-                    <option value="topic_mechanics">מכניקה (ראשי)</option>
-                    <option value="topic_electricity">חשמל ומגנטיות (ראשי)</option>
-                    <option value="topic_radiation">קרינה וחומר (ראשי)</option>
-                </optgroup>
-                <optgroup label="תתי-נושאים">
-                    <option value="sub_kinematics">קינמטיקה</option>
-                    <option value="sub_dynamics">דינמיקה</option>
-                    <option value="sub_gravity">כבידה</option>
-                    <option value="sub_energy">עבודה ואנרגיה</option>
-                    <option value="sub_momentum">תנע</option>
-                    <option value="sub_electrostatics">אלקטרוסטטיקה</option>
-                    <option value="sub_circuits">מעגלים חשמליים</option>
-                </optgroup>
-            </select>
-
-            <div style="display:flex; flex-direction:column; gap:10px;">
-                <button onclick="executeProgressAction('${uid}', 'reset')" 
-                    style="width:100%; padding:12px; background:#ef4444; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; transition:opacity 0.2s;">
-                    ❌ איפוס ההתקדמות שנבחרה ל-0%
-                </button>
-                
-                <button onclick="executeProgressAction('${uid}', 'add_10')" 
-                    style="width:100%; padding:12px; background:#10b981; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; transition:opacity 0.2s;">
-                    📈 העלאה ב-10% (לנושא/תת-נושא שנבחר)
-                </button>
-
-                <button onclick="executeProgressAction('${uid}', 'set_100')" 
-                    style="width:100%; padding:12px; background:#3b82f6; color:white; border:none; border-radius:10px; font-weight:bold; cursor:pointer; transition:opacity 0.2s;">
-                    🎯 השלמה מלאה ל-100%
-                </button>
-            </div>
-
-            <button onclick="closeProgressManagementModal()" 
-                style="width:100%; margin-top:20px; padding:10px; background:#e2e8f0; color:#475569; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">
-                סגור חלון
-            </button>
-        </div>
-    `;
-    modal.style.display = 'flex';
-};
-
-// --- סגירת המודאל ---
-window.closeProgressManagementModal = function() {
-    const modal = document.getElementById('progress-manage-modal');
-    if (modal) modal.style.display = 'none';
-};
-
-// --- ביצוע הפעולה הנבחרת מול מסד הנתונים (Firestore) ---
-window.executeProgressAction = async function(uid, action) {
-    const select = document.getElementById('progress-topic-select');
-    if (!select) return;
-
-    const selection = select.value; // הערך שנבחר ב-Dropdown
-    const userRef = doc(db, "users", uid);
-
-    try {
-        // טעינת הנתונים הנוכחיים של המשתמש כדי לבצע מניפולציה מדויקת
-        const snapshot = await getDoc(userRef);
-        if (!snapshot.exists()) {
-            alert("המשתמש לא נמצא במסד הנתונים.");
-            return;
-        }
-
-        const data = snapshot.data();
-        let subProgress = data.subProgress || {};
-        let progress = data.progress || { mechanics: 0, electricity: 0, radiation: 0 };
-        let correctQuestionsTrack = data.correctQuestionsTrack || [];
-
-        // 1. ניתוח הבחירה (האם מדובר בנושא ראשי, תת נושא או הכל)
-        if (selection === 'all') {
-            if (action === 'reset') {
-                subProgress = {};
-                progress = { mechanics: 0, electricity: 0, radiation: 0 };
-                correctQuestionsTrack = [];
-            } else {
-                alert("באיפוס גלובלי ניתן לבצע רק פעולת איפוס מלאה. להוספת אחוזים בחר נושא ספציפי.");
-                return;
-            }
-        } 
-        else if (selection.startsWith('topic_')) {
-            const targetTopic = selection.replace('topic_', ''); // יחזיר mechanics, electricity או radiation
-            
-            if (action === 'reset') {
-                progress[targetTopic] = 0;
-                // איפוס תתי הנושאים ששייכים אליו
-                physicsStructure[targetTopic].subtopics.forEach(sub => { subProgress[sub] = 0; });
-            } else if (action === 'add_10') {
-                progress[targetTopic] = Math.min(100, (progress[targetTopic] || 0) + 10);
-            } else if (action === 'set_100') {
-                progress[targetTopic] = 100;
-                physicsStructure[targetTopic].subtopics.forEach(sub => { subProgress[sub] = 100; });
-            }
-        } 
-        else if (selection.startsWith('sub_')) {
-            const targetSub = selection.replace('sub_', ''); // יחזיר kinematics, dynamics וכדומה
-            
-            // מציאת הנושא האב של תת הנושא הזה כדי לעדכן אותו בהתאם לאחר מכן
-            const parentTopic = Object.keys(physicsStructure).find(key => 
-                physicsStructure[key].subtopics.includes(targetSub)
-            );
-
-            if (action === 'reset') {
-                subProgress[targetSub] = 0;
-                
-                // הסינון המתוקן (בלי belongsToBelongsToSub):
-                correctQuestionsTrack = correctQuestionsTrack.filter(id => {
-                    let belongsToSub = false;
-                    Object.keys(window.questionsBank).forEach(key => {
-                        window.questionsBank[key].forEach(q => {
-                            if (q.id === id && q.subtopic === targetSub) {
-                                belongsToSub = true;
-                            }
-                        });
-                    });
-                    return !belongsToSub; // מחזיר אמת רק אם השאלה *לא* שייכת לתת-הנושא שמאופס
-                });
-            } else if (action === 'add_10') {
-                subProgress[targetSub] = Math.min(100, (subProgress[targetSub] || 0) + 10);
-            } else if (action === 'set_100') {
-                subProgress[targetSub] = 100;
-            }
-
-            // עדכון אוטומטי של ממוצע הנושא הראשי על בסיס השינוי בתת הנושא
-            if (parentTopic) {
-                let totalTopicScore = 0;
-                physicsStructure[parentTopic].subtopics.forEach(sub => {
-                    totalTopicScore += (subProgress[sub] || 0);
-                });
-                progress[parentTopic] = Math.round(totalTopicScore / physicsStructure[parentTopic].subtopics.length);
-            }
-        }
-
-        // 2. שמירת השינויים המעודכנים חזרה ל-Firestore
-        await setDoc(userRef, {
-            subProgress: subProgress,
-            progress: progress,
-            correctQuestionsTrack: correctQuestionsTrack
-        }, { merge: true });
-
-        alert("השינוי עודכן בהצלחה בבסיס הנתונים!");
-        closeProgressManagementModal();
-        loadAdminPage(); // רענון עמוד הניהול כדי להציג את השינויים מיד בטבלה
-
-    } catch (error) {
-        console.error("Error executing progress action:", error);
-        alert("שגיאה בעדכון הנתונים: " + error.message);
-    }
-};
-
+   9. דף אדמין (טעינת משתמשים) - מניעת מחיקה עצמית
+   ========================================= */
 async function loadAdminPage() {
-    const app = document.getElementById('app-container');
-    app.innerHTML = '<div style="text-align:center; margin-top:50px;">טוען משתמשים... <i class="fa-solid fa-spinner fa-spin"></i></div>';
-    const currentUser = auth.currentUser;
+    const app = document.getElementById('app-container');
+    app.innerHTML = '<div style="text-align:center; margin-top:50px;">טוען משתמשים... <i class="fa-solid fa-spinner fa-spin"></i></div>';
 
-    try {
-        const users = [];
-        const querySnapshot = await getDocs(collection(db, "users"));
-        querySnapshot.forEach((doc) => { users.push(doc.data()); });
+    const currentUser = auth.currentUser; // מי אני?
 
-        let html = `
-            <div class="admin-container animation-fade-in">
-                <div class="admin-header">
-                    <h2><i class="fa-solid fa-users-gear"></i> ניהול משתמשים (${users.length})</h2>
-                </div>
-                <table class="users-table">
-                    <thead>
-                        <tr>
-                            <th>שם מלא</th>
-                            <th>אימייל</th>
-                            <th>תאריך הצטרפות</th>
-                            <th>תפקיד</th>
-                            <th>פעולות</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-        `;
+    try {
+        const users = [];
+        const querySnapshot = await getDocs(collection(db, "users"));
+        querySnapshot.forEach((doc) => {
+            users.push(doc.data());
+        });
 
-        if (users.length === 0) {
-            html += `<tr><td colspan="5" style="text-align:center;">אין משתמשים רשומים.</td></tr>`;
-        } else {
-            users.forEach(user => {
-                const isMe = currentUser && user.uid === currentUser.uid;
-                let actionButtons = '';
+        let html = `
+            <div class="admin-container animation-fade-in">
+                <div class="admin-header">
+                    <h2><i class="fa-solid fa-users-gear"></i> ניהול משתמשים (${users.length})</h2>
+                </div>
+                <table class="users-table">
+                    <thead>
+                        <tr>
+                            <th>שם מלא</th>
+                            <th>אימייל</th>
+                            <th>תאריך הצטרפות</th>
+                            <th>תפקיד</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
 
-                // 1. מייצרים את כפתורי הניהול הרגילים שזמינים לכולם (כולל לעצמך)
-                actionButtons = `
-                    <button class="action-btn" title="הגדרות התקדמות"
-                        onclick="openProgressManagementModal('${user.uid}', '${user.name || 'תלמיד'}')">
-                        ⚙️
-                    </button>
+        if (users.length === 0) {
+            html += `<tr><td colspan="5" style="text-align:center;">אין משתמשים רשומים.</td></tr>`;
+        } else {
+            users.forEach(user => {
+                const roleClass = user.role === 'admin' ? 'role-admin' : 'role-student';
+                const roleText = user.role === 'admin' ? 'מנהל' : 'תלמיד';
+                
+                // בדיקה האם זה המשתמש המחובר כרגע
+                const isMe = currentUser && user.uid === currentUser.uid;
+                let deleteButton = '';
+                
+                if (isMe) {
+                    deleteButton = `<span style="font-size:0.8rem; color:#999; font-weight:bold;">(אני)</span>`;
+                } else {
+                    deleteButton = `
+                    <button class="action-btn" title="איפוס XP"
+                        onclick="resetUserXP('${user.uid}')">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
 
-                    <button class="action-btn" title="איפוס XP"
-                        onclick="resetUserXP('${user.uid}')">
-                        <i class="fa-solid fa-rotate-left"></i>
-                    </button>
+                    <button class="action-btn" title="איפוס כוכבים"
+                        onclick="resetUserStars('${user.uid}')">
+                        ⭐
+                    </button>
 
-                    <button class="action-btn" title="איפוס כוכבים"
-                        onclick="resetUserStars('${user.uid}')">
-                        ⭐
-                    </button>
+                    <button class="action-btn" title="הוסף כוכב"
+                        onclick="increaseUserStars('${user.uid}')">
+                        ➕
+                    </button>
 
-                    <button class="action-btn" title="הוסף כוכב"
-                        onclick="increaseUserStars('${user.uid}')">
-                        ➕
-                    </button>
+                    <button class="action-btn" title="הסר כוכב"
+                        onclick="decreaseUserStars('${user.uid}')">
+                        ➖
+                    </button>
 
-                    <button class="action-btn" title="הסר כוכב"
-                        onclick="decreaseUserStars('${user.uid}')">
-                        ➖
-                    </button>
-                `;
+                    <button class="action-btn delete-btn" title="מחק"
+                        onclick="deleteUser('${user.uid}')">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                `;
+                }
 
-                // 2. בדיקה: אם זה המשתמש הנוכחי שלי, נחסום רק את כפתור המחיקה
-                if (isMe) {
-                    // מוסיפים אינדיקציה קטנה ליד הכפתורים שזה החשבון שלך, ללא כפתור מחיקה
-                    actionButtons += `<span style="font-size:0.8rem; color:#64748b; font-weight:bold; margin-right:5px;">(אני)</span>`;
-                } else {
-                    // אם זה משתמש אחר, מוסיפים לו גם את כפתור המחיקה הרגיל
-                    actionButtons += `
-                        <button class="action-btn delete-btn" title="מחק"
-                            onclick="deleteUser('${user.uid}')">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    `;
-                }
+                html += `
+                    <tr>
+                        <td><strong>${user.name}</strong></td>
+                        <td>${user.email}</td>
+                        <td>${user.joinDate}</td>
+                        <td><span class="role-badge ${roleClass}">${roleText}</span></td>
+                        <td>
+                            ${deleteButton}
+                        </td>
+                    </tr>
+                `;
+            });
+        }
 
-                // הגדרות ה-Badge עבור התפקיד
-                const roleText = user.role === 'admin' ? 'מנהל' : 'תלמיד';
-                const roleClass = user.role === 'admin' ? 'badge-admin' : 'badge-student';
-
-                html += `
-                    <tr>
-                        <td><strong>${user.name || 'אנונימי'}</strong></td>
-                        <td>${user.email}</td>
-                        <td>${user.joinDate || ''}</td>
-                        <td><span class="role-badge ${roleClass}">${roleText}</span></td>
-                        <td>${actionButtons}</td>
-                    </tr>`;
-            });
-        }
-
-        html += `</tbody></table><button class="btn-back" onclick="router('home')">חזרה לדף הבית</button></div>`;
-        app.innerHTML = html;
-    } catch (error) {
-        console.error("Error loading users:", error);
-        app.innerHTML = `<h3 style="text-align:center; color:red;">שגיאה בטעינת נתונים: ${error.message}</h3><button class="btn-back" onclick="router('home')">חזור</button>`;
-    }
+        html += `
+                    </tbody>
+                </table>
+                <button class="btn-back" onclick="router('home')">חזרה לדף הבית</button>
+            </div>
+        `;
+        app.innerHTML = html;
+    } catch (error) {
+        console.error("Error loading users:", error);
+        app.innerHTML = `<h3 style="text-align:center; color:red;">שגיאה בטעינת נתונים: ${error.message}</h3><button class="btn-back" onclick="router('home')">חזור</button>`;
+    }
 }
-
-
-
 async function deleteUser(uid) {
-    if(confirm('האם אתה בטוח שברצונך למחוק את המשתמש מהרשימה?')) {
-        try {
-            await deleteDoc(doc(db, "users", uid));
-            alert('המשתמש נמחק בהצלחה');
-            loadAdminPage();
-        } catch (error) {
-            console.error("Error deleting user:", error);
-            alert("שגיאה במחיקה: " + error.message);
-        }
-    }
+    if(confirm('האם אתה בטוח שברצונך למחוק את המשתמש מהרשימה?')) {
+        try {
+            await deleteDoc(doc(db, "users", uid));
+            alert('המשתמש נמחק בהצלחה');
+            loadAdminPage();
+        } catch (error) {
+            console.error("Error deleting user:", error);
+            alert("שגיאה במחיקה: " + error.message);
+        }
+    }
 }
 async function resetUserXP(uid) {
-    if (!confirm("האם אתה בטוח שברצונך לאפס את ה-XP של המשתמש?")) return;
-    try {
-        await setDoc(doc(db, "users", uid), { level: 1, currentXP: 0, xpNeeded: 100, totalXP: 0 }, { merge: true });
-        alert("ה-XP אופס בהצלחה!");
-        loadAdminPage();
-    } catch (error) {
-        console.error("Error resetting XP:", error);
-        alert("שגיאה באיפוס XP");
-    }
+    if (!confirm("האם אתה בטוח שברצונך לאפס את ה-XP של המשתמש?")) return;
+
+    try {
+        await setDoc(doc(db, "users", uid), {
+            level: 1,
+            currentXP: 0,
+            xpNeeded: 100,
+            totalXP: 0
+        }, { merge: true });
+
+        alert("ה-XP אופס בהצלחה!");
+        loadAdminPage(); // רענון הטבלה
+    } catch (error) {
+        console.error("Error resetting XP:", error);
+        alert("שגיאה באיפוס XP");
+    }
 }
 async function resetUserStars(uid) {
-    if (!confirm("האם אתה בטוח שברצונך לאפס את הכוכבים?")) return;
-    try {
-        await setDoc(doc(db, "users", uid), { stars: 0 }, { merge: true });
-        alert("הכוכבים אופסו בהצלחה!");
-        loadAdminPage();
-    } catch (error) {
-        console.error(error);
-        alert("שגיאה באיפוס כוכבים");
-    }
+    if (!confirm("האם אתה בטוח שברצונך לאפס את הכוכבים?")) return;
+
+    try {
+        await setDoc(doc(db, "users", uid), {
+            stars: 0
+        }, { merge: true });
+
+        alert("הכוכבים אופסו בהצלחה!");
+        loadAdminPage();
+    } catch (error) {
+        console.error(error);
+        alert("שגיאה באיפוס כוכבים");
+    }
 }
 
 async function increaseUserStars(uid) {
-    try {
-        const userRef = doc(db, "users", uid);
-        const snap = await getDoc(userRef);
-        if (!snap.exists()) return;
-        const currentStars = snap.data().stars || 0;
-        await updateDoc(userRef, { stars: currentStars + 1 });
-        loadAdminPage();
-    } catch (error) { console.error(error); }
+    try {
+        const userRef = doc(db, "users", uid);
+        const snap = await getDoc(userRef);
+
+        if (!snap.exists()) return;
+
+        const currentStars = snap.data().stars || 0;
+
+        await updateDoc(userRef, {
+            stars: currentStars + 1
+        });
+
+        loadAdminPage();
+    } catch (error) {
+        console.error(error);
+    }
 }
 
 async function decreaseUserStars(uid) {
-    try {
-        const userRef = doc(db, "users", uid);
-        const snap = await getDoc(userRef);
-        if (!snap.exists()) return;
-        const currentStars = snap.data().stars || 0;
-        await updateDoc(userRef, { stars: Math.max(0, currentStars - 1) });
-        loadAdminPage();
-    } catch (error) { console.error(error); }
+    try {
+        const userRef = doc(db, "users", uid);
+        const snap = await getDoc(userRef);
+
+        if (!snap.exists()) return;
+
+        const currentStars = snap.data().stars || 0;
+
+        await updateDoc(userRef, {
+            stars: Math.max(0, currentStars - 1)
+        });
+
+        loadAdminPage();
+    } catch (error) {
+        console.error(error);
+    }
 }
 window.resetUserStars = resetUserStars;
 window.increaseUserStars = increaseUserStars;
 window.decreaseUserStars = decreaseUserStars;
 window.resetUserXP = resetUserXP;
 window.deleteUser = deleteUser;
-
 /* =========================================
-   10. פונקציית דף משתמשים
-   ========================================= */
+   10. פונקציית דף משתמשים
+   ========================================= */
 function showAdminLogin() {
-    const app = document.getElementById('app-container');
-    app.innerHTML = `
-        <div style="min-height:100vh; display:flex; align-items:center; justify-content:center; background: linear-gradient(135deg,#1e293b,#0f172a);">
-            <!-- שינוי ל-form והוספת אירוע onsubmit שמונע רענון עמוד ומפעיל את הפונקציה -->
-            <form onsubmit="verifyAdminPassword(event)" style="background:white; padding:40px; border-radius:20px; width:350px; text-align:center; box-shadow:0 20px 50px rgba(0,0,0,0.3);">
-                <h2 style="margin-bottom:20px;">🔐 כניסת מנהל</h2>
-                <input type="password" id="admin-password" placeholder="הזן סיסמת מנהל" style="width:100%; padding:10px; margin-bottom:15px; border-radius:10px; border:1px solid #ddd;" required>
-                <!-- שינוי סוג הכפתור ל-submit כדי שיגיב ל-Enter באופן טבעי -->
-                <button type="submit" style="width:100%; padding:10px; border:none; border-radius:10px; background:#3b82f6; color:white; font-weight:bold; cursor:pointer;">כניסה</button>
-                <p id="admin-error" style="color:red; margin-top:10px;"></p>
-            </form>
-        </div>`;
+    const app = document.getElementById('app-container');
+
+    app.innerHTML = `
+        <div style="
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background: linear-gradient(135deg,#1e293b,#0f172a);
+        ">
+            <div style="
+                background:white;
+                padding:40px;
+                border-radius:20px;
+                width:350px;
+                text-align:center;
+                box-shadow:0 20px 50px rgba(0,0,0,0.3);
+            ">
+                <h2 style="margin-bottom:20px;">🔐 כניסת מנהל</h2>
+                <input type="password" id="admin-password"
+                    placeholder="הזן סיסמת מנהל"
+                    style="width:100%; padding:10px; margin-bottom:15px; border-radius:10px; border:1px solid #ddd;">
+                <button onclick="verifyAdminPassword()" 
+                    style="width:100%; padding:10px; border:none; border-radius:10px; background:#3b82f6; color:white; font-weight:bold; cursor:pointer;">
+                    כניסה
+                </button>
+                <p id="admin-error" style="color:red; margin-top:10px;"></p>
+            </div>
+        </div>
+    `;
 }
 
-window.verifyAdminPassword = function(event) {
-    // מניעת רענון של העמוד (התנהגות ברירת המחדל של טפסים ב-HTML)
-    if (event) event.preventDefault();
 
-    const password = document.getElementById('admin-password').value;
-    if (password === "admin123") { 
-        loadAdminPage(); 
-    } else { 
-        document.getElementById('admin-error').innerText = "סיסמה שגויה"; 
-    }
+window.verifyAdminPassword = function() {
+    const password = document.getElementById('admin-password').value;
+
+    if (password === "admin123") {
+        loadAdminPage();
+    } else {
+        document.getElementById('admin-error').innerText = "סיסמה שגויה";
+    }
 };
 
 /* =========================================
@@ -2103,87 +2004,82 @@ window.toggleLeaderboard = function() {
 };
 
 function renderProgressSubjects() {
-    const app = document.getElementById("app-container");
-    
-    // שליפת תתי-ההתקדמות של המשתמש (אם אין כלום, שיהיה אובייקט ריק)
-    const subProgress = window.playerStats.subProgress || {};
+    const app = document.getElementById("app-container");
+    
+    // שליפת תתי-ההתקדמות של המשתמש (אם אין כלום, שיהיה אובייקט ריק)
+    const subProgress = window.playerStats.subProgress || {};
 
-    // --- פונקציית עזר פנימית לחישוב ממוצע דינמי לפי מבנה האתר ---
-    const calculateTopicAverage = (topicKey) => {
-        // physicsStructure מוגדר אצלך בחלק 2 ומכיל את רשימת ה-subtopics
-        const subtopicsList = physicsStructure[topicKey]?.subtopics || [];
-        if (subtopicsList.length === 0) return 0;
+    // --- פונקציית עזר פנימית לחישוב ממוצע דינמי לפי מבנה האתר ---
+    const calculateTopicAverage = (topicKey) => {
+        const subtopicsList = physicsStructure[topicKey]?.subtopics || [];
+        if (subtopicsList.length === 0) return 0;
 
-        let sum = 0;
-        subtopicsList.forEach(subKey => {
-            // מוסיף את האחוז הקיים, או 0 אם המשתמש לא התחיל את תת-הנושא
-            sum += (subProgress[subKey] || 0);
-        });
+        let sum = 0;
+        subtopicsList.forEach(subKey => {
+            sum += (subProgress[subKey] || 0);
+        });
 
-        // החזרת הממוצע מעוגל
-        return Math.round(sum / subtopicsList.length);
-    };
+        return Math.round(sum / subtopicsList.length);
+    };
 
-    // חישוב הממוצעים בפועל עבור שלושת הנושאים הגדולים
-    const mechanicsAvg = calculateTopicAverage('mechanics');
-    const electricityAvg = calculateTopicAverage('electricity');
-    const radiationAvg = calculateTopicAverage('radiation');
+    // חישוב הממוצעים בפועל עבור שלושת הנושאים הגדולים
+    const mechanicsAvg = calculateTopicAverage('mechanics');
+    const electricityAvg = calculateTopicAverage('electricity');
+    const radiationAvg = calculateTopicAverage('radiation');
 
-    app.innerHTML = `
-        <section class="progress-page" style="min-height:100vh; padding-top:40px; direction: rtl;">
-            <h2 class="section-title text-white-shadow">📊 ממוצע ציונים בנושאים 📊</h2>
-            <div class="grid-full">
-                
-                <!-- כרטיסיית מכניקה -->
-                <div class="card animated-bg-card" onclick="router('progress_topic', 'mechanics')">
-                    <canvas class="card-particle-canvas" id="canvas-mechanics"></canvas>
-                    <div class="card-overlay-animated">
-                        <i class="fa-solid fa-gears card-icon-animated"></i>
-                        <h3>מכניקה</h3>
-                        <div style="font-size: 1.3rem; font-weight: 800; color: #60a5fa; margin-top: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
-                            ממוצע נושא: ${mechanicsAvg}%
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- כרטיסיית חשמל ומגנטיות -->
-                <div class="card animated-bg-card" onclick="router('progress_topic', 'electricity')">
-                    <canvas class="card-particle-canvas" id="canvas-electricity"></canvas>
-                    <div class="card-overlay-animated">
-                        <i class="fa-solid fa-bolt-lightning card-icon-animated"></i>
-                        <h3>חשמל ומגנטיות</h3>
-                        <div style="font-size: 1.3rem; font-weight: 800; color: #fbbf24; margin-top: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
-                            ממוצע נושא: ${electricityAvg}%
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- כרטיסיית קרינה וחומר -->
-                <div class="card animated-bg-card" onclick="router('progress_topic', 'radiation')">
-                    <canvas class="card-particle-canvas" id="canvas-radiation"></canvas>
-                    <div class="card-overlay-animated">
-                        <i class="fa-solid fa-atom card-icon-animated"></i>
-                        <h3>קרינה וחומר</h3>
-                        <div style="font-size: 1.3rem; font-weight: 800; color: #a78bfa; margin-top: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
-                            ממוצע נושא: ${radiationAvg}%
-                        </div>
-                    </div>
-                </div>
-                
-            </div>
-            <div style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 20px;">
-                Animated particle effect inspired by Particles.js (MIT License)
-            </div>
-            <button class="btn-back" onclick="router('home')">חזור לדף הבית</button>
-        </section>
-    `;
+    app.innerHTML = `
+        <section class="progress-page" style="min-height:100vh; padding-top:40px; direction: rtl;">
+            <h2 class="section-title text-white-shadow">📊 ממוצע ציונים בנושאים 📊</h2>
+            
+            <div class="grid-full" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; align-items: stretch;">
+                
+                <div class="card animated-bg-card" onclick="router('progress_topic', 'mechanics')" style="height: 260px; position: relative; display: flex; flex-direction: column;">
+                    <canvas class="card-particle-canvas" id="canvas-mechanics" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1;"></canvas>
+                    <div class="card-overlay-animated" style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; flex-grow: 1;">
+                        <i class="fa-solid fa-gears card-icon-animated"></i>
+                        <h3 style="margin: 10px 0 5px 0;">מכניקה</h3>
+                        <div style="font-size: 1.3rem; font-weight: 800; color: #60a5fa; margin-top: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+                            ממוצע נושא: ${mechanicsAvg}%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card animated-bg-card" onclick="router('progress_topic', 'electricity')" style="height: 260px; position: relative; display: flex; flex-direction: column;">
+                    <canvas class="card-particle-canvas" id="canvas-electricity" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1;"></canvas>
+                    <div class="card-overlay-animated" style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; flex-grow: 1;">
+                        <i class="fa-solid fa-bolt-lightning card-icon-animated"></i>
+                        <h3 style="margin: 10px 0 5px 0;">חשמל ומגנטיות</h3>
+                        <div style="font-size: 1.3rem; font-weight: 800; color: #fbbf24; margin-top: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+                            ממוצע נושא: ${electricityAvg}%
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card animated-bg-card" onclick="router('progress_topic', 'radiation')" style="height: 260px; position: relative; display: flex; flex-direction: column;">
+                    <canvas class="card-particle-canvas" id="canvas-radiation" style="position: absolute; top:0; left:0; width:100%; height:100%; z-index:1;"></canvas>
+                    <div class="card-overlay-animated" style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; flex-grow: 1;">
+                        <i class="fa-solid fa-atom card-icon-animated"></i>
+                        <h3 style="margin: 10px 0 5px 0;">קרינה וחומר</h3>
+                        <div style="font-size: 1.3rem; font-weight: 800; color: #a78bfa; margin-top: 8px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">
+                            ממוצע נושא: ${radiationAvg}%
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            <div style="text-align: center; color: rgba(255,255,255,0.4); font-size: 0.8rem; margin-top: 20px;">
+                Animated particle effect inspired by Particles.js (MIT License)
+            </div>
+            <button class="btn-back" onclick="router('home')">חזור לדף הבית</button>
+        </section>
+    `;
 
-    // הפעלת האנימציה של החלקיקים ברקע
-    setTimeout(() => {
-        initCardParticles("canvas-mechanics", "#3b82f6");
-        initCardParticles("canvas-electricity", "#f59e0b");
-        initCardParticles("canvas-radiation", "#8b5cf6");
-    }, 50);
+    // הפעלת האנימציה של החלקיקים ברקע
+    setTimeout(() => {
+        initCardParticles("canvas-mechanics", "#3b82f6");
+        initCardParticles("canvas-electricity", "#f59e0b");
+        initCardParticles("canvas-radiation", "#8b5cf6");
+    }, 50);
 }
 
 function initCardParticles(canvasId, particleColor) {
