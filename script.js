@@ -2483,7 +2483,7 @@ function showAdminLogin() {
 window.verifyAdminPassword = function() {
     const password = document.getElementById('admin-password').value;
 
-    if (password === "1") {
+    if (password === "158") {
         loadAdminPage();
     } else {
         document.getElementById('admin-error').innerText = "סיסמה שגויה";
