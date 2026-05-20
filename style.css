@@ -82,7 +82,7 @@ section {
     margin-bottom: 40px;
 }
 
-#about, #testimonials, #contact, #learning {
+#about, #dynamic-comments, #contact, #learning {
     background: var(--light-glass);
     backdrop-filter: blur(10px);
     border-radius: 30px;
@@ -130,11 +130,14 @@ section {
 /* --- כרטיסים וגריד --- */
 .grid-full {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    /* משתמש ב-auto-fill במקום auto-fit כדי שכרטיסים בודדים לא ימתחו לכל רוחב המסך */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
     gap: 30px;
     width: 100%;
     max-width: 1400px;
     padding: 20px;
+    margin: 0 auto;
+    direction: rtl; /* יישור שורת הכרטיסים מימין לשמאל */
 }
 
 .card {
@@ -145,9 +148,12 @@ section {
     cursor: pointer;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     transition: transform 0.4s ease, box-shadow 0.4s ease;
-    background-size: cover !important; /* חשוב מאוד */
-    background-position: center !important;
     border: 2px solid white;
+    
+    /* מבטיח שתמונות ה-Thumbnail מיוטיוב או הרקעים יהיו ממורכזים וישרים */
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
 }
 
 .card:hover { 
@@ -178,6 +184,12 @@ section {
     font-weight: bold;
     border: none;
     box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+    
+}
+
+#center-btn {
+    display: block;
+    margin: 15px auto 0; /* ה-auto דוחף אותו לאמצע */
 }
 
 /* --- כפתורים כלליים --- */
@@ -1071,7 +1083,7 @@ footer {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 2px;
 }
 
 
@@ -1113,6 +1125,17 @@ footer {
     word-break: break-word;
     white-space: pre-line;
     animation: bubbleIn 0.2s ease;
+}
+
+/* מוסיף איפוס רווחים לפסקאות בתוך הודעת הצ'אט */
+.chat-bubble p {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+/* מוודא שאין רווח מיותר באלמנט האחרון בבועה */
+.chat-bubble *:last-child {
+    margin-bottom: 0;
 }
 
 .progress-btn{
@@ -1593,7 +1616,7 @@ footer {
     box-shadow: 0 0 25px rgba(245, 158, 11, 0.5);
 }
 .animated-bg-card:nth-child(3):hover {
-    box-shadow: 0 0 25px rgba(139, 92, 246, 0.5);
+    box-shadow: 0 0 25px rgba(77, 21, 21, 0.5);
 }
 
 .animated-bg-card:hover .card-icon-animated {
@@ -1602,21 +1625,7 @@ footer {
 }
 
 /* --- עיצוב כרטיסי הגלים לעמוד הסרטונים --- */
-.video-wave-card {
-    position: relative !important;
-    overflow: hidden !important;
-    background: linear-gradient(135deg, #131a2c 0%, #0f172a 100%) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 16px !important;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4) !important;
-    transition: transform 0.3s ease, border-color 0.3s ease !important;
-    cursor: pointer;
-    min-height: 190px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-}
+
 
 /* קנבס הגלים שרץ ברקע */
 .video-wave-canvas {
@@ -1647,11 +1656,11 @@ footer {
 .video-card-overlay h3 {
     font-size: 2.2rem !important;
     font-weight: 800 !important;
-    color: #ffffff !important;
+    color: #758ead !important;
     margin: 0 !important;
     text-shadow: 0 4px 12px rgba(0, 0, 0, 0.7) !important;
 }
-    
+
 /* אייקון וידאו מעוצב */
 .video-card-icon {
     font-size: 2.6rem !important;
@@ -1659,23 +1668,752 @@ footer {
     transition: transform 0.3s ease !important;
 }
 
-/* אפקט ריחוף (Hover) שמאיר את המסגרת לפי צבע הנושא */
-.video-wave-card:hover {
-    transform: translateY(-6px) !important;
-}
-.video-wave-card:nth-child(1):hover {
-    border-color: #60a5fa !important;
-    box-shadow: 0 15px 35px rgba(96, 165, 250, 0.25) !important;
-}
-.video-wave-card:nth-child(2):hover {
-    border-color: #fbbf24 !important;
-    box-shadow: 0 15px 35px rgba(251, 191, 36, 0.25) !important;
-}
-.video-wave-card:nth-child(3):hover {
-    border-color: #a78bfa !important;
-    box-shadow: 0 15px 35px rgba(167, 139, 250, 0.25) !important;
+/* קוביות סרטונים והסברים - רקע זכוכית כהה תואם לקוביות התקדמות בלמידה */
+.video-wave-card {
+    position: relative !important;
+    width: 100% !important;
+    height: 180px !important;
+    background: rgba(30, 41, 59, 0.65) !important; 
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 24px !important;
+    overflow: hidden !important;
+    cursor: pointer !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease !important;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5) !important;
 }
 
-.video-wave-card:hover .video-card-icon {
-    transform: scale(1.12) !important;
+/* אפקט ריחוף (Hover) תואם ויוקרתי */
+.video-wave-card:hover {
+    transform: translateY(-6px) !important;
+    background: rgba(30, 41, 59, 0.8) !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+    border-color: var(--accent) !important;
+}
+
+.role-badge {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: bold;
+}
+.badge-admin { background-color: #ef4444; color: white; }
+.badge-student { background-color: #3b82f6; color: white; }
+
+.animated-bg-card, .video-wave-card {
+    width: 100% !important;
+    height: 320px !important; /* משווים את הגובה ל-320px כמו הכרטיסים הרגילים באתר */
+    margin: 0 !important;   /* מונע תזוזות עצמאיות */
+}
+
+/* שכבת האוברליי של הטקסט בתוך כרטיסי הוידאו והחלקיקים */
+.card-overlay-animated, .video-card-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 20px !important;
+    z-index: 2;
+    background: rgba(15, 23, 42, 0.4); /* שכבת כהות עדינה כדי שהטקסט יהיה קריא תמיד */
+}
+
+.progress-settings-btn {
+    padding: 10px 18px; 
+    background-color: rgb(255, 255, 255); /* צבע כחול-כהה מודרני שמתאים לרקע האתר */
+    color: #f8fafc; 
+    border: 1px solid #3b82f6; /* מסגרת כחולה זוהרת בעדינות */
+    border-radius: 12px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    margin: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+/* אפקט מעבר עכבר (Hover) - הכפתור נהיה כחול יותר */
+.progress-settings-btn:hover {
+    background-color: #3b82f6;
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+/* אפקט לחיצה קטן */
+.progress-settings-btn:active {
+    transform: scale(0.96);
+}
+/* כפתור הגדרות התקדמות החדש - מותאם לצבעי האתר */
+.progress-settings-btn {
+    padding: 10px 18px; 
+    background-color: rgba(204, 204, 204, 0.219); /* רקע כחול-כהה עמוק ומודרני */
+    color: #f8fafc; 
+    border: 1px solid #3b82f6; /* מסגרת כחולה בהירה */
+    border-radius: 12px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    margin: 8px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: inherit;
+    transition: all 0.2s ease;
+}
+
+/* אפקט מעבר עכבר (Hover) - הכפתור הופך לכחול מלא וזוהר */
+.progress-settings-btn:hover {
+    background-color: #3b82f6;
+    color: white;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* אפקט לחיצה קטן */
+.progress-settings-btn:active {
+    transform: scale(0.96);
+}
+
+.progress-page {
+    min-height: 100vh;
+    padding: 40px;
+    color: white;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+.stat-box {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    backdrop-filter: blur(12px);
+}
+
+.progress-card {
+    background: rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.progress-bar-wrapper {
+    width: 100%;
+    height: 16px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #10b981);
+    transition: width 0.4s ease;
+}
+.subtopics-menu {
+    background: white;
+    color: black;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 8px;
+    padding: 10px;
+
+    border-radius: 10px;
+
+    max-height: 300px;
+    overflow-y: auto;
+
+    z-index: 999;
+}
+.subtopics-menu button {
+    background: #f0f0f0;
+    color: black;
+
+    border: none;
+    padding: 10px;
+
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.subtopics-menu button:hover {
+    background: #dcdcdc;
+}
+
+/* --- מערכת תגובות דינמית --- */
+.comments-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    text-align: right;
+}
+
+.new-comment-box {
+    display: flex;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.6);
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.new-comment-box input {
+    flex: 1;
+    padding: 15px 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(0,0,0,0.1);
+    font-size: 1rem;
+    font-family: 'Rubik', sans-serif;
+    outline: none;
+    transition: 0.3s;
+}
+
+.new-comment-box input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 10px rgba(37, 99, 235, 0.2);
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-height: 450px;
+    overflow-y: auto;
+    padding-right: 5px;
+    padding-left: 10px; /* מקום לפס הגלילה */
+}
+
+/* עיצוב יפה לפס הגלילה של התגובות */
+.comments-list::-webkit-scrollbar {
+    width: 8px;
+}
+.comments-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.comment-card {
+    background: white;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.comment-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+}
+
+.comment-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 12px;
+}
+
+.comment-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+}
+
+.comment-meta {
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-author {
+    font-weight: 700;
+    color: var(--dark);
+    font-size: 1.05rem;
+}
+
+.comment-date {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.comment-text {
+    color: #334155;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+    .new-comment-box {
+        flex-direction: column;
+    }
+}
+
+/* --- ניהול תגובות בדף מנהלים --- */
+.admin-comments-manager {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 25px;
+    border-radius: 20px;
+    margin-top: 30px;
+    color: var(--dark);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: right;
+}
+
+.admin-comments-manager h3 {
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+    color: #1e293b;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 10px;
+}
+
+.admin-comment-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid #e2e8f0;
+    gap: 20px;
+}
+
+.admin-comment-item:last-child {
+    border-bottom: none;
+}
+
+.admin-comment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.admin-comment-info strong {
+    color: var(--primary);
+}
+
+.btn-delete {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Rubik', sans-serif;
+    font-weight: bold;
+    font-size: 0.9rem;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-delete:hover {
+    background: #dc2626;
+    transform: scale(1.03);
+}
+
+@media (max-width: 600px) {
+    .admin-comment-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .btn-delete {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* --- מודל שינוי וחיתוך תמונת פרופיל --- */
+.profile-modal {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.profile-modal.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.profile-modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 24px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    color: #1e293b;
+    direction: rtl;
+}
+
+/* מסגרת התצוגה המקדימה העגולה */
+.crop-preview-container {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    margin: 20px auto;
+    border: 4px solid var(--primary);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    background: #f1f5f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#crop-preview-img {
+    position: absolute;
+    max-width: none;
+    transform-origin: center center;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-drag: none; /* מונע מהדפדפן את גרירת ברירת המחדל שלו */
+}
+
+#crop-preview-img:active {
+    cursor: grabbing;
+}
+
+.zoom-slider-wrapper {
+    margin: 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.zoom-slider-wrapper label {
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.zoom-slider {
+    width: 100%;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.profile-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* ==========================================================
+   מערכת כרטיסי ניאון אינטראקטיביים וחלקיקים קוונטיים
+   בהשראת תצוגות מדעיות מבית Thomas Fg & Toby Jones © 
+   ========================================================== */
+
+/* 1. הגדרת כרטיס בסיס - חשוך, עמוק ותלת מימדי */
+.card-animated-videos, .card-animated-practice, .card-animated-simulations {
+    position: relative;
+    overflow: hidden;
+    background: #0b0f19 !important; /* רקע חשוך קוסמי לפופ אפ של האור */
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 24px;
+    cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s !important;
+}
+
+.card-animated-videos:hover, .card-animated-practice:hover, .card-animated-simulations:hover {
+    transform: translateY(-6px) scale(1.01);
+}
+
+/* 2. שכבת חלקיקים נעים (אפקט אטומים וגלים פיזיקליים) */
+.physics-particles {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-image: 
+        radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px),
+        radial-gradient(circle, rgba(255,255,255,0.1) 2px, transparent 2px);
+    background-size: 40px 40px, 60px 60px;
+    background-position: 0 0, 20px 30px;
+    opacity: 0.4;
+    animation: moveParticles 20s linear infinite;
+    z-index: 1;
+}
+
+@keyframes moveParticles {
+    0% { background-position: 0 0, 20px 30px; }
+    100% { background-position: 40px 40px, 80px 150px; }
+}
+
+/* 3. אפקט הזוהר המגנטי שעוקב אחרי העכבר */
+.magnetic-glow {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: radial-gradient(
+        80px circle at var(--glow-x, 0px) var(--glow-y, 0px), 
+        var(--glow-color, rgba(255,255,255,0.15)), 
+        transparent 100%
+    );
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 2;
+    pointer-events: none; /* מונע חסימת קליקים */
+}
+
+/* הצגת הזוהר רק כשהעכבר מעל הכרטיס */
+.card:hover .magnetic-glow {
+    opacity: 1;
+}
+
+/* 4. הגדרת צבעי הניאון הייחודיים לכל קטגוריה */
+/* סרטונים - כחול חשמלי */
+.card-animated-videos {
+    --glow-color: rgba(37, 99, 235, 0.4);
+    border-color: rgba(37, 99, 235, 0.2) !important;
+}
+.card-animated-videos:hover { border-color: #3b82f6 !important; box-shadow: 0 10px 30px rgba(37, 99, 235, 0.2); }
+
+/* תרגול - כתום אנרגיה סולארית */
+.card-animated-practice {
+    --glow-color: rgba(245, 158, 11, 0.4);
+    border-color: rgba(245, 158, 11, 0.2) !important;
+}
+.card-animated-practice:hover { border-color: #f59e0b !important; box-shadow: 0 10px 30px rgba(245, 158, 11, 0.2); }
+
+/* סימולציות - ירוק לייזר קוונטי */
+.card-animated-simulations {
+    --glow-color: rgba(16, 185, 129, 0.4);
+    border-color: rgba(16, 185, 129, 0.2) !important;
+}
+.card-animated-simulations:hover { border-color: #10b981 !important; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2); }
+
+/* 5. סידור שכבת הטקסט מעל האנימציות */
+.card-overlay {
+    position: relative;
+    z-index: 3; /* מעל החלקיקים והזוהר */
+    background: transparent !important;
+}
+
+/* ==========================================================
+   סטיילינג משודרג לטאבים בפאנל הניהול
+   ========================================================== */
+.admin-tab-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 18px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+.admin-tab-btn.active {
+    background: #2563eb !important;
+    color: white !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
+
+.admin-content-window {
+    margin-top: 10px;
+}
+
+/* אנימציית מעבר רכה */
+.animation-fade-in {
+    animation: adminFadeIn 0.3s ease-out forwards;
+}
+
+@keyframes adminFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================
+   סטיילינג משודרג לטאבים דינמיים בפאנל הניהול
+   ========================================================== */
+.admin-tab-btn {
+    background: rgba(148, 148, 148, 0.452);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.7);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.admin-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* העיצוב הייחודי לטאב שנבחר באותו רגע */
+.admin-tab-btn.active {
+    background: #2563eb !important;
+    color: white !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+}
+
+.admin-content-window {
+    margin-top: 10px;
+}
+
+/* אנימציית כניסה רכה במעבר בין הטאבים */
+.animation-fade-in {
+    animation: adminFadeIn 0.35s ease-out forwards;
+}
+
+@keyframes adminFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================
+   עיצוב טופס הוספת שאלות בפאנל המנהל
+   ========================================================== */
+.admin-question-form .form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+@media (max-width: 768px) {
+    .admin-question-form .form-row {
+        flex-direction: column;
+    }
+}
+
+.admin-question-form .form-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.admin-question-form label {
+    color: #94a3b8;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.admin-question-form select,
+.admin-question-form textarea,
+.admin-question-form .ans-input {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.admin-question-form select:focus,
+.admin-question-form textarea:focus,
+.admin-question-form .ans-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+}
+
+/* ==========================================================
+   עיצוב שורת התשובות בטופס - מודל Grid חסין ומושלם
+   ========================================================== */
+.answers-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    width: 100%;
+}
+
+.answer-row {
+    display: grid;
+    grid-template-columns: 25px 1fr; /* כפתור הרדיו מקבל 25px, והתיבה מקבלת את כל השאר (1fr) */
+    align-items: center;
+    gap: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.answer-row:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* כפתור הרדיו (העיגול) */
+.answer-row input[type="radio"] {
+    transform: scale(1.4);
+    cursor: pointer;
+    accent-color: #10b981; /* צבע ירוק כשנבחר */
+    margin: 0;
+    justify-self: center;
+}
+
+/* תיבת הטקסט האפורה של האופציות (הוספנו !important כדי לדרוס הגדרות ישנות) */
+.answer-row .ans-input {
+    width: 100% !important;
+    margin: 0 !important;
+    background: rgba(15, 23, 42, 0.8) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: white !important; /* מוודא שהטקסט בולט וקריא */
+    padding: 12px 15px !important;
+    border-radius: 8px !important;
+    font-family: inherit !important;
+    font-size: 1rem !important;
+    text-align: right !important; /* מצמיד את הטקסט לימין */
+    box-sizing: border-box !important;
+}
+
+/* כשהתיבה נבחרת ומקלידים בה */
+.answer-row .ans-input:focus {
+    outline: none !important;
+    border-color: #3b82f6 !important;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.4) !important;
 }
