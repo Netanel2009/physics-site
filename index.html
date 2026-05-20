@@ -65,6 +65,9 @@
             <div class="profile-dropdown">
                 <p id="user-name-display">שם משתמש</p>
                 <hr>
+                <a href="#" onclick="openProfilePicModal(event)" style="display: flex; align-items: center; gap: 8px; padding: 10px 15px; color: #1e293b; text-decoration: none; font-weight: 500; transition: 0.2s;" onmouseover="this.style.background='rgba(37, 99, 235, 0.1)'" onmouseout="this.style.background='none'">
+                    <i class="fa-solid fa-camera" style="color: var(--primary);"></i> שנה תמונת פרופיל
+                </a>
                 <span onclick="handleLogout()">
                     התנתק <i class="fa-solid fa-right-from-bracket"></i>
                 </span>
@@ -92,6 +95,8 @@
 </nav>
 
     <main id="app-container"></main>
+
+    
 
     <footer>
         <p>© 2026 PhysicsMaster - כל הזכויות שמורות.</p>
@@ -122,6 +127,8 @@
             </form>
         </div>
     </div>
+    
+    
 
     <!-- AI Chat Widget -->
     <div id="ai-chat-box">
@@ -152,7 +159,7 @@
         🎯
     </button>
 
-
+        
     
     <button onclick="router('progress')" class="progress-icon">
         <i class="fa-solid fa-chart-line"></i>
@@ -169,7 +176,40 @@
     <button class="chat-fab" onclick="toggleChat()">
         🤖
     </button>
+
+    <div id="profile-pic-modal" class="profile-modal">
+    <div class="profile-modal-content">
+        <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 10px;">✂️ התאמת תמונת פרופיל</h3>
+        <p style="color: #64748b; font-size: 0.9rem;">גרור את הסמן כדי לקבוע את גבולות התמונה בתוך העיגול</p>
+        
+        <div class="crop-preview-container" 
+            onmousedown="startCropDrag(event)" 
+            onmousemove="onCropDrag(event)" 
+            onmouseup="endCropDrag()" 
+            onmouseleave="endCropDrag()"
+            ontouchstart="startCropDrag(event)"
+            ontouchmove="onCropDrag(event)"
+            ontouchend="endCropDrag()">
+            <img id="crop-preview-img" src="" alt="תצוגה מקדימה">
+        </div>
+
+        <div class="zoom-slider-wrapper">
+            <label for="profile-zoom">זום והתאמת גבולות:</label>
+            <input type="range" id="profile-zoom" class="zoom-slider" min="1" max="3" step="0.05" value="1" oninput="updateCropZoom()">
+        </div>
+
+        <div class="profile-modal-actions">
+            <button class="btn-main" onclick="saveProfilePic()" style="padding: 10px 25px;">שמור תמונה</button>
+            <button class="btn-back" onclick="closeProfilePicModal()" style="margin:0; background:#e2e8f0; color:#475569; border:none; padding: 10px 20px;">ביטול</button>
+        </div>
+    </div>
+</div>
+
+<input type="file" id="profile-file-input" accept="image/*" style="display: none;" onchange="handleProfileFileSelect(event)">
+
     <script type="module" src="script.js"></script>
+    
+    
 
     <script>
         window.initPhysicsWaves = function(canvasId, waveColor, speed, amplitude) {
