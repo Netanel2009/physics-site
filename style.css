@@ -2417,3 +2417,54 @@ footer {
     border-color: #3b82f6 !important;
     box-shadow: 0 0 10px rgba(59, 130, 246, 0.4) !important;
 }
+
+/* =========================================
+   מערכת התראות מותאמות (Toast)
+   ========================================= */
+#toast-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.custom-toast {
+    min-width: 250px;
+    background-color: #1e293b; /* רקע כהה שמתאים לאתר */
+    color: #f8fafc;
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Rubik', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateX(100%); /* מתחיל מחוץ למסך בצד ימין */
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* אנימציה קופצנית חלקה */
+}
+
+/* המחלקה שמוסיפה את האנימציה להופעה */
+.custom-toast.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* צבעים לפי סוג ההתראה */
+.toast-success { border-right: 5px solid #22c55e; } /* ירוק להצלחה */
+.toast-error { border-right: 5px solid #ef4444; }   /* אדום לשגיאה */
+.toast-info { border-right: 5px solid #3b82f6; }    /* כחול למידע */
+
+.video-credit {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    text-align: center;
+    margin-top: 20px;
+    padding-bottom: 10px;
+}
+
