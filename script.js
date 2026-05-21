@@ -110,31 +110,58 @@ window.contentData = {
     categories: [
         { id: 'explanations', title: 'סרטונים 📚', bgClass: 'card-animated-videos' },
         { id: 'exercises', title: 'תרגול שאלות 📝', bgClass: 'card-animated-practice' },
-        { id: 'simulations', title: 'סימולציות 🧪', bgClass: 'card-animated-simulations' }
+        { id: 'simulations', title: 'בגרויות🎓', bgClass: 'card-animated-simulations' }
     ],
     subjects: [
         { id: 'mechanics', title: 'מכניקה', desc: '', image: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' },
         { id: 'electricity', title: 'חשמל ומגנטיות', desc: '', image: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' },
         { id: 'radiation', title: 'קרינה וחומר', desc: '', image: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)' }
     ],
+    
     mechanics_content: [
-        { type: 'folder', id: 'kinematics_folder', title: 'קינמטיקה', image: 'linear-gradient(to right, #3b82f6, #60a5fa)', desc: 'תנועה בקו ישר, נפילה חופשית וזריקות' },
-        { type: 'folder', id: 'energy_momentum_folder', title: 'תנע ואנרגיה', image: 'linear-gradient(to right, #10b981, #34d399)', desc: 'שימור תנע, עבודה ואנרגיה מכנית' },
-        { type: 'video', title: 'תנועה הרמונית', url: 'https://youtu.be/FFj3V4CiElI', desc: 'קפיצים ומטוטלות' }
+        { type: 'video', title: 'קינימטיקה', url: 'https://youtu.be/q8K73P4hft8' },
+        { type: 'video', title: 'וקטורים', url: 'https://www.youtube.com/watch?v=zSnxWlGmKjc' },
+        { type: 'video', title: 'זריקה משופעת', url: 'https://www.youtube.com/watch?v=x3gni5NU8x0' },
+        { type: 'video', title: 'כוחות וחוקי ניוטון', url: 'https://www.youtube.com/watch?v=L1uIXFfcAHQ' },
+        { type: 'video', title: 'תנועה מעגלית', url: 'https://www.youtube.com/watch?v=fvGxsSZBqek' },
+        { type: 'video', title: 'מתקף ותנע', url: 'https://www.youtube.com/watch?v=6k8Hd3wPoU0' },
+        { type: 'video', title: 'עבודה ואנרגיה', url: 'https://www.youtube.com/watch?v=xfUsUoy-bBk' },
+        { type: 'video', title: 'כבידה', url: 'https://www.youtube.com/watch?v=cW8UYvYZtqA' },
+        { type: 'video', title: 'אנרגית כבידה', url: 'https://www.youtube.com/watch?v=o2UOq8rQd6g' },
+        { type: 'video', title: 'תנועה הרמונית', url: 'https://www.youtube.com/watch?v=FFj3V4CiElI' }
     ],
+
+    // ==== הוספתי את רשימת סרטוני חשמל ומגנטיות ====
+    electricity_content: [
+        { type: 'video', title: 'חוק קולון ושדה חשמלי', url: 'https://youtu.be/j8OclInR9yU' },
+        { type: 'video', title: 'אנרגיה פוטנציאלית חשמלית', url: 'https://www.youtube.com/watch?v=i-pjTYYw2O0' },
+        { type: 'video', title: 'פוטנציאל חשמלי', url: 'https://www.youtube.com/watch?v=0nUrKXMEm1o' },
+        { type: 'video', title: 'זרם חשמלי, מתח והתנגדות', url: 'https://www.youtube.com/watch?v=h5BIvx7dW4c' },
+        { type: 'video', title: 'מעגלים חשמליים', url: 'https://www.youtube.com/watch?v=erUANXuMPEM' },
+        { type: 'video', title: 'הספק חשמלי', url: 'https://www.youtube.com/watch?v=Z86B9_bSptA' },
+        { type: 'video', title: 'נצילות', url: 'https://www.youtube.com/watch?v=-Zprb5xFrn4' },
+        { type: 'video', title: 'חוקי קירכהוף', url: 'https://www.youtube.com/watch?v=nUhVSHkvedY' },
+        { type: 'video', title: 'מגנטיות', url: 'https://www.youtube.com/watch?v=X3NbSoV7L_A' },
+        { type: 'video', title: 'תנועת מטען בשדה מגנטי', url: 'https://www.youtube.com/watch?v=HpRpdU5PCsI' },
+        { type: 'video', title: 'תיל נושא זרם בשדה מגנטי', url: 'https://www.youtube.com/watch?v=DOu_L_4Cf2A' },
+        { type: 'video', title: 'השראה אלקטרומגנטית', url: 'https://www.youtube.com/watch?v=fWN49cjM9HI' },
+        { type: 'video', title: 'קיבול וקבלים', url: 'https://www.youtube.com/watch?v=0G8Ai-Diceo' }
+    ],
+
     mechanics_exercises: [
-    { id: 'ex_kinematics', title: 'תרגול קינמטיקה', desc: 'שאלות על תנועה שוות תאוצה', image: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' },
-    { id: 'ex_dynamics', title: 'תרגול דינמיקה', desc: 'חוקי ניוטון וכוחות', image: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' },
-    { id: 'ex_circular', title: 'תנועה מעגלית', desc: 'זמן מחזור, תדירות וכוח צנטריפיטלי', image: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)' }, // הכרטיסייה החדשה!
-    { id: 'ex_gravity', title: 'תרגול כבידה', desc: 'חוקי קפלר ומסלולי לוויינים', image: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)' },
-    { id: 'ex_energy', title: 'תרגול עבודה ואנרגיה', desc: 'שימור אנרגיה מכנית והספק', image: 'linear-gradient(135deg, #f59e0b 0%, #b45309 100%)' },
-    { id: 'ex_momentum', title: 'תרגול תנע', desc: 'התנגשויות ומתקף', image: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }
+        { id: 'ex_kinematics', title: 'תרגול קינמטיקה', desc: 'שאלות על תנועה שוות תאוצה', image: 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)' },
+        { id: 'ex_dynamics', title: 'תרגול דינמיקה', desc: 'חוקי ניוטון וכוחות', image: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)' },
+        { id: 'ex_circular', title: 'תנועה מעגלית', desc: 'זמן מחזור, תדירות וכוח צנטריפיטלי', image: 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)' },
+        { id: 'ex_gravity', title: 'תרגול כבידה', desc: 'חוקי קפלר ומסלולי לוויינים', image: 'linear-gradient(135deg, #6366f1 0%, #4338ca 100%)' },
+        { id: 'ex_energy', title: 'תרגול עבודה ואנרגיה', desc: 'שימור אנרגיה מכנית והספק', image: 'linear-gradient(135deg, #f59e0b 0%, #b45309 100%)' },
+        { id: 'ex_momentum', title: 'תרגול תנע', desc: 'התנגשויות ומתקף', image: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }
     ],
+    
     electricity_exercises: [
-    { id: 'ex_electrostatics', title: 'אלקטרוסטטיקה', desc: 'חוק קולון, שדה חשמלי ופוטנציאל', image: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' },
-    { id: 'ex_electricity', title: 'זרם ישר ומעגלים', desc: 'חוק אום, כא"מ, מתח הדקים והספק', image: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)' },
-    { id: 'ex_magnetism', title: 'מגנטיות', desc: 'שדות מגנטיים, כוח לורנץ וכוח אמפר', image: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' },
-    { id: 'ex_induction', title: 'השראה אלקטרומגנטית', desc: 'חוק פאראדיי, חוק לנץ וזרמים מושרים', image: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' }
+        { id: 'ex_electrostatics', title: 'אלקטרוסטטיקה', desc: 'חוק קולון, שדה חשמלי ופוטנציאל', image: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' },
+        { id: 'ex_electricity', title: 'זרם ישר ומעגלים', desc: 'חוק אום, כא"מ, מתח הדקים והספק', image: 'linear-gradient(135deg, #eab308 0%, #ca8a04 100%)' },
+        { id: 'ex_magnetism', title: 'מגנטיות', desc: 'שדות מגנטיים, כוח לורנץ וכוח אמפר', image: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)' },
+        { id: 'ex_induction', title: 'השראה אלקטרומגנטית', desc: 'חוק פאראדיי, חוק לנץ וזרמים מושרים', image: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)' }
     ],
 
     radiation_exercises: [
@@ -148,10 +175,11 @@ window.contentData = {
 
     bagrut_folder: [
         { type: 'folder', id: 'bagrut_mechanics', title: 'מכניקה', image: 'linear-gradient(135deg, #3b82f6, #2563eb)' },
-        { type: 'folder', id: 'bagrut_electricity', title: 'חשמל', image: 'linear-gradient(135deg, #f59e0b, #d97706)' },
+        { type: 'video', id: 'bagrut_electricity', title: 'חשמל', image: 'linear-gradient(135deg, #f59e0b, #d97706)' },
         { type: 'folder', id: 'bagrut_radiation', title: 'קרינה וחומר', image: 'linear-gradient(135deg, #8b5cf6, #7c3aed)' }
     ],
-        bagrut_mechanics: [
+    
+    bagrut_mechanics: [
         { type: 'video', title: 'שאלון מכניקה 2023', url: 'https://youtu.be/EXAMPLE1' }
     ],
 
@@ -161,9 +189,7 @@ window.contentData = {
 
     bagrut_radiation: [
         { type: 'video', title: 'שאלון קרינה 2023', url: 'https://youtu.be/EXAMPLE3' }
-    ],
-    kinematics_folder: [{ type: 'video', title: 'קינמטיקה (בסיס)', url: 'https://youtu.be/q8K73P4hft8', desc: 'תנועה בקו ישר ונפילה חופשית' }],
-    energy_momentum_folder: [{ type: 'video', title: 'שימור תנע', url: 'https://youtu.be/6k8Hd3wPoU0', desc: 'התנגשויות ומתקף' }]
+    ]
 };
 
 /* =========================================
@@ -811,13 +837,11 @@ function triggerLevelUpEffect() {
    ========================================= */
    
 window.router = function(view, data = null) {
-
     window.scrollTo(0, 0);
     const appContainer = document.getElementById('app-container');
     if(!appContainer) return;
     appContainer.innerHTML = '';
 
-    // הגנה: אם מנסים להיכנס לדף התקדמות לפני שהסטטיסטיקה נטענה
     if ((view === 'progress' || view === 'progress_topic') && !window.playerStats.progress) {
         renderHomePage();
         return;
@@ -828,6 +852,21 @@ window.router = function(view, data = null) {
         case 'subject_select': 
             pageMode = data; 
             renderSubjects(); 
+            break;
+        // הוסף את השורות האלו:
+        case 'simulations_page':
+            renderSimulationsPage();
+            break;
+        case 'content_list':
+            renderContentList(data);
+            break;
+        // בתוך ה-switch(view) של פונקציית window.router, הוסף את ה-case הזה:
+        case 'simulations_page':
+            renderSimulationsPage();
+            break;
+
+        case 'simulation_category':
+            renderSimulationCategory(data); // קריאה לעמוד הבגרויות הספציפי
             break;
         case 'content_list': renderContentList(data); break; 
         case 'exercise_list': renderExerciseList(data); break;
@@ -850,7 +889,179 @@ window.router = function(view, data = null) {
    6. פונקציות הרינדור (Render Functions)
    ========================================= */
 
+// 1. מאגר הנתונים המלא של הבגרויות והפתרונות שהגדרת
+const bagrutData = {
+    mechanics: {
+        2025: { exam: "https://files.geva.co.il/geva_website/uploads/2025/07/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-36361-%D7%A7%D7%99%D7%A5-25.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2025/07/2025-%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%9E%D7%9B%D7%A0%D7%99%D7%A7%D7%94-361.pdf" },
+        2024: { exam: "https://files.geva.co.il/geva_website/uploads/2024/06/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-36361.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2024/06/%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-36361-%D7%A7%D7%99%D7%A5-2024-1.pdf" },
+        2023: { exam: "https://files.geva.co.il/geva_website/uploads/2023/06/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-36361.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2023/06/%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-36361-%D7%A7%D7%99%D7%A5-2023-1-2.pdf" },
+        2022: { exam: "https://files.geva.co.il/geva_website/uploads/2022/05/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-36361-%D7%A7%D7%99%D7%A5-2022.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2022/05/%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-36361-%D7%A7%D7%99%D7%A5-2022.pdf" },
+        2021: { exam: "https://files.geva.co.il/geva_website/uploads/2021/06/%D7%9E%D7%9B%D7%A0%D7%99%D7%A7%D7%94-36361.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2021/06/36361.pdf" },
+        2020: { exam: "https://files.geva.co.il/geva_website/uploads/2020/06/36361-2020.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2020/06/36361-2.pdf" },
+        2019: { exam: "https://files.geva.co.il/geva_website/uploads/2019/05/36361.pdf", solution: "- https://files.geva.co.il/geva_website/uploads/2019/05/36361-2.pdf" },
+        2018: { exam: "https://files.geva.co.il/geva_website/uploads/2018/07/36361.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2018/07/%D7%9E%D7%9B%D7%A0%D7%99%D7%A7%D7%94-1.pdf" },
+        2017: { exam: "https://files.geva.co.il/geva_website/uploads/2017/06/36201-%D7%A1%D7%95%D7%A4%D7%99.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2017/06/%D7%9E%D7%9B%D7%A0%D7%99%D7%A7%D7%94-2017-2.pdf" },
+        2016: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/mehanika_q_summer2016.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/mehanika_a2_summer2016.pdf" },
+        2015: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/mehanika_q1_summer2015.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/mehanika_a_summer2015.pdf" },
+        2014: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/mehanika_q_summer_2014.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/mehanika_a3_summer_2014.pdf" },
+        2013: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/mehanika_q_summer_2013.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/mehanika_a1_summer_2013.pdf" },
+        2012: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/physics_mechanica_summer_2012_Q.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/physics_mechanica_summer_2012_A.pdf" },
+        2011: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/physics_mechanica_summer_2011_Q.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/physics_mechanica_2011-summer_A.pdf" },
+        2010: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/Physics_Summer2010_A_917531-1.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/Physics_Summer2010_Q_917531.pdf" },
+        2009: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1244104547140.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1244105979171.pdf" },
+        2008: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1212577879406.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1212577930109.pdf" },
+        2007: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1183972231359.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1183980159312.pdf" },
+        2006: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/917531.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1151492887843.pdf" },
+        2005: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/9174545531.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1229324776961.pdf" }
+    },
+    electricity: {
+        2025: { exam: "https://files.geva.co.il/geva_website/uploads/2025/07/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-36371-%D7%A7%D7%99%D7%A5-25.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2025/07/%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%97%D7%A9%D7%9E%D7%9C-371-%D7%A7%D7%99%D7%A5-2025-%D7%95%D7%9E%D7%A2%D7%95%D7%93%D7%9B%D7%9F.pdf" },
+        2024: { exam: "https://files.geva.co.il/geva_website/uploads/2024/06/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-36371.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2025/07/%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%97%D7%A9%D7%9E%D7%9C-371-%D7%A7%D7%99%D7%A5-2025-%D7%95%D7%9E%D7%A2%D7%95%D7%93%D7%9B%D7%9F.pdf" },
+        2023: { exam: "https://files.geva.co.il/geva_website/uploads/2023/06/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-36371.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2023/06/%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-36371-%D7%A7%D7%99%D7%A5-2023-1.pdf" },
+        2022: { exam: "https://files.geva.co.il/geva_website/uploads/2022/05/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-%D7%A4%D7%99%D7%96%D7%99%D7%A7%D7%94-%D7%97%D7%A9%D7%9E%D7%9C-36371.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2022/05/%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-36371-%D7%A7%D7%99%D7%A5-2022.pdf" },
+        2021: { exam: "https://files.geva.co.il/geva_website/uploads/2021/06/%D7%97%D7%A9%D7%9E%D7%9C-36371.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2021/06/36371.pdf" },
+        2020: { exam: "https://files.geva.co.il/geva_website/uploads/2020/06/36371-2020.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2020/06/36371.pdf" },
+        2019: { exam: "https://files.geva.co.il/geva_website/uploads/2019/05/36371.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2019/05/36371-1.pdf" },
+        2018: { exam: "https://files.geva.co.il/geva_website/uploads/2018/07/36003.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2018/07/%D7%97%D7%A9%D7%9E%D7%9C.pdf" },
+        2017: { exam: "https://files.geva.co.il/geva_website/uploads/2017/06/36002-%D7%A1%D7%95%D7%A4%D7%99.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2017/06/%D7%A7%D7%A8%D7%99%D7%A0%D7%94-%D7%95%D7%97%D7%95%D7%9E%D7%A8-2017.pdf" },
+        2016: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/hashmal_q_summer2016.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/hashmal_a1_summer2016.pdf" },
+        2015: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/hasmal_q_summer2015.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/hashmal_a_summer2015.pdf" },
+        2014: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/hashmal_q_summer_2014.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/hashmal_a_summer_2014.pdf" },
+        2013: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/hashmal_q_summer_2013.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/hashmal_a1_summer_2013.pdf" },
+        2012: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/physics_elect_summer_2012_q.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/physics_elect_summer_2012_a.pdf" },
+        2011: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/physics_elect_summer_2011_mA-Q.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/physics_elect_summer_2011_mA_A.pdf" },
+        2010: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/Physics_Summer2010_A_917521.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/Physics_Summer2010_Q_917521.pdf" },
+        2009: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1244111233731.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1244364226237.pdf" },
+        2008: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1212577906156.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1212594318515.pdf" },
+        2007: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1183974428953.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1183981209406.pdf" },
+        2006: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/917521.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1151507902156.pdf" },
+        2005: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/91756523521.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1120126382413.pdf" }
+    },
+    radiation: {
+        2025: { exam: "https://files.geva.co.il/geva_website/uploads/2025/07/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-36282-%D7%A7%D7%99%D7%A5-25.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2025/07/%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%A7%D7%A8%D7%99%D7%A0%D7%94-%D7%95%D7%97%D7%95%D7%9E%D7%A8-282-%D7%A7%D7%99%D7%A5-25-1.pdf" },
+        2024: { exam: "https://files.geva.co.il/geva_website/uploads/2024/06/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-36282.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2025/07/%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-%D7%A7%D7%A8%D7%99%D7%A0%D7%94-%D7%95%D7%97%D7%95%D7%9E%D7%A8-282-%D7%A7%D7%99%D7%A5-25-1.pdf" },
+        2023: { exam: "https://files.geva.co.il/geva_website/uploads/2023/06/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-36282.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2023/06/%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-36282-%D7%A7%D7%99%D7%A5-2023-1.pdf" },
+        2022: { exam: "https://files.geva.co.il/geva_website/uploads/2022/05/%D7%A9%D7%90%D7%9C%D7%95%D7%9F-36282-%D7%A7%D7%99%D7%A5-2022.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2022/05/%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-36282-%D7%A7%D7%99%D7%A5-2022-1.pdf" },
+        2021: { exam: "https://files.geva.co.il/geva_website/uploads/2021/06/%D7%A7%D7%A8%D7%99%D7%A0%D7%94-%D7%95%D7%97%D7%95%D7%9E%D7%A8-36282.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2021/06/36282.pdf" },
+        2020: { exam: "https://files.geva.co.il/geva_website/uploads/2020/06/%D7%A7%D7%A8%D7%99%D7%A0%D7%94-%D7%95%D7%97%D7%95%D7%9E%D7%A8-2020.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2020/06/36282-1.pdf" },
+        2019: { exam: "https://files.geva.co.il/geva_website/uploads/2019/05/%D7%A4%D7%99%D7%A1%D7%99%D7%A7%D7%94-36282.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2019/05/%D7%A4%D7%AA%D7%A8%D7%95%D7%9F-36282-1.pdf" },
+        2018: { exam: "https://files.geva.co.il/geva_website/uploads/2018/07/36003.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2018/07/%D7%A7%D7%A8%D7%99%D7%A0%D7%94-%D7%95%D7%97%D7%95%D7%9E%D7%A8.pdf" },
+        2017: { exam: "https://files.geva.co.il/geva_website/uploads/2017/06/36003-%D7%A1%D7%95%D7%A4%D7%99.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2017/06/%D7%A7%D7%A8%D7%99%D7%A0%D7%94-%D7%95%D7%97%D7%95%D7%9E%D7%A8-2017.pdf" },
+        2016: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/krina_q_summer2016.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/krina_a_summer2016.pdf" },
+        2015: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/krina_q_summer2015.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/krina_a_summer2015.pdf" },
+        2014: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/krina_q_summer_2014.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/krina_a_summer_2014.pdf" },
+        2013: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/krina_q_summer_2013.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/krina1_a_summer_2013.pdf" },
+        2012: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/physics_krina_2012_summer_Q.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/physics_krina_2012_summer_A.pdf" },
+        2011: { exam: "https://files.geva.co.il/geva_website/uploads/2017/01/%D7%A7%D7%A8%D7%99%D7%A0%D7%94-%D7%95%D7%97%D7%95%D7%9E%D7%A8-2011.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/physics_krina_homer_2011_summer_A.pdf" },
+        2010: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/Physics_Summer2010_A_036541.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/Physics_Summer2010_Q_036541.pdf" },
+        2009: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1244118160031.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1244361038362.pdf" },
+        2008: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1212583538156.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1225189661500.pdf" },
+        2007: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/2007_physics_summer_5_k_H.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1183989821031.pdf" },
+        2006: { exam: "https://files.geva.co.il/geva_website/uploads/2016/12/36541.pdf", solution: "https://files.geva.co.il/geva_website/uploads/2016/12/articlefile_1151507902156.pdf" }
+    }
+};
 
+// 2. פונקציית הרינדור הדינמית שמייצרת את העמוד
+function renderSimulationCategory(category) {
+    const app = document.getElementById('app-container');
+    if (!app) return;
+
+    // הגדרת כותרת מתאימה לקטגוריה שנבחרה
+    let categoryTitle = "";
+    if (category === 'mechanics') categoryTitle = "בגרויות במכניקה";
+    if (category === 'electricity') categoryTitle = "בגרויות בחשמל ומגנטיות";
+    if (category === 'radiation') categoryTitle = "בגרויות בקרינה וחומר";
+
+    // לולאה דינמית שבונה את כרטיסיות השנים על בסיס הנתונים
+    let yearsHTML = "";
+    const categoryData = bagrutData[category] || {};
+
+    for (let year = 2025; year >= 2005; year--) {
+        const item = categoryData[year];
+        
+        // אם אין לשנה הזו מידע בכלל (למשל שנת 2005 בקרינה וחומר), נדלג עליה
+        if (!item) continue; 
+
+        // הקישור לתמונה שהעלית (צריך להישמר באותו מיקום של קובץ ה-HTML/JS)
+        const imageSrc = "https://i.postimg.cc/KvcW14X1/Screenshot-2026-05-21-161840.png"; 
+
+        yearsHTML += `
+            <div style="background: #1e293b; border: 1px solid #334155; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.3); display: flex; flex-direction: column; justify-content: space-between;">
+                <div style="padding: 12px; font-weight: bold; color: #fff; background: #0f172a; font-size: 1.1rem;">
+                    בגרות ${year}
+                </div>
+                
+                <div style="flex-grow: 1; display: flex; align-items: center; justify-content: center; background: #fff; padding: 15px; min-height: 200px;">
+                    <img src="${imageSrc}" alt="בגרות שנת ${year}" style="max-width: 100%; max-height: 180px; object-fit: contain; border-radius: 4px;" onerror="this.src='https://placeholder.co/300x400?text=Physics+Master'"/>
+                </div>
+                
+                <div style="display: flex; gap: 8px; padding: 12px; background: #0f172a; border-top: 1px solid #334155;">
+                    ${item.exam ? `
+                        <a href="${item.exam}" target="_blank" style="flex: 1; text-decoration: none; text-align: center; background: #3b82f6; color: #fff; padding: 8px 4px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; transition: background 0.2s;">
+                            📄 שאלון
+                        </a>
+                    ` : ''}
+                    
+                    ${item.solution ? `
+                        <a href="${item.solution}" target="_blank" style="flex: 1; text-decoration: none; text-align: center; background: #10b981; color: #fff; padding: 8px 4px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; transition: background 0.2s;">
+                            ✅ פתרון
+                        </a>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    // הזרקת המבנה השלם של העמוד לתוך האתר
+    app.innerHTML = `
+        <section style="min-height:100vh; padding: 40px 20px; text-align: center; direction: rtl;">
+            <h2 class="section-title" style="margin-bottom: 10px; color: rgb(255, 255, 255);">${categoryTitle} 📋</h2>
+            <p style="color: #94a3b8; margin-bottom: 40px;">בחר בשאלון הבגרות או בפתרון הרשמי לצפייה בקובץ ה-PDF</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 25px; max-width: 1200px; margin: 0 auto 45px auto;">
+                ${yearsHTML}
+            </div>
+            
+            <button class="btn-back" onclick="router('simulations_page')" style="padding: 10px 20px; font-size: 1rem; cursor: pointer;">
+                חזור לקטגוריות
+            </button>
+        </section>
+    `;
+}
+
+function renderSimulationsPage() {
+    const app = document.getElementById('app-container');
+    if (!app) return;
+
+    app.innerHTML = `
+        <section style="min-height:100vh; padding: 40px 20px; text-align: center; direction: rtl;">
+            <h2 class="section-title" style="margin-bottom: 40px; color: rgb(255, 255, 255);">בגרויות🎓</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto 40px auto;">
+                
+                <div class="category-card" onclick="router('simulation_category', 'mechanics')" style="background: linear-gradient(135deg, #1e3a8a, #3b82f6); padding: 40px 20px; border-radius: 15px; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">⚙️</div>
+                    <h3 style="color: #fff; margin: 0; font-size: 1.5rem;">מכניקה</h3>
+                </div>
+
+                <div class="category-card" onclick="router('simulation_category', 'electricity')" style="background: linear-gradient(135deg, #b45309, #f59e0b); padding: 40px 20px; border-radius: 15px; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">⚡</div>
+                    <h3 style="color: #fff; margin: 0; font-size: 1.5rem;">חשמל</h3>
+                </div>
+
+                <div class="category-card" onclick="router('simulation_category', 'radiation')" style="background: linear-gradient(135deg, #047857, #10b981); padding: 40px 20px; border-radius: 15px; cursor: pointer; transition: transform 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <div style="font-size: 3rem; margin-bottom: 15px;">⚛️</div>
+                    <h3 style="color: #fff; margin: 0; font-size: 1.5rem;">קרינה וחומר</h3>
+                </div>
+
+            </div>
+            
+            <button class="btn-back" onclick="router('home')" style="margin-top: 20px; padding: 10px 20px; font-size: 1rem; cursor: pointer;">
+                חזור לדף הבית
+            </button>
+        </section>
+    `;
+}
 
 function renderHomePage() {
     const app = document.getElementById('app-container');
@@ -1070,14 +1281,19 @@ function renderContentList(subjectId) {
                             <div class="card" onclick="markVideoWatched('${item.url}');" style="background-image: url('${thumb}')">
                                 <div class="card-overlay">
                                     <div style="font-size:3rem; margin-bottom:10px; color:#ef4444;"><i class="fa-brands fa-youtube"></i></div>
-                                    <h3>${item.title}</h3>
+                                    <h3 style="color: darkblue;">${item.title}</h3>
                                     <button class="card-btn">צפה בסרטון</button>
                                 </div>
                             </div>`;
                     }
                 }).join('')}
             </div>
+            
             <button class="btn-back" onclick="router('subject_select', 'explanations')">חזור לנושאים</button>
+
+            <div style="text-align: center; margin: 40px 0 20px 0; font-size: 0.75rem; color: #94a3b8; opacity: 0.8;">
+                סרטוני לימוד באדיבות: אריאל לבזון
+            </div>
         </section>
     `;
 }
@@ -1200,18 +1416,28 @@ function renderFolderContent(folderId) {
 let currentActiveQuestions = [];
 
 async function renderActiveExercise(exId) {
-    // 1. זיהוי אוטומטי של הנושא הראשי (subject) מתוך מילון תתי-הנושאים שקיים אצלך
     let subject = '';
+    let cleanSubtopicId = exId; // משתנה שישמור את השם הנקי עבור פיירבייס
+
+    // 1. זיהוי אוטומטי של הנושא הראשי - תוך התחשבות בקידומת 'ex_'
     for (const [sub, list] of Object.entries(subTopicsMap)) {
-        if (list.some(topic => topic.id === exId)) {
-            subject = sub;
-            break;
+        for (const topic of list) {
+            // בודק אם ה-ID תואם בדיוק, או אם הוא תואם כשמוסיפים לו 'ex_'
+            if (topic.id === exId || 'ex_' + topic.id === exId) {
+                subject = sub;
+                cleanSubtopicId = topic.id; // ישמור את השם הנקי, למשל "kinematics"
+                break;
+            }
         }
+        if (subject) break; // עצירת הלולאה החיצונית ברגע שמצאנו
     }
+
+    console.log("Subject found:", subject, "| Firebase Subtopic:", cleanSubtopicId);
 
     // 2. משיכת השאלות החדשות שיצרת ב-Firebase עבור הנושא הזה
     if (subject) {
-        const fbQuestions = await loadQuestionsFromFirebase(subject, exId);
+        // שים לב: אנחנו שולחים את cleanSubtopicId ל-Firebase ולא את exId
+        const fbQuestions = await loadQuestionsFromFirebase(subject, cleanSubtopicId);
         
         // אם המערך המקומי של הנושא הזה עדיין לא קיים, ניצור אותו
         if (!window.questionsBank[exId]) {
@@ -1559,6 +1785,9 @@ window.handleSubjectClick = function(subId) {
 window.handleCategoryClick = function(catId) {
     if (catId === 'explanations' || catId === 'exercises') {
         window.router('subject_select', catId);
+    } else if (catId === 'simulations') {
+        // ניתוב לדף הסימולציות החדש
+        window.router('simulations_page');
     } else {
         alert('קטגוריה זו בבנייה כרגע...');
     }
@@ -2098,6 +2327,14 @@ function getAdminQuestionsHtml() {
                     <i class="fa-solid fa-cloud-arrow-up"></i> שמור שאלה במאגר
                 </button>
             </form>
+
+            <div class="admin-manage-section" style="margin-top: 40px; border-top: 2px solid #e2e8f0; padding-top: 20px;">
+                <h3 class="section-title">ניהול שאלות קיימות</h3>
+                <button class="btn-main" onclick="loadAdminQuestions()" style="margin-bottom: 20px;">
+                    <i class="fa-solid fa-list"></i> טען והצג שאלות למחיקה/עריכה
+                </button>
+                <div id="admin-questions-list"></div>
+            </div>
         </div>
     `;
 }
@@ -3873,7 +4110,7 @@ async function submitNewQuestion(e) {
             createdAt: serverTimestamp()
         });
 
-        alert('השאלה נוספה בהצלחה למאגר! ✅');
+        showCustomAlert("השאלה נוספה בהצלחה למאגר! ✅", "success");
         
         // איפוס הטופס להזנת שאלה נוספת
         document.getElementById('admin-add-question-form').reset();
@@ -3891,5 +4128,261 @@ async function submitNewQuestion(e) {
 // חשיפת הפונקציות כדי שה-HTML יזהה אותן
 window.updateAdminSubTopics = updateAdminSubTopics;
 window.submitNewQuestion = submitNewQuestion;
+
+// 1. טעינת כל השאלות למסך המנהל
+// 1. פונקציה ראשית: מציגה את הקטגוריות הראשיות
+window.loadAdminQuestions = function() {
+    const listContainer = document.getElementById('admin-questions-list');
+    
+    // מילון לתרגום מפתחות הנושאים לעברית על הכפתורים
+    const subjectNamesHebrew = {
+        mechanics: '⚙️ מכניקה',
+        electricity: '⚡ חשמל ומגנטיות',
+        radiation: '🌊 קרינה וחומר',
+        waves: '🌊 גלים ואופטיקה'
+    };
+
+    let html = '<h4 style="margin-bottom:15px; color: #f8fafc;">בחר קטגוריה ראשית:</h4>';
+    html += '<div style="display:flex; gap:10px; flex-wrap:wrap;">';
+    
+    // מעבר על המילון הקיים שלך subTopicsMap כדי לייצר כפתורים
+    for (const subjectKey in subTopicsMap) {
+        const displayName = subjectNamesHebrew[subjectKey] || subjectKey;
+        html += `<button onclick="showAdminSubtopics('${subjectKey}')" style="background: #334155; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; font-family: 'Rubik', sans-serif; transition: 0.3s;" onmouseover="this.style.background='#475569'" onmouseout="this.style.background='#334155'">${displayName}</button>`;
+    }
+    html += '</div>';
+    
+    // אזורי התוכן שיפתחו בהמשך
+    html += '<div id="admin-subtopics-container" style="margin-top:20px; padding-top: 20px; border-top: 1px solid #475569;"></div>';
+    html += '<div id="admin-questions-viewer" style="margin-top:20px;"></div>';
+    
+    listContainer.innerHTML = html;
+};
+
+// 2. פונקציה להצגת תתי-הנושאים של קטגוריה נבחרת
+window.showAdminSubtopics = function(subjectKey) {
+    const container = document.getElementById('admin-subtopics-container');
+    document.getElementById('admin-questions-viewer').innerHTML = ''; // ניקוי שאלות קודמות
+    
+    const subtopics = subTopicsMap[subjectKey];
+    if (!subtopics) return;
+
+    let html = '<h4 style="margin-bottom:15px; color: #f8fafc;">בחר תת-נושא:</h4>';
+    html += '<div style="display:flex; gap:10px; flex-wrap:wrap;">';
+    
+    subtopics.forEach(topic => {
+        html += `<button onclick="showAdminQuestionsForSubtopic('${subjectKey}', '${topic.id}')" style="background: #2563eb; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-family: 'Rubik', sans-serif;">${topic.name || topic.id}</button>`;
+    });
+    
+    html += '</div>';
+    container.innerHTML = html;
+};
+
+// 3. פונקציה להצגת השאלות (מ-Firebase + מהקובץ המקומי) עבור תת-הנושא
+window.showAdminQuestionsForSubtopic = async function(subjectKey, subtopicId) {
+    const viewer = document.getElementById('admin-questions-viewer');
+    viewer.innerHTML = '<div style="color: white;">טוען שאלות... <i class="fa-solid fa-spinner fa-spin"></i></div>';
+
+    try {
+        // --- א. משיכת שאלות מ-Firebase ---
+        const q = query(collection(db, "questions"), where("subtopic", "==", subtopicId));
+        const querySnapshot = await getDocs(q);
+        
+        let fbQuestions = [];
+        querySnapshot.forEach((docSnap) => {
+            fbQuestions.push({ id: docSnap.id, ...docSnap.data() });
+        });
+
+        // --- ב. שליפת השאלות המקודדות מהמערך המקומי (אם קיימות) ---
+        let localQuestions = [];
+        if (window.questionsBank) {
+            // בודק גם אם ה-ID נקי וגם אם יש לו קידומת 'ex_'
+            if (window.questionsBank[subtopicId]) {
+                localQuestions = window.questionsBank[subtopicId];
+            } else if (window.questionsBank['ex_' + subtopicId]) {
+                localQuestions = window.questionsBank['ex_' + subtopicId];
+            }
+        }
+
+        // --- ג. בדיקה אם יש בכלל שאלות ---
+        if (fbQuestions.length === 0 && localQuestions.length === 0) {
+            viewer.innerHTML = '<p style="color: #0f172a; text-align: center; background: white; padding: 15px; border-radius: 8px;">אין שאלות בתת-נושא זה.</p>';
+            return;
+        }
+
+        // --- ד. רינדור כל השאלות למסך ---
+        let html = '<div style="display: flex; flex-direction: column; gap: 20px;">';
+
+        // 1. רינדור שאלות Firebase (ניתנות לעריכה/מחיקה)
+        fbQuestions.forEach(data => {
+            html += generateQuestionHTML(data, true);
+        });
+
+        // 2. רינדור שאלות קובץ (לקריאה בלבד)
+        localQuestions.forEach((qObj) => {
+            // המרה של מבנה השאלה המקומי (q, options, a) למבנה האחיד (text, answers, correctIndex)
+            let adaptedData = {
+                text: qObj.q,
+                answers: qObj.options || [],
+                correctIndex: qObj.options ? qObj.options.indexOf(qObj.a) : -1
+            };
+            // נוודא שלא נציג שוב שאלה מקומית שבעצם נמשכה עכשיו מפיירבייס בעת תרגול
+            const alreadyExists = fbQuestions.some(fbq => fbq.text === adaptedData.text);
+            if (!alreadyExists) {
+                html += generateQuestionHTML(adaptedData, false);
+            }
+        });
+
+        html += '</div>';
+        viewer.innerHTML = html;
+
+    } catch (error) {
+        console.error("Error loading questions:", error);
+        viewer.innerHTML = '<p style="color: #ef4444; background: white; padding: 10px;">שגיאה בטעינת השאלות. בדוק קונסול.</p>';
+    }
+};
+
+// פונקציית עזר ליצירת הכרטיסייה (מפרידה בין שאלה שניתנת לעריכה לשאלה חסומה)
+// פונקציית עזר ליצירת הכרטיסייה (מפרידה בין שאלה שניתנת לעריכה לשאלה חסומה)
+window.generateQuestionHTML = function(data, isFirebase) {
+    const qId = isFirebase ? data.id : null;
+    const badgeHtml = isFirebase 
+        ? `<span style="background: #dbeafe; color: #1e3a8a; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;">מקור: Firebase ☁️</span>`
+        : `<span style="background: #fef3c7; color: #92400e; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: bold;">מקור: קובץ קוד 📄 (לא ניתן לעריכה מכאן)</span>`;
+
+    let actionsHtml = '';
+    if (isFirebase) {
+        actionsHtml = `
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button onclick="deleteQuestion('${qId}')" style="background: #ef4444; color: white; border: none; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; font-family: 'Rubik', sans-serif;">
+                    <i class="fa-solid fa-trash"></i> מחיקה
+                </button>
+                <button onclick="toggleEditQuestion('${qId}')" style="background: #3b82f6; color: white; border: none; padding: 6px 16px; border-radius: 6px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; font-family: 'Rubik', sans-serif;">
+                    <i class="fa-solid fa-pen"></i> עריכה
+                </button>
+            </div>
+            
+            <div id="edit-form-${qId}" style="display: none; margin-top: 15px; background: #f8fafc; padding: 15px; border-radius: 8px; border: 2px dashed #cbd5e1;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #0f172a;">טקסט השאלה לעריכה:</label>
+                <input type="text" id="edit-text-${qId}" value="${(data.text || '').replace(/"/g, '&quot;')}" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Rubik', sans-serif; font-size: 1rem;">
+                
+                <label style="display: block; margin-bottom: 8px; font-weight: bold; color: #0f172a;">תשובות (סמן מימין את התשובה הנכונה):</label>
+                ${(data.answers || []).map((ans, i) => `
+                    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px; background: #ffffff; padding: 8px 12px; border-radius: 8px; border: 1px solid #e2e8f0; box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);">
+                        
+                        <label style="display: flex; align-items: center; justify-content: center; cursor: pointer; margin: 0; padding: 5px;">
+                            <input type="radio" name="edit-correct-${qId}" value="${i}" ${data.correctIndex === i ? 'checked' : ''} style="width: 24px; height: 24px; cursor: pointer; accent-color: #22c55e; margin: 0; flex-shrink: 0;">
+                        </label>
+                        
+                        <input type="text" id="edit-ans-${qId}-${i}" value="${(ans || '').replace(/"/g, '&quot;')}" style="flex: 1; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: 'Rubik', sans-serif; font-size: 1rem; color: #0f172a;">
+                    </div>
+                `).join('')}
+                
+                <button onclick="saveEditedQuestion('${qId}')" style="background: #22c55e; color: white; border: none; padding: 10px 15px; border-radius: 6px; cursor: pointer; margin-top: 15px; width: 100%; font-weight: 700; font-family: 'Rubik', sans-serif; font-size: 1.05rem;">
+                    <i class="fa-solid fa-save"></i> שמור שינויים
+                </button>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="admin-q-card" style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #cbd5e1; text-align: right; color: #0f172a; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
+            <div style="margin-bottom: 10px;">${badgeHtml}</div>
+            <div style="font-size: 1.25rem; font-weight: 700; color: #0f172a; margin-bottom: 12px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px; line-height: 1.4;">
+                <span style="color: #2563eb; margin-left: 5px;">❓</span> ${data.text}
+            </div>
+            ${actionsHtml}
+        </div>
+    `;
+};
+
+// 2. פונקציה למחיקת שאלה
+window.deleteQuestion = async function(docId) {
+    if (!confirm("האם אתה בטוח שברצונך למחוק שאלה זו לצמיתות?")) return;
+    
+    try {
+        await deleteDoc(doc(db, "questions", docId));
+        showCustomAlert("השאלה נמחקה בהצלחה! 🗑️", "success");
+        loadAdminQuestions(); // רענון הרשימה אוטומטית אחרי מחיקה
+    } catch (error) {
+        console.error("שגיאה במחיקת השאלה:", error);
+        alert("אירעה שגיאה במחיקה.");
+    }
+};
+
+// 3. פונקציה לפתיחה/סגירה של אזור העריכה
+window.toggleEditQuestion = function(docId) {
+    const editForm = document.getElementById(`edit-form-${docId}`);
+    if (editForm.style.display === 'none') {
+        editForm.style.display = 'block';
+    } else {
+        editForm.style.display = 'none';
+    }
+};
+
+// 4. פונקציה לשמירת השאלה הערוכה ב-Firebase
+window.saveEditedQuestion = async function(docId) {
+    try {
+        // איסוף הנתונים המעודכנים מהטופס
+        const newText = document.getElementById(`edit-text-${docId}`).value;
+        const newAnswers = [
+            document.getElementById(`edit-ans-${docId}-0`).value,
+            document.getElementById(`edit-ans-${docId}-1`).value,
+            document.getElementById(`edit-ans-${docId}-2`).value,
+            document.getElementById(`edit-ans-${docId}-3`).value
+        ];
+        
+        const correctRadio = document.querySelector(`input[name="edit-correct-${docId}"]:checked`);
+        const newCorrectIndex = parseInt(correctRadio.value);
+
+        // עדכון המסמך הספציפי ב-Firestore
+        await updateDoc(doc(db, "questions", docId), {
+            text: newText,
+            answers: newAnswers,
+            correctIndex: newCorrectIndex
+        });
+
+        showCustomAlert("השאלה עודכנה בהצלחה! ✨", "success");
+        loadAdminQuestions(); // רענון הרשימה כדי לראות את השינויים
+
+    } catch (error) {
+        console.error("שגיאה בעדכון השאלה:", error);
+        alert("אירעה שגיאה בעדכון הנתונים.");
+    }
+};
+
+window.showCustomAlert = function(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    // יצירת אלמנט ההתראה
+    const toast = document.createElement('div');
+    toast.className = `custom-toast toast-${type}`;
+    
+    // בחירת אייקון מתאים לפי סוג ההתראה
+    let icon = '<i class="fa-solid fa-check-circle" style="color: #22c55e; font-size: 1.3rem;"></i>';
+    if (type === 'error') {
+        icon = '<i class="fa-solid fa-circle-exclamation" style="color: #ef4444; font-size: 1.3rem;"></i>';
+    } else if (type === 'info') {
+        icon = '<i class="fa-solid fa-circle-info" style="color: #3b82f6; font-size: 1.3rem;"></i>';
+    }
+
+    // הכנסת התוכן להתראה
+    toast.innerHTML = `${icon} <span>${message}</span>`;
+    container.appendChild(toast);
+
+    // הפעלת האנימציה עם השהייה קלה
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10);
+
+    // הסרה אוטומטית של ההתראה אחרי 3 שניות
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            toast.remove(); // מחיקה מה-DOM אחרי סיום האנימציה
+        }, 400);
+    }, 3000);
+};
 
 window.addEventListener("load", () => { initSparkleEffect(); });
